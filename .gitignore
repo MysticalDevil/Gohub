@@ -2,6 +2,7 @@ tmp
 .env
 .DS_store
 .hitsory
+.air.toml
 
 # Golang
 ########################
@@ -49,7 +50,6 @@ tmp/
 
 # System generated files
 ########################
-.DS_store
 .DS_store?
 .AppleDouble
 .LSOverride
