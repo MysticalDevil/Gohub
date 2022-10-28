@@ -14,7 +14,7 @@ delay = 1000
 # Ignored the following extension or directory
 exclude_dir = ["assets", "tmp", "vendor", "public/uploads"]
 # Ignored te following file
-exclude_file = [".air.toml-template"]
+exclude_file = []
 # Use regex ignore file
 exclude_regex = []
 # Ignore unchanged files
