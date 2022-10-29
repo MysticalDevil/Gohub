@@ -21,6 +21,8 @@ func main() {
 		"For example --env=testing, which loads the .env.testing file")
 	flag.Parse()
 	config.InitConfig(env)
+	// Initialize Logger
+	bootstrap.SetupLogger()
 
 	// Create a new Gin Engine instance
 	router := gin.New()
