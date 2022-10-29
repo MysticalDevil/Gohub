@@ -1,3 +1,4 @@
+// Package routes Register route
 package routes
 
 import (
