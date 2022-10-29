@@ -1,3 +1,4 @@
+// Package config Responsible for configuration information
 package config
 
 import (

@@ -1,3 +1,4 @@
+// Package bootstrap Handler initialization logic
 package bootstrap
 
 import (
