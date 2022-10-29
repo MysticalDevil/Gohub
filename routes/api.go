@@ -15,6 +15,8 @@ func RegisterAPIRoutes(r *gin.Engine) {
 			suc := new(auth.SignupController)
 			// Determine whether the phone number is registered
 			authGroup.POST("/signup/phone/exist", suc.IsPhoneExist)
+			// Determine whether the email is registered
+			authGroup.POST("/signup/email/exist", suc.IsEmailExist)
 		}
 	}
 }

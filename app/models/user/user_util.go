@@ -5,7 +5,7 @@ import "gohub/pkg/database"
 // IsEmailExist Determine if Email has been registered
 func IsEmailExist(email string) bool {
 	var count int64
-	database.DB.Model(User{}).Where("emil=?", email).Count(&count)
+	database.DB.Model(User{}).Where("email=?", email).Count(&count)
 	return count > 0
 }
 
