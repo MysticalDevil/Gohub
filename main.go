@@ -24,6 +24,8 @@ func main() {
 	// Initialize Logger
 	bootstrap.SetupLogger()
 
+	gin.SetMode(gin.ReleaseMode)
+
 	// Create a new Gin Engine instance
 	router := gin.New()
 	// Initialize DB

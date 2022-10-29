@@ -1,7 +1,11 @@
 // Package helpers Store helper method
 package helpers
 
-import "reflect"
+import (
+	"fmt"
+	"reflect"
+	"time"
+)
 
 // Empty Check if a variable is empty
 func Empty(val any) bool {
@@ -27,4 +31,9 @@ func Empty(val any) bool {
 		return v.IsNil()
 	}
 	return reflect.DeepEqual(val, reflect.Zero(v.Type()).Interface())
+}
+
+// MicrosecondStr Output time.Duration type as ms with 3 decimal places
+func MicrosecondStr(elapsed time.Duration) string {
+	return fmt.Sprintf("%.3fms", float64(elapsed.Nanoseconds())/1e6)
 }
