@@ -10,8 +10,8 @@ type SignupPhoneExistRequest struct {
 	Phone string `json:"phone,omitempty" valid:"phone"`
 }
 
-// ValidateSignupPhoneExist Phone number registration validator
-func ValidateSignupPhoneExist(data any, _ *gin.Context) map[string][]string {
+// SignupPhoneExist Phone number registration validator
+func SignupPhoneExist(data any, _ *gin.Context) map[string][]string {
 	// Custom validation rules
 	rules := govalidator.MapData{
 		"phone": []string{"required", "digits:11"},
@@ -25,24 +25,15 @@ func ValidateSignupPhoneExist(data any, _ *gin.Context) map[string][]string {
 		},
 	}
 
-	// Configuration initialization
-	opts := govalidator.Options{
-		Data:          data,
-		Rules:         rules,
-		TagIdentifier: "valid",
-		Messages:      messages,
-	}
-
-	// Start validate
-	return govalidator.New(opts).ValidateStruct()
+	return validate(data, rules, messages)
 }
 
 type SignupEmailExistRequest struct {
 	Email string `json:"email,omitempty" valid:"email"`
 }
 
-// ValidateSignupEmailExist Email registration validator
-func ValidateSignupEmailExist(data any, _ *gin.Context) map[string][]string {
+// SignupEmailExist Email registration validator
+func SignupEmailExist(data any, _ *gin.Context) map[string][]string {
 	// Custom validation rules
 	rules := govalidator.MapData{
 		"email": []string{"required", "min:4", "max:30", "email"},
@@ -58,14 +49,5 @@ func ValidateSignupEmailExist(data any, _ *gin.Context) map[string][]string {
 		},
 	}
 
-	// Configuration initialization
-	opts := govalidator.Options{
-		Data:          data,
-		Rules:         rules,
-		TagIdentifier: "valid",
-		Messages:      messages,
-	}
-
-	// Start validate
-	return govalidator.New(opts).ValidateStruct()
+	return validate(data, rules, messages)
 }
