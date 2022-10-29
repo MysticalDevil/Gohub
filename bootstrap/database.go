@@ -11,7 +11,6 @@ import (
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
-	"log"
 	"time"
 )
 
@@ -40,7 +39,6 @@ func SetupDB() {
 			config.Get("database.postgresql.port"),
 			config.Get("database.postgresql.timezone"),
 		)
-		log.Println(dsn)
 		dbConfig = postgres.New(postgres.Config{
 			DSN: dsn,
 		})
