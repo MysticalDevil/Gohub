@@ -18,7 +18,7 @@ exclude_file = []
 # Use regex ignore file
 exclude_regex = []
 # Ignore unchanged files
-exclude_unchange = false
+exclude_unchanged = false
 # Monitoring System Change Directory
 follow_symlink = false
 # Custom parameters
