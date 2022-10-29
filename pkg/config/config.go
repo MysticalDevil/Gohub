@@ -102,6 +102,11 @@ func GetString(path string, defaultValue ...any) string {
 	return cast.ToString(internalGet(path, defaultValue...))
 }
 
+// GetInt To get the configuration information of Int64 type
+func GetInt(path string, defaultValue ...any) int {
+	return cast.ToInt(internalGet(path, defaultValue...))
+}
+
 // GetInt64 To get the configuration information of Int64 type
 func GetInt64(path string, defaultValue ...any) int64 {
 	return cast.ToInt64(internalGet(path, defaultValue...))
