@@ -17,7 +17,6 @@ type SignupController struct {
 // IsPhoneExist Check if the phone number is registered
 func (sc *SignupController) IsPhoneExist(c *gin.Context) {
 	request := requests.SignupPhoneExistRequest{}
-
 	// Parse Json request
 	if ok := requests.Validate(c, &request, requests.SignupPhoneExist); !ok {
 		return
