@@ -3,6 +3,7 @@ package bootstrap
 import (
 	"errors"
 	"fmt"
+	"gohub/app/models/user"
 	"gohub/pkg/config"
 	"gohub/pkg/database"
 	"gorm.io/driver/mysql"
@@ -57,4 +58,10 @@ func SetupDB() {
 	database.SQLDB.SetConnMaxLifetime(
 		time.Duration(config.GetInt("database.max_life_seconds")) * time.Second,
 	)
+
+	// Migrate the database
+	err := database.DB.AutoMigrate(&user.User{})
+	if err != nil {
+		fmt.Println(err.Error())
+	}
 }
