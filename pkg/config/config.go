@@ -11,11 +11,11 @@ import (
 // viper library example
 var viper *viperLib.Viper
 
-// ConfigFunc Dynamically load configuration information
-type ConfigFunc func() map[string]any
+// Func Dynamically load configuration information
+type Func func() map[string]any
 
-// ConfigFuncs Load into this array first, loadConfig dynamically generates configuration information
-var ConfigFuncs map[string]ConfigFunc
+// Funcs Load into this array first, loadConfig dynamically generates configuration information
+var Funcs map[string]Func
 
 func init() {
 	// Initialize the Viper library
@@ -29,7 +29,7 @@ func init() {
 	// Read environment variables
 	viper.AutomaticEnv()
 
-	ConfigFuncs = make(map[string]ConfigFunc)
+	Funcs = make(map[string]Func)
 }
 
 // InitConfig Initialize configuration information,
@@ -42,7 +42,7 @@ func InitConfig(env string) {
 }
 
 func loadConfig() {
-	for name, fn := range ConfigFuncs {
+	for name, fn := range Funcs {
 		viper.Set(name, fn())
 	}
 }
@@ -77,8 +77,8 @@ func Env(envName string, defaultValue ...any) any {
 }
 
 // Add To add configuration items
-func Add(name string, configFn ConfigFunc) {
-	ConfigFuncs[name] = configFn
+func Add(name string, configFn Func) {
+	Funcs[name] = configFn
 }
 
 // Get To get configuration items
