@@ -30,6 +30,8 @@ func main() {
 	router := gin.New()
 	// Initialize DB
 	bootstrap.SetupDB()
+	// Initialize Redis
+	bootstrap.SetupRedis()
 	// Initialize route binding
 	bootstrap.SetupRoute(router)
 	// Run serve
