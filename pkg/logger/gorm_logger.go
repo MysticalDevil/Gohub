@@ -27,7 +27,7 @@ func NewGormLogger() GormLogger {
 }
 
 // LogMode Implement the LogMode method of gormLogger.Interface
-func (l GormLogger) LogMode(level gormLogger.LogLevel) gormLogger.Interface {
+func (l GormLogger) LogMode(_ gormLogger.LogLevel) gormLogger.Interface {
 	return GormLogger{
 		ZapLogger:     l.ZapLogger,
 		SlowThreshold: l.SlowThreshold,
