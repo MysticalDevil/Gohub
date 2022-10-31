@@ -28,12 +28,14 @@ func main() {
 
 	// Create a new Gin Engine instance
 	router := gin.New()
+
 	// Initialize DB
 	bootstrap.SetupDB()
 	// Initialize Redis
 	bootstrap.SetupRedis()
 	// Initialize route binding
 	bootstrap.SetupRoute(router)
+
 	// Run serve
 	err := router.Run(":" + config.Get("app.port"))
 	if err != nil {
