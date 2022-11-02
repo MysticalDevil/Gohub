@@ -4,8 +4,8 @@ import (
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
 	"gohub/pkg/logger"
+	"gohub/pkg/response"
 	"net"
-	"net/http"
 	"net/http/httputil"
 	"os"
 	"strings"
@@ -54,9 +54,7 @@ func Recovery() gin.HandlerFunc {
 				)
 
 				// return 500 status code
-				c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
-					"message": "Internal server error, please try again later",
-				})
+				response.Abort500(c)
 			}
 		}()
 		c.Next()
