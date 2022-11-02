@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/thedevsaddam/govalidator"
-	"net/http"
+	"gohub/pkg/response"
 )
 
 // ValidatorFunc Validate function type
@@ -18,11 +18,11 @@ type ValidatorFunc func(any, *gin.Context) map[string][]string
 func Validate(c *gin.Context, obj any, handler ValidatorFunc) bool {
 	// Parse request, support json data, form request and url query
 	if err := c.ShouldBind(obj); err != nil {
-		c.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{
-			"message": "Request parsing error, please confirm the format is correct. " +
+		response.BadRequest(
+			c, err,
+			"Request parsing error, please confirm the format is correct. "+
 				"Please use the `multipart` header for uploading files, and use json format for parameters",
-			"error": err.Error(),
-		})
+		)
 		fmt.Println(err.Error())
 		return false
 	}
@@ -30,10 +30,7 @@ func Validate(c *gin.Context, obj any, handler ValidatorFunc) bool {
 	// Validate form
 	errs := handler(obj, c)
 	if len(errs) > 0 {
-		c.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{
-			"message": "Request verification failed, please see errors for details",
-			"errors":  errs,
-		})
+		response.ValidationError(c, errs)
 		return false
 	}
 
