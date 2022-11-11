@@ -2,7 +2,9 @@
 package helpers
 
 import (
+	"crypto/rand"
 	"fmt"
+	"io"
 	"reflect"
 	"time"
 )
@@ -36,4 +38,18 @@ func Empty(val any) bool {
 // MicrosecondStr Output time.Duration type as ms with 3 decimal places
 func MicrosecondStr(elapsed time.Duration) string {
 	return fmt.Sprintf("%.3fms", float64(elapsed.Nanoseconds())/1e6)
+}
+
+// RandomNumber Generate a random number string of 'length' length
+func RandomNumber(length int) string {
+	table := [...]byte{'1', '2', '3', '4', '5', '6', '7', '8', '9', '0'}
+	b := make([]byte, length)
+	n, err := io.ReadAtLeast(rand.Reader, b, length)
+	if n != length {
+		panic(err)
+	}
+	for i := 0; i < len(b); i++ {
+		b[i] = table[int(b[i])%len(table)]
+	}
+	return string(b)
 }
