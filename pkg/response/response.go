@@ -129,7 +129,7 @@ func Unauthorized(c *gin.Context, msg ...string) {
 		"message": defaultMessage(
 			"Request parsing error, please confirm whether the request format is correct. "+
 				"Please use the 'multipart' header for uploading files and use JSON format for parameters",
-			msg...
+			msg...,
 		),
 	})
 }
