@@ -2,10 +2,12 @@
 package verifycode
 
 import (
+	"fmt"
 	"gohub/app"
 	"gohub/pkg/config"
 	"gohub/pkg/helpers"
 	"gohub/pkg/logger"
+	"gohub/pkg/mail"
 	"gohub/pkg/redis"
 	"gohub/pkg/sms"
 	"strings"
@@ -49,6 +51,31 @@ func (vc *VerifyCode) SendSMS(phone string) bool {
 		Template: config.GetString("sms.aliyun.template_code"),
 		Data:     map[string]string{"code": code},
 	})
+}
+
+// SendEmail Send Email verification code, example:
+//
+//	verifycode.NewVerifyCode().SendEmail(request.Email)
+func (vc *VerifyCode) SendEmail(email string) error {
+	// generate verify code
+	code := vc.generateVerifyCode(email)
+
+	if !app.IsProduction() && strings.HasSuffix(email, config.GetString("verifycode.debug_email_suffix")) {
+		return nil
+	}
+	content := fmt.Sprintf("<h1>Your email verification code is %v </h1>", code)
+	// Send email
+	mail.NewMailer().Send(mail.Email{
+		From: mail.From{
+			Address: config.GetString("mail.from.address"),
+			Name:    config.GetString("mail.from.name"),
+		},
+		To:      []string{email},
+		Subject: "Email verify code",
+		HTML:    []byte(content),
+	})
+
+	return nil
 }
 
 // CheckAnswer Check whether the verification code submitted by the user is correct
