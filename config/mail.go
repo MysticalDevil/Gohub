@@ -7,7 +7,7 @@ func init() {
 		return map[string]any{
 			"smtp": map[string]any{
 				"host":     config.Env("MAIL_HOST", "localhost"),
-				"port":     config.Env("MAIL_PORT", 8025),
+				"port":     config.Env("MAIL_PORT", 7788),
 				"username": config.Env("MAIL_USERNAME", ""),
 				"password": config.Env("MAIL_PASSWORD", ""),
 			},
