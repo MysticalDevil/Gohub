@@ -20,7 +20,8 @@ func RegisterAPIRoutes(r *gin.Engine) {
 			// Send verification code
 			vcc := new(auth.VerifyController)
 			// Image verification code, need to add current limit
-			authGroup.GET("/verify-codes/captcha", vcc.ShowCaptcha)
+			authGroup.POST("/verify-codes/captcha", vcc.ShowCaptcha)
+			authGroup.POST("/verify-codes/phone", vcc.SendUsingPhone)
 		}
 	}
 }
