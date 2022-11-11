@@ -130,5 +130,5 @@ func GetBool(path string, defaultValue ...any) bool {
 
 // GetStringMapString To get struct data
 func GetStringMapString(path string) map[string]string {
-	return cast.ToStringMapString(path)
+	return viper.GetStringMapString(path)
 }
