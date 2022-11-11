@@ -5,7 +5,7 @@ import "gohub/pkg/config"
 
 func init() {
 	config.Add("app", func() map[string]any {
-		return map[string]any {
+		return map[string]any{
 			// App name
 			"name": config.Env("APP_NAME", "Gohub"),
 			// The current environment, used to distinguish multiple environments, generally local, stage, production, test
