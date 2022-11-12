@@ -62,3 +62,26 @@ func (sc *SignupController) SignupUsingPhone(c *gin.Context) {
 		response.Abort500(c, "Failed to create user, please try later~")
 	}
 }
+
+// SignupUsingEmail Sign up with email
+func (sc *SignupController) SignupUsingEmail(c *gin.Context) {
+	request := requests.SignupUsingEmailRequest{}
+	if ok := requests.Validate(c, &request, requests.SignupUsingEmail); !ok {
+		return
+	}
+
+	userModel := user.User{
+		Name:     request.Name,
+		Email:    request.Email,
+		Password: request.Password,
+	}
+	userModel.Create()
+
+	if userModel.ID > 0 {
+		response.CreatedJSON(c, gin.H{
+			"data": userModel,
+		})
+	} else {
+		response.Abort500(c, "Failed to create user, please try later~")
+	}
+}
