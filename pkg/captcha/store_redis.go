@@ -2,7 +2,7 @@ package captcha
 
 import (
 	"errors"
-	"gohub/app"
+	"gohub/pkg/app"
 	"gohub/pkg/config"
 	"gohub/pkg/redis"
 	"time"

@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
-	"gohub/app"
+	"gohub/pkg/app"
 	"gopkg.in/natefinch/lumberjack.v2"
 	"os"
 	"strings"

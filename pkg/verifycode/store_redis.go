@@ -1,7 +1,7 @@
 package verifycode
 
 import (
-	"gohub/app"
+	"gohub/pkg/app"
 	"gohub/pkg/config"
 	"gohub/pkg/redis"
 	"time"
