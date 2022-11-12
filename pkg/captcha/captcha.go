@@ -3,7 +3,7 @@ package captcha
 
 import (
 	"github.com/mojocn/base64Captcha"
-	"gohub/app"
+	"gohub/pkg/app"
 	"gohub/pkg/config"
 	"gohub/pkg/redis"
 	"sync"

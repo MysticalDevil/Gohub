@@ -3,7 +3,7 @@ package verifycode
 
 import (
 	"fmt"
-	"gohub/app"
+	"gohub/pkg/app"
 	"gohub/pkg/config"
 	"gohub/pkg/helpers"
 	"gohub/pkg/logger"
