@@ -4,6 +4,7 @@ package requests
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/thedevsaddam/govalidator"
+	"gohub/app/requests/validators"
 )
 
 type SignupPhoneExistRequest struct {
@@ -50,4 +51,54 @@ func SignupEmailExist(data any, _ *gin.Context) map[string][]string {
 	}
 
 	return validate(data, rules, messages)
+}
+
+// SignupUsingPhoneRequest Request information via mobile phone registration
+type SignupUsingPhoneRequest struct {
+	Phone           string `json:"phone,omitempty" valid:"phone"`
+	VerifyCode      string `json:"verify_code,omitempty" valid:"verify_code"`
+	Name            string `json:"name" valid:"name"`
+	Password        string `json:"password,omitempty" valid:"password"`
+	PasswordConfirm string `json:"password_confirm,omitempty" valid:"password_confirm"`
+}
+
+func SignupUsingPhone(data any, c *gin.Context) map[string][]string {
+	rules := govalidator.MapData{
+		"phone":            []string{"required", "digits:11"},
+		"name":             []string{"required", "alpha_num", "between:3,20", "not_exists:users,name"},
+		"password":         []string{"required", "min:6"},
+		"password_confirm": []string{"required"},
+		"verify_code":      []string{"required", "digits:6"},
+	}
+
+	messages := govalidator.MapData{
+		"phone": []string{
+			"required:The mobile phone number is required, and the parameter name is 'phone'",
+			"digits:Mobile number must be 11 digits long",
+		},
+		"name": []string{
+			"required:Username is required",
+			"alpha_num:Username is malformed, only numbers and English are allowed",
+			"between:Username length must be between 3 and 20",
+		},
+		"password": []string{
+			"required:Password is required",
+			"min:Password length must be greater than 6",
+		},
+		"password_confirm": []string{
+			"required:Password confirm is required",
+		},
+		"verify_code": []string{
+			"required:Verification code answer is required",
+			"digits:The verification code must be a 6-digit number",
+		},
+	}
+
+	errs := validate(data, rules, messages)
+
+	_data := data.(*SignupUsingPhoneRequest)
+	errs = validators.ValidatePasswordConfirm(_data.Password, _data.PasswordConfirm, errs)
+	errs = validators.ValidateVerifyCode(_data.Phone, _data.VerifyCode, errs)
+
+	return errs
 }
