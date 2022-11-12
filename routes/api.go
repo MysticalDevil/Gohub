@@ -17,6 +17,7 @@ func RegisterAPIRoutes(r *gin.Engine) {
 			authGroup.POST("/signup/phone/exist", suc.IsPhoneExist)
 			// Determine whether the email is registered
 			authGroup.POST("/signup/email/exist", suc.IsEmailExist)
+			authGroup.POST("/signup/using-phone", suc.SignupUsingPhone)
 			// Send verification code
 			vcc := new(auth.VerifyController)
 			// Image verification code, need to add current limit
