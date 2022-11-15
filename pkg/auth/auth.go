@@ -3,7 +3,9 @@ package auth
 
 import (
 	"errors"
+	"github.com/gin-gonic/gin"
 	"gohub/app/models/user"
+	"gohub/pkg/logger"
 )
 
 // Attempt Try to log in
@@ -28,4 +30,19 @@ func LoginByPhone(phone string) (user.User, error) {
 	}
 
 	return userModel, nil
+}
+
+// CurrentUser Get the currently logged-in user from gin.Context
+func CurrentUser(c *gin.Context) user.User {
+	userModel, ok := c.MustGet("current_user").(user.User)
+	if !ok {
+		logger.LogIf(errors.New("could not get user"))
+		return user.User{}
+	}
+	return userModel
+}
+
+// CurrentUID Get the current login user ID from gin.Context
+func CurrentUID(c *gin.Context) string {
+	return c.GetString("current_user_id")
 }
