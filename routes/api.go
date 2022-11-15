@@ -4,14 +4,19 @@ package routes
 import (
 	"github.com/gin-gonic/gin"
 	"gohub/app/http/controllers/api/v1/auth"
+	"gohub/app/http/middlewares"
 )
 
 // RegisterAPIRoutes Registration page related routing
 func RegisterAPIRoutes(r *gin.Engine) {
 	v1 := r.Group("/v1")
+	// Global middleware: rate limit per hour. Here is where all API requests add up.
+	v1.Use(middlewares.LimitIP("200-H"))
 	{
 		authGroup := v1.Group("/auth")
+		authGroup.Use(middlewares.LimitIP("1000-H"))
 		{
+			// Sign up
 			suc := new(auth.SignupController)
 			// Determine whether the phone number is registered
 			authGroup.POST("/signup/phone/exist", suc.IsPhoneExist)
@@ -27,6 +32,7 @@ func RegisterAPIRoutes(r *gin.Engine) {
 			authGroup.POST("/verify-codes/phone", vcc.SendUsingPhone)
 			authGroup.POST("/verify-codes/email", vcc.SendUsingEmail)
 
+			// Login
 			lgc := new(auth.LoginController)
 			// Use phone, SMS verify code to login
 			authGroup.POST("/login/using-phone", lgc.LoginByPhone)
