@@ -30,3 +30,21 @@ func (pc *PasswordController) ResetByPhone(c *gin.Context) {
 		response.Success(c)
 	}
 }
+
+// ResetByEmail Use email and verify code to reset password
+func (pc *PasswordController) ResetByEmail(c *gin.Context) {
+	request := requests.ResetByEmailRequest{}
+	if ok := requests.Validate(c, &request, requests.ResetByEmail); !ok {
+		return
+	}
+
+	userModel := user.GetByEmail(request.Email)
+	if userModel.ID == 0 {
+		response.Abort404(c)
+	} else {
+		userModel.Password = request.Password
+		userModel.Save()
+
+		response.Success(c)
+	}
+}

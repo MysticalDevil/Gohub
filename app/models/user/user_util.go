@@ -22,6 +22,12 @@ func GetByPhone(phone string) (userModel User) {
 	return
 }
 
+// GetByEmail Get users by email
+func GetByEmail(email string) (userModel User) {
+	database.DB.Where("email = ?", email).First(&userModel)
+	return
+}
+
 // GetByUtil Get users by phone/Email/username
 func GetByUtil(loginID string) (userModel User) {
 	database.DB.
