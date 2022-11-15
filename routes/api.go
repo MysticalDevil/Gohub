@@ -19,18 +19,24 @@ func RegisterAPIRoutes(r *gin.Engine) {
 			authGroup.POST("/signup/email/exist", suc.IsEmailExist)
 			authGroup.POST("/signup/using-phone", suc.SignupUsingPhone)
 			authGroup.POST("/signup/using-email", suc.SignupUsingEmail)
+
 			// Send verification code
 			vcc := new(auth.VerifyController)
 			// Image verification code, need to add current limit
 			authGroup.POST("/verify-codes/captcha", vcc.ShowCaptcha)
 			authGroup.POST("/verify-codes/phone", vcc.SendUsingPhone)
 			authGroup.POST("/verify-codes/email", vcc.SendUsingEmail)
+
 			lgc := new(auth.LoginController)
 			// Use phone, SMS verify code to login
 			authGroup.POST("/login/using-phone", lgc.LoginByPhone)
 			// Support phone, username, email
 			authGroup.POST("/login/using-password", lgc.LoginByPassword)
 			authGroup.POST("/login/refresh-token", lgc.RefreshToken)
+
+			// Reset password
+			pwc := new(auth.PasswordController)
+			authGroup.POST("/password-reset/using-phone", pwc.ResetByPhone)
 		}
 	}
 }
