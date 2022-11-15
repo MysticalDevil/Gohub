@@ -50,3 +50,16 @@ func (lc *LoginController) LoginByPassword(c *gin.Context) {
 		})
 	}
 }
+
+// RefreshToken Refresh Access Token
+func (lc *LoginController) RefreshToken(c *gin.Context) {
+	token, err := jwt.NewJWT().RefreshToken(c)
+
+	if err != nil {
+		response.Error(c, err, "Refresh Access Token failed")
+	} else {
+		response.JSON(c, gin.H{
+			"token": token,
+		})
+	}
+}
