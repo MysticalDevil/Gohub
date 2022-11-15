@@ -28,6 +28,8 @@ func RegisterAPIRoutes(r *gin.Engine) {
 			lgc := new(auth.LoginController)
 			// Use phone, SMS verify code to login
 			authGroup.POST("/login/using-phone", lgc.LoginByPhone)
+			// Support phone, username, email
+			authGroup.POST("/login/using-password", lgc.LoginByPassword)
 		}
 	}
 }
