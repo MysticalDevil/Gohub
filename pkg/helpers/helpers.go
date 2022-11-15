@@ -5,6 +5,7 @@ import (
 	"crypto/rand"
 	"fmt"
 	"io"
+	mathRand "math/rand"
 	"reflect"
 	"time"
 )
@@ -60,4 +61,15 @@ func FirstElement(args []string) string {
 		return args[0]
 	}
 	return ""
+}
+
+// RandomString Generate a random string of length 'length'
+func RandomString(length int) string {
+	mathRand.Seed(time.Now().UnixNano())
+	letters := "qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM"
+	b := make([]byte, length)
+	for i := range b {
+		b[i] = letters[mathRand.Intn(len(letters))]
+	}
+	return string(b)
 }
