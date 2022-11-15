@@ -43,6 +43,7 @@ func main() {
 	// register subcommand
 	rootCmd.AddCommand(
 		cmd.Serve,
+		cmd.Key,
 	)
 
 	// Configure the web service to run by default
