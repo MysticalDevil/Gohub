@@ -53,3 +53,11 @@ func RandomNumber(length int) string {
 	}
 	return string(b)
 }
+
+// FirstElement Get args[0] safely to avoid panic: runtime error: index out of range
+func FirstElement(args []string) string {
+	if len(args) > 0 {
+		return args[0]
+	}
+	return ""
+}

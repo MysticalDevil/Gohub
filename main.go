@@ -1,12 +1,14 @@
 package main
 
 import (
-	"flag"
-	"github.com/gin-gonic/gin"
+	"fmt"
+	"github.com/spf13/cobra"
+	"gohub/app/cmd"
 	"gohub/bootstrap"
 	btsConfig "gohub/config"
 	"gohub/pkg/config"
-	"log"
+	"gohub/pkg/console"
+	"os"
 )
 
 func init() {
@@ -15,31 +17,42 @@ func init() {
 }
 
 func main() {
-	// Configuration initialization, depends on the command line --env parameter
-	var env string
-	flag.StringVar(&env, "env", "", "Load .env file. "+
-		"For example --env=testing, which loads the .env.testing file")
-	flag.Parse()
-	config.InitConfig(env)
-	// Initialize Logger
-	bootstrap.SetupLogger()
+	// Application entry, the command cmd.CmdServer is called by default
+	var rootCmd = &cobra.Command{
+		Use:   "Gohub",
+		Short: "A simple forum project",
+		Long:  `Default will run "serve" command, you can use "-h" flag to see all subcommands`,
 
-	gin.SetMode(gin.ReleaseMode)
+		// All subcommands of rootCmd execute the following code
+		PersistentPreRun: func(command *cobra.Command, args []string) {
+			config.InitConfig(cmd.Env)
 
-	// Create a new Gin Engine instance
-	router := gin.New()
+			// Initialize Logger
+			bootstrap.SetupLogger()
 
-	// Initialize DB
-	bootstrap.SetupDB()
-	// Initialize Redis
-	bootstrap.SetupRedis()
-	// Initialize route binding
-	bootstrap.SetupRoute(router)
+			// Initialize DB
+			bootstrap.SetupDB()
 
-	// Run serve
-	err := router.Run(":" + config.Get("app.port"))
-	if err != nil {
-		// Error handling, port occupied or other errors
-		log.Println(err.Error())
+			// Initialize Redis
+			bootstrap.SetupRedis()
+
+			// Initialize the cache
+		},
+	}
+
+	// register subcommand
+	rootCmd.AddCommand(
+		cmd.Serve,
+	)
+
+	// Configure the web service to run by default
+	cmd.RegisterDefaultCmd(rootCmd, cmd.Serve)
+
+	// Register global parameters, --env
+	cmd.RegisterGlobalFlags(rootCmd)
+
+	// Execute the main command
+	if err := rootCmd.Execute(); err != nil {
+		console.Exit(fmt.Sprintf("Failed to run app with %v: %x", os.Args, err.Error()))
 	}
 }
