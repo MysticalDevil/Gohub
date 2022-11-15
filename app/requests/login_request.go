@@ -36,3 +36,46 @@ func LoginByPhone(data any, c *gin.Context) map[string][]string {
 
 	return errs
 }
+
+type LoginByPasswordRequest struct {
+	CaptchaID     string `json:"captcha_id,omitempty" valid:"captcha_id"`
+	CaptchaAnswer string `json:"captcha_answer,omitempty" valid:"captcha_answer"`
+
+	LoginID  string `json:"login_id" valid:"login_id"`
+	Password string `json:"password,omitempty" valid:"password"`
+}
+
+// LoginByPassword Validate the form
+func LoginByPassword(data any, c *gin.Context) map[string][]string {
+	rules := govalidator.MapData{
+		"login_id":       []string{"required", "min:3"},
+		"password":       []string{"required", "min:6"},
+		"captcha_id":     []string{"required"},
+		"captcha_answer": []string{"required", "digits:6"},
+	}
+
+	messages := govalidator.MapData{
+		"login_id": []string{
+			"required:The login ID is required, and supports mobile phone number, email address and user name",
+			"min:Login ID length must be greater than 3",
+		},
+		"password": []string{
+			"required:Password is required",
+			"min:Password length must be greater than 6",
+		},
+		"captcha_id": []string{
+			"requires:Image verification code ID is required",
+		},
+		"captcha_answer": []string{
+			"required:Image verification code answer is required",
+			"digits:The picture verification code must be 6 digits in length",
+		},
+	}
+
+	errs := validate(data, rules, messages)
+
+	_data := data.(*LoginByPasswordRequest)
+	errs = validators.ValidateCaptcha(_data.CaptchaID, _data.CaptchaAnswer, errs)
+
+	return errs
+}
