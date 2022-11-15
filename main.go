@@ -44,6 +44,7 @@ func main() {
 	rootCmd.AddCommand(
 		cmd.Serve,
 		cmd.Key,
+		cmd.Play,
 	)
 
 	// Configure the web service to run by default
