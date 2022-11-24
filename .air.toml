@@ -4,11 +4,11 @@ tmp_dir = "tmp"
 
 [build]
 # On windows platform
-bin = "./tmp/main.exe"
-cmd = "go build -o ./tmp/main.exe ."
+# bin = "./tmp/main.exe"
+# cmd = "go build -o ./tmp/main.exe ."
 # On Unix, Linux platform
-# bin = "./tmp/main"
-# cmd = "go build -o ./tmp/main ."
+bin = "./tmp/main"
+cmd = "go build -o ./tmp/main ."
 # Delay time to trigger build
 delay = 1000
 # Ignored the following extension or directory
