@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/spf13/cobra"
 	"gohub/app/cmd"
+	"gohub/app/cmd/make"
 	"gohub/bootstrap"
 	btsConfig "gohub/config"
 	"gohub/pkg/config"
@@ -45,6 +46,7 @@ func main() {
 		cmd.Serve,
 		cmd.Key,
 		cmd.Play,
+		make.Make,
 	)
 
 	// Configure the web service to run by default
