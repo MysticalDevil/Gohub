@@ -1,0 +1,24 @@
+package cmd
+
+import(
+    "errors"
+    "gohub/pkg/console"
+
+    "github.com/spf13/cobra"
+)
+
+var {{StructName}} = &cobra.Command{
+    Use: "{{PackageName}}",
+    Short: "HERE PUTS THE COMMAND DESCRIPTION",
+    Run: run{{StructName}},
+    Args: cobra.ExactArgs(1), // Only one parameter is allowed and must be passed
+}
+
+func run{{StructName}}(cmd *cobra.Command, args []string) {
+    console.Success("This is a tip for success")
+    console.Warning("This is a tip")
+    console.Error("This is an error message")
+    console.Warning("The terminal output is preferably in English, so that the compatibility is better")
+    console.Exit("The exit method can be used to print a message and interrupt the program")
+    console.ExitIf(errors.New("print and exit when err != nil"))
+}
