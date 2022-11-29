@@ -69,6 +69,7 @@ func init() {
 	// Register make subcommands
 	Make.AddCommand(
 		CMD,
+		CmdMakeModel,
 	)
 }
 
