@@ -7,7 +7,7 @@ import (
 	"strings"
 )
 
-var ApiController = &cobra.Command{
+var CmdMakeApiController = &cobra.Command{
 	Use:   "apicontroller",
 	Short: "Create api controller, example: make apicontroller v1/user",
 	Run:   runMakeApiController,

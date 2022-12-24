@@ -70,7 +70,8 @@ func init() {
 	Make.AddCommand(
 		CMD,
 		CmdMakeModel,
-		ApiController,
+		CmdMakeApiController,
+		CmdMakeRequest,
 	)
 }
 

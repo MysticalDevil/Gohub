@@ -47,7 +47,6 @@ func main() {
 		cmd.Key,
 		cmd.Play,
 		make.Make,
-		make.ApiController,
 	)
 
 	// Configure the web service to run by default
