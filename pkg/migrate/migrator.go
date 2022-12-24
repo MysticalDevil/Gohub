@@ -78,6 +78,46 @@ func (migrator *Migrator) Up() {
 	}
 }
 
+// Rollback of the previous operation
+func (migrator *Migrator) Rollback() {
+	// Get the last batch of migration data
+	lastMigration := Migration{}
+	migrator.DB.Order("id DESC").First(&lastMigration)
+
+	var migrations []Migration
+	migrator.DB.Where("batch = ?", lastMigration.Batch).Order("id DESC").Find(&migrations)
+
+	// Rollback of the last migration
+	if !migrator.rollbackMigrations(migrations) {
+		console.Success("[migrations] table is empty, nothing to rollback.")
+	}
+}
+
+// Fallback migration, execute the down method of migration in reverse order
+func (migrator *Migrator) rollbackMigrations(migrations []Migration) bool {
+	// Flag whether a migration fallback has actually been performed
+	runed := false
+
+	for _, _migration := range migrations {
+		console.Warning("rollback " + _migration.Migration)
+
+		// Execute the down method of migrating files
+		mfile := getMigrationFile(_migration.Migration)
+		if mfile.Down != nil {
+			mfile.Down(database.DB.Migrator(), database.SQLDB)
+		}
+
+		runed = true
+
+		// Delete this record if the rollback is successful
+		migrator.DB.Delete(&_migration)
+
+		console.Success("finish " + mfile.FileName)
+	}
+
+	return runed
+}
+
 // Get the current value of this batch
 func (migrator *Migrator) getBatch() int {
 	// Default value is 1
