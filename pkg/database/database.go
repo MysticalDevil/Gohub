@@ -3,7 +3,9 @@ package database
 
 import (
 	"database/sql"
+	"errors"
 	"fmt"
+	"gohub/pkg/config"
 	"gorm.io/gorm"
 	gormLogger "gorm.io/gorm/logger"
 )
@@ -26,4 +28,102 @@ func Connect(dbConfig gorm.Dialector, _logger gormLogger.Interface) {
 	if err != nil {
 		fmt.Println(err.Error())
 	}
+}
+
+func CurrentDatabase() (dbName string) {
+	dbName = DB.Migrator().CurrentDatabase()
+	return
+}
+
+func DeleteAllTables() (err error) {
+	switch config.Get("database.connection") {
+	case "mysql":
+		err = deleteMySQLTables()
+	case "sqlite":
+		err = deleteAllSqliteTables()
+	case "postgresql":
+		err = deletePostgresQLTables()
+	default:
+		panic(errors.New("database connection not supported"))
+	}
+
+	return
+}
+
+func deleteMySQLTables() error {
+	dbName := CurrentDatabase()
+	var tables []string
+
+	// Read all tables
+	err := DB.Table("information_schema.tables").
+		Where("table_schema = ?", dbName).
+		Pluck("table_name", &tables).
+		Error
+	if err != nil {
+		return err
+	}
+
+	// Disable foreign key detection temporarily
+	DB.Exec("SET foreign_key_checks = 0;")
+
+	// Delete all tables
+	for _, table := range tables {
+		err := DB.Migrator().DropTable(table)
+		if err != nil {
+			return err
+		}
+	}
+
+	// Enable foreign key detection
+	DB.Exec("SET foreign_key_checks = 1;")
+	return nil
+}
+
+func deletePostgresQLTables() error {
+	dbName := CurrentDatabase()
+	var tables []string
+
+	// Read all tables
+	err := DB.Table("information_schema.tables").
+		Where("table_schema = ? AND table_catalog = ?", "public", dbName).
+		Pluck("table_name", &tables).
+		Error
+	if err != nil {
+		return err
+	}
+
+	// Disable foreign key detection temporarily
+	DB.Exec("SET CONSTRAINTS ALL DEFERRED;")
+
+	// Delete all tables
+	for _, table := range tables {
+		err := DB.Migrator().DropTable(table)
+		if err != nil {
+			return err
+		}
+	}
+
+	// Enable foreign key detection
+	DB.Exec("SET CONSTRAINTS ALL IMMEDIATE;")
+	return nil
+}
+
+func deleteAllSqliteTables() error {
+	var tables []string
+
+	// Read all tables
+	err := DB.Select(&tables, "SELECT name FROM sqlite_master WHERE type='table'").Error
+	if err != nil {
+		return err
+	}
+
+	// Delete all tables
+	for _, table := range tables {
+		err := DB.Migrator().DropTable(table)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
 }
