@@ -3,7 +3,6 @@ package bootstrap
 import (
 	"errors"
 	"fmt"
-	"gohub/app/models/user"
 	"gohub/pkg/config"
 	"gohub/pkg/database"
 	"gohub/pkg/logger"
@@ -58,8 +57,8 @@ func SetupDB() {
 	)
 
 	// Migrate the database
-	err := database.DB.AutoMigrate(&user.User{})
-	if err != nil {
-		fmt.Println(err.Error())
-	}
+	// err := database.DB.AutoMigrate(&user.User{})
+	// if err != nil {
+	// 	   fmt.Println(err.Error())
+	// }
 }
