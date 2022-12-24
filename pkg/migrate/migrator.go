@@ -2,9 +2,12 @@
 package migrate
 
 import (
+	"gohub/pkg/console"
 	"gohub/pkg/database"
+	"gohub/pkg/file"
 	"gohub/pkg/logger"
 	"gorm.io/gorm"
+	"os"
 )
 
 // Migrator Data migration operation class
@@ -44,4 +47,93 @@ func (migrator *Migrator) createMigrationsTable() {
 			logger.Error(err.Error())
 		}
 	}
+}
+
+// Up Execute all files that have not been migrated
+func (migrator *Migrator) Up() {
+	// Read all migration files to ensure they are sorted by time
+	migrateFiles := migrator.readAllMigrationFiles()
+
+	// Get the current batch value
+	batch := migrator.getBatch()
+
+	// Get all migration data
+	var migrations []Migration
+	migrator.DB.Find(&migrations)
+
+	// This value can be used to determine if the database is up-to-date
+	runed := false
+
+	// Iterate over the migration file and execute the up callback if it has not been executed before
+	for _, mfile := range migrateFiles {
+		// Compare file names to determine if they have been run
+		if mfile.isNotMigrated(migrations) {
+			migrator.runUpMigration(mfile, batch)
+			runed = true
+		}
+	}
+
+	if !runed {
+		console.Success("database is up-to-date.")
+	}
+}
+
+// Get the current value of this batch
+func (migrator *Migrator) getBatch() int {
+	// Default value is 1
+	batch := 1
+
+	// Take the last migration data executed
+	lastMigration := Migration{}
+	migrator.DB.Order("id DESC").First(&lastMigration)
+
+	// Add one if there is a value
+	if lastMigration.ID > 0 {
+		batch = lastMigration.Batch + 1
+	}
+	return batch
+}
+
+// Read files from file directories to ensure correct time ordering
+func (migrator *Migrator) readAllMigrationFiles() []MigrationFile {
+	// Retrieve all files in the database/migrations/ directory
+	// By default, the files are sorted by name
+	files, err := os.ReadDir(migrator.Folder)
+	console.ExitIf(err)
+
+	var migrateFiles []MigrationFile
+	for _, f := range files {
+		// Remove the file suffix '.go'
+		fileName := file.NameWithoutExtension(f.Name())
+
+		// Get the [MigrationFile] object by the name of the migration file
+		mfile := getMigrationFile(fileName)
+
+		// Make sure the migration files are available,
+		// then put them in the migrateFiles array
+		if len(mfile.FileName) > 0 {
+			migrateFiles = append(migrateFiles, mfile)
+		}
+	}
+
+	// Returns the sorted [MigrationFile] array
+	return migrateFiles
+}
+
+// Execute migration, execute the up method of migration
+func (migrator *Migrator) runUpMigration(mfile MigrationFile, batch int) {
+	// Execute sql for up block
+	if mfile.Up != nil {
+		console.Warning("migrating " + mfile.FileName)
+		// Execute up method
+		mfile.Up(database.DB.Migrator(), database.SQLDB)
+		// Prompts for that file to be migrated
+		console.Success("migrated " + mfile.FileName)
+	}
+
+	err := migrator.DB.Create(&Migration{
+		Migration: mfile.FileName,
+		Batch:     batch,
+	}).Error
+	console.ExitIf(err)
 }

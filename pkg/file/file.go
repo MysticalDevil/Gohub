@@ -3,6 +3,8 @@ package file
 
 import (
 	"os"
+	"path/filepath"
+	"strings"
 )
 
 // Put Save data to file
@@ -20,4 +22,8 @@ func Exists(fileToCheck string) bool {
 		return false
 	}
 	return true
+}
+
+func NameWithoutExtension(fileName string) string {
+	return strings.TrimSuffix(fileName, filepath.Ext(fileName))
 }

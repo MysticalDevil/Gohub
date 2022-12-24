@@ -26,3 +26,23 @@ func Add(name string, up migrationFunc, down migrationFunc) {
 		Down:     down,
 	})
 }
+
+// getMigrationFile Get the MigrationFile object by the name of the migration file
+func getMigrationFile(name string) MigrationFile {
+	for _, mfile := range migrationFiles {
+		if name == mfile.FileName {
+			return mfile
+		}
+	}
+	return MigrationFile{}
+}
+
+// isNotMigrated Determine if the migration has been executed
+func (mfile MigrationFile) isNotMigrated(migrations []Migration) bool {
+	for _, migration := range migrations {
+		if migration.Migration == mfile.FileName {
+			return false
+		}
+	}
+	return true
+}
