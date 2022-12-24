@@ -139,6 +139,23 @@ func (migrator *Migrator) Refresh() {
 	migrator.Up()
 }
 
+// Fresh Drop all tables and rerun all migrations
+func (migrator *Migrator) Fresh() {
+	// Get the database name to prompt for
+	dbName := database.CurrentDatabase()
+
+	// Delete all tables
+	err := database.DeleteAllTables()
+	console.ExitIf(err)
+	console.Success("clear up database " + dbName)
+
+	// Re-create the migrates table
+	migrator.createMigrationsTable()
+	console.Success("[migrations] table created.")
+
+	migrator.Up()
+}
+
 // Get the current value of this batch
 func (migrator *Migrator) getBatch() int {
 	// Default value is 1
