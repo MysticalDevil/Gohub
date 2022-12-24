@@ -118,6 +118,27 @@ func (migrator *Migrator) rollbackMigrations(migrations []Migration) bool {
 	return runed
 }
 
+// Reset all migrations
+func (migrator *Migrator) Reset() {
+	var migrations []Migration
+
+	// Read all migration files in reverse order
+	migrator.DB.Order("id DESC").Find(&migrations)
+
+	// Rollback of all migrations
+	if !migrator.rollbackMigrations(migrations) {
+		console.Success("[migrations] table is empty, nothing to reset.")
+	}
+}
+
+// Refresh Roll back all migrations and run all migrations
+func (migrator *Migrator) Refresh() {
+	// Rollback of all migrations
+	migrator.Reset()
+	// Run all migrations
+	migrator.Up()
+}
+
 // Get the current value of this batch
 func (migrator *Migrator) getBatch() int {
 	// Default value is 1
