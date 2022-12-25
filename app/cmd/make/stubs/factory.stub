@@ -1,0 +1,21 @@
+package factories
+
+import (
+    "gohub/app/models/{{PackageName}}"
+    "gohub/pkg/helpers"
+
+    "github.com/go-faker/faker/v4"
+)
+
+func Make{{StructNamePlural}}(count int) []{{PackageName}}.{{StructName}} {
+    var objs []{{PackageName}}.{{StructName}}
+
+    for i := 0; i < count; i++ {
+        {{VariableName}}Model := {{PackageName}}.{{StructName}} {
+            FIXME()
+        }
+        objs = append(objs, {{VariableName}}Model)
+    }
+
+    return objs
+}
