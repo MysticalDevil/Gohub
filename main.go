@@ -48,6 +48,7 @@ func main() {
 		cmd.Play,
 		make.Make,
 		cmd.Migrate,
+		cmd.DBSeed,
 	)
 
 	// Configure the web service to run by default

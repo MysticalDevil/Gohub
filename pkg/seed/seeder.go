@@ -1,7 +1,11 @@
 // Package seed Handling database populating logic
 package seed
 
-import "gorm.io/gorm"
+import (
+	"gohub/pkg/console"
+	"gohub/pkg/database"
+	"gorm.io/gorm"
+)
 
 // Store all Seeder
 var seeders []Seeder
@@ -31,4 +35,46 @@ func Add(name string, fn SeederFunc) {
 // SetRunOrder Set [seeder array for sequential execution]
 func SetRunOrder(names []string) {
 	orderSeederNames = names
+}
+
+// GetSeeder Get Seeder object by name
+func GetSeeder(name string) Seeder {
+	for _, sdr := range seeders {
+		if name == sdr.Name {
+			return sdr
+		}
+	}
+	return Seeder{}
+}
+
+// RunAll Run all Seeder
+func RunAll() {
+	// Run the ordered first
+	executed := make(map[string]string)
+	for _, name := range orderSeederNames {
+		sdr := GetSeeder(name)
+		if len(sdr.Name) > 0 {
+			console.Warning("Running Ordered Seeder: " + sdr.Name)
+			sdr.Func(database.DB)
+			executed[name] = name
+		}
+	}
+
+	for _, sdr := range seeders {
+		// Filtering already running
+		if _, ok := executed[sdr.Name]; !ok {
+			console.Warning("Running Seeder: " + sdr.Name)
+			sdr.Func(database.DB)
+		}
+	}
+}
+
+// RunSeeder Run single Seeder
+func RunSeeder(name string) {
+	for _, sdr := range seeders {
+		if name == sdr.Name {
+			sdr.Func(database.DB)
+			break
+		}
+	}
 }
