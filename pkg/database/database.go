@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"gohub/pkg/config"
+	"gohub/pkg/logger"
 	"gorm.io/gorm"
 	gormLogger "gorm.io/gorm/logger"
 )
@@ -126,4 +127,13 @@ func deleteAllSqliteTables() error {
 	}
 
 	return nil
+}
+
+func TableName(obj any) string {
+	stmt := &gorm.Statement{DB: DB}
+	err := stmt.Parse(obj)
+	if err != nil {
+		logger.LogIf(err)
+	}
+	return stmt.Schema.Table
 }
