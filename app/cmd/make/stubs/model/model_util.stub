@@ -1,6 +1,11 @@
 package {{PackageName}}
 
-import "gohub/pkg/database"
+import (
+	"github.com/gin-gonic/gin"
+	"gohub/pkg/app"
+	"gohub/pkg/database"
+	"gohub/pkg/paginator"
+)
 
 func Get(idStr string) ({{VariableName}} {{StructName}}) {
 	database.DB.Where("id", idStr).First(&{{VariableName}})
@@ -28,7 +33,7 @@ func Paginate(c *gin.Context, perPage int) ({{VariableNamePlural}} []{{StructNam
         c,
         database.DB.Model({{StructName}}{}),
         &{{VariableNamePlural}},
-        app.V1URL(database.TableName(&StructName}}{})),
+        app.V1URL(database.TableName(&{{StructName}}{})),
         perPage,
     )
     return

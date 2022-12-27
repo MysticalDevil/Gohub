@@ -12,7 +12,7 @@ func Make{{StructNamePlural}}(count int) []{{PackageName}}.{{StructName}} {
 
     for i := 0; i < count; i++ {
         {{VariableName}}Model := {{PackageName}}.{{StructName}} {
-            FIXME()
+            // todo
         }
         objs = append(objs, {{VariableName}}Model)
     }
