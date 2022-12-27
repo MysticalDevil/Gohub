@@ -13,7 +13,7 @@ type {{StructName}}Request struct {
 
 func {{StructName}}Save(data any, c *gin.Context) map[string][]string {
     rules := govalidator.MapData{
-        // "name":        []string{"required", "min_cn:2", "max_cn:8", "not_exists:{{TableName}}, name"},
+        // "name":        []string{"required", "min_cn:2", "max_cn:8", "not_exists:{{TableName}},name"},
         // "description": []string{"min_cn:3", "max_cn:255"},
     }
     messages := govalidator.MapData{
@@ -22,11 +22,11 @@ func {{StructName}}Save(data any, c *gin.Context) map[string][]string {
         //     "min_cn:Name length should be at least 2 words",
         //     "max_cn:Name length cannot exceed 8 words",
         //     "not_exists:Name already exists",
-        // }
+        // },
         // "description": []string{
         //     "min_cn:Description length should be at least 3 words",
         //     "max_cn:Description length cannot exceed 255 characters",
-        // }
+        // },
     }
 
     return validate(data, rules, messages)

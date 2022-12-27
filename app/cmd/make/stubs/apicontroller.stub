@@ -52,7 +52,7 @@ func (ctrl *{{StructNamePlural}}Controller) Update(c *gin.Context) {
         return
     }
 
-    if ok := policies,CanModify{{StructName}}(c, {{VariableName}}model); !ok {
+    if ok := policies.CanModify{{StructName}}(c, {{VariableName}}model); !ok {
         response.Abort403(C)
         return
     }

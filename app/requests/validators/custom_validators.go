@@ -8,7 +8,9 @@ import (
 	"gohub/pkg/captcha"
 	"gohub/pkg/database"
 	"gohub/pkg/verifycode"
+	"strconv"
 	"strings"
+	"unicode/utf8"
 )
 
 func init() {
@@ -18,6 +20,10 @@ func init() {
 	// not_exists:users,email Check whether the same information exists in the database table
 	// not_exists:users,email,32 Exclude users with id 32
 	govalidator.AddCustomRule("not_exists", ValidateFieldExist)
+	// max_cn:8 Chinese length is set to no more than 8
+	govalidator.AddCustomRule("max_cn", ValidateMaxCn)
+	// min_cn:2 Chinese length is set to not less than 2
+	govalidator.AddCustomRule("min_cn", ValidateMinCn)
 }
 
 // ValidateCaptcha Customize rules, verify [picture verification code]
@@ -77,6 +83,32 @@ func ValidateFieldExist(field, rules, message string, value any) error {
 			return errors.New(message)
 		}
 		return fmt.Errorf("%v is taken", requestValue)
+	}
+	return nil
+}
+
+// ValidateMaxCn Customize rules, verify the maximum length of Chinese characters
+func ValidateMaxCn(field, rule, message string, value any) error {
+	valLength := utf8.RuneCountInString(value.(string))
+	l, _ := strconv.Atoi(strings.TrimPrefix(rule, "max_cn:"))
+	if valLength > l {
+		if message != "" {
+			return errors.New(message)
+		}
+		return fmt.Errorf("length should be less than %d characters", l)
+	}
+	return nil
+}
+
+// ValidateMinCn Customize rules, verify the minimum length of Chinese characters
+func ValidateMinCn(field, rule, message string, value any) error {
+	valLength := utf8.RuneCountInString(value.(string))
+	l, _ := strconv.Atoi(strings.TrimPrefix(rule, "min_cn:"))
+	if valLength < l {
+		if message != "" {
+			return errors.New(message)
+		}
+		return fmt.Errorf("length should be greater than %d characters", l)
 	}
 	return nil
 }
