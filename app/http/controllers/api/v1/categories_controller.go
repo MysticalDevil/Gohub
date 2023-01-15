@@ -29,3 +29,27 @@ func (ctrl *CategoriesController) Store(c *gin.Context) {
 		response.Abort500(c, "Failed to create, please try later ~")
 	}
 }
+
+func (ctrl *CategoriesController) Update(c *gin.Context) {
+	// Verify that the url parameter id is correct
+	categoryModel := category.Get(c.Param("id"))
+	if categoryModel.ID == 0 {
+		response.Abort404(c)
+		return
+	}
+
+	request := requests.CategoryRequest{}
+	if ok := requests.Validate(c, &request, requests.CategorySave); !ok {
+		return
+	}
+
+	categoryModel.Name = request.Name
+	categoryModel.Description = request.Description
+	rowsAffected := categoryModel.Save()
+
+	if rowsAffected > 0 {
+		response.Data(c, categoryModel)
+	} else {
+		response.Abort500(c)
+	}
+}
