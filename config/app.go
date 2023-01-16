@@ -20,6 +20,8 @@ func init() {
 			"url": config.Env("APP_URL", "http://localhost:3000"),
 			// Set time zone
 			"timezone": config.Env("TIMEZONE", "Asia/Shanghai"),
+			// API domain name, if not set, add api prefix to all API URLs
+			"api_domain": config.Env("API_DOMAIN"),
 		}
 	})
 }

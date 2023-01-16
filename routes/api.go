@@ -6,11 +6,18 @@ import (
 	controllers "gohub/app/http/controllers/api/v1"
 	"gohub/app/http/controllers/api/v1/auth"
 	"gohub/app/http/middlewares"
+	"gohub/pkg/config"
 )
 
 // RegisterAPIRoutes Registration page related routing
 func RegisterAPIRoutes(r *gin.Engine) {
-	v1 := r.Group("/v1")
+	var v1 *gin.RouterGroup
+	if len(config.Get("app.api_domain")) == 0 {
+		v1 = r.Group("/api/v1")
+	} else {
+		v1 = r.Group("/v1")
+	}
+
 	// Global middleware: rate limit per hour. Here is where all API requests add up.
 	v1.Use(middlewares.LimitIP("200-H"))
 	{
