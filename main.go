@@ -50,6 +50,7 @@ func main() {
 		make.Make,
 		cmd.Migrate,
 		cmd.DBSeed,
+		cmd.Cache,
 	)
 
 	// Configure the web service to run by default
