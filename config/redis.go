@@ -9,7 +9,10 @@ func init() {
 			"port":     config.Env("REDIS_PORT", "6379"),
 			"password": config.Env("REDIS_PASSWORD", ""),
 			// Use 1 for business class storage (picture verification code, SMS verification code, session)
-			"database": config.Env("REDIS_MIN_DB", 1),
+			"database": config.Env("REDIS_MAIN_DB", 1),
+
+			// Use 0 for the cache package, and clearing the cache should not affect the business
+			"database_cache": config.Env("REDIS_CACHE_DB", 0),
 		}
 	})
 }

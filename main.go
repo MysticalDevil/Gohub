@@ -38,6 +38,7 @@ func main() {
 			bootstrap.SetupRedis()
 
 			// Initialize the cache
+			bootstrap.SetupCache()
 		},
 	}
 
