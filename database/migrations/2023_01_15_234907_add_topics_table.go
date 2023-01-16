@@ -3,7 +3,6 @@ package migrations
 import (
 	"database/sql"
 	"gohub/app/models"
-	"gohub/pkg/logger"
 	"gohub/pkg/migrate"
 
 	"gorm.io/gorm"
@@ -33,14 +32,11 @@ func init() {
 	}
 
 	up := func(migrator gorm.Migrator, DB *sql.DB) {
-		if err := migrator.AutoMigrate(&Topic{}); err != nil {
-			logger.LogIf(err)
-			return
-		}
+		_ = migrator.AutoMigrate(&Topic{})
 	}
 
 	down := func(migrator gorm.Migrator, DB *sql.DB) {
-		migrator.DropTable(&Topic{})
+		_ = migrator.DropTable(&Topic{})
 	}
 
 	migrate.Add("2023_01_15_234907_add_topics_table", up, down)

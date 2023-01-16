@@ -19,11 +19,11 @@ func init() {
 	}
 
 	up := func(migrator gorm.Migrator, DB *sql.DB) {
-		migrator.AutoMigrate(&Category{})
+		_ = migrator.AutoMigrate(&Category{})
 	}
 
 	down := func(migrator gorm.Migrator, DB *sql.DB) {
-		migrator.DropTable(&Category{})
+		_ = migrator.DropTable(&Category{})
 	}
 
 	migrate.Add("2022_12_27_211654_add_categories_table", up, down)
