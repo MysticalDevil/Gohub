@@ -19,11 +19,13 @@ func init() {
 	// There are two types of not_exists parameters, one is 2 parameters and the other is 3 parameters
 	// not_exists:users,email Check whether the same information exists in the database table
 	// not_exists:users,email,32 Exclude users with id 32
-	govalidator.AddCustomRule("not_exists", ValidateFieldExist)
+	govalidator.AddCustomRule("not_exists", ValidateFieldNotExist)
 	// max_cn:8 Chinese length is set to no more than 8
 	govalidator.AddCustomRule("max_cn", ValidateMaxCn)
 	// min_cn:2 Chinese length is set to not less than 2
 	govalidator.AddCustomRule("min_cn", ValidateMinCn)
+	// exist:category,id The value of category_id is stored in the database and can be used
+	govalidator.AddCustomRule("exists", ValidateFieldExist)
 }
 
 // ValidateCaptcha Customize rules, verify [picture verification code]
@@ -50,8 +52,8 @@ func ValidateVerifyCode(key, answer string, errs map[string][]string) map[string
 	return errs
 }
 
-// ValidateFieldExist Customize rules, verify that the field already exists in the table
-func ValidateFieldExist(field, rules, message string, value any) error {
+// ValidateFieldNotExist Customize rules, verify that the field already exists in the table
+func ValidateFieldNotExist(field, rules, message string, value any) error {
 	rng := strings.Split(strings.TrimPrefix(rules, "not_exists:"), ",")
 
 	// The first parameter, the table name, such as users
@@ -84,6 +86,32 @@ func ValidateFieldExist(field, rules, message string, value any) error {
 		}
 		return fmt.Errorf("%v is taken", requestValue)
 	}
+	return nil
+}
+
+// ValidateFieldExist Customize rules, verify that the field exists in the table
+func ValidateFieldExist(field, rule, message string, value any) error {
+	rng := strings.Split(strings.TrimPrefix(rule, "exists:"), ",")
+
+	// The first parameter, the table name
+	tableName := rng[0]
+	// THe second parameter, the field name, eg: id
+	dbField := rng[1]
+
+	// The data requested by the user
+	requestValue := value.(string)
+
+	// Query database
+	var count int64
+	database.DB.Table(tableName).Where(dbField+"= ?", requestValue).Count(&count)
+
+	if count == 0 {
+		if message != "" {
+			return errors.New(message)
+		}
+		return fmt.Errorf("%v not exist", requestValue)
+	}
+
 	return nil
 }
 
