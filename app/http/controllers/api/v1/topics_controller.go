@@ -62,3 +62,24 @@ func (ctrl *TopicsController) Update(c *gin.Context) {
 		response.Abort500(c, "Failed to update, please try later~")
 	}
 }
+
+func (ctrl *TopicsController) Delete(c *gin.Context) {
+	topicModel := topic.Get(c.Param("id"))
+	if topicModel.ID == 0 {
+		response.Abort404(c)
+		return
+	}
+
+	if ok := policies.CanModifyTopic(c, topicModel); !ok {
+		response.Abort403(c)
+		return
+	}
+
+	rowsAffected := topicModel.Delete()
+	if rowsAffected > 0 {
+		response.Success(c)
+		return
+	}
+
+	response.Abort500(c, "Failed to delete, please try later~")
+}
