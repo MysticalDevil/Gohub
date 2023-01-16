@@ -32,3 +32,27 @@ func (ctrl *TopicsController) Store(c *gin.Context) {
 		response.Abort500(c, "Failed to create, please try later~")
 	}
 }
+
+func (ctrl *TopicsController) Update(c *gin.Context) {
+	topicModel := topic.Get(c.Param("id"))
+	if topicModel.ID == 0 {
+		response.Abort404(c)
+		return
+	}
+
+	request := requests.TopicRequest{}
+	if ok := requests.Validate(c, &request, requests.TopicSave); !ok {
+		return
+	}
+
+	topicModel.Title = request.Title
+	topicModel.Body = request.Body
+	topicModel.CategoryID = request.CategoryID
+
+	rowsAffected := topicModel.Save()
+	if rowsAffected > 0 {
+		response.Data(c, topicModel)
+	} else {
+		response.Abort500(c, "Failed to update, please try later~")
+	}
+}
