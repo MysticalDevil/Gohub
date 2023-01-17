@@ -18,23 +18,23 @@ func GetBy(field, value string) (category Category) {
 }
 
 func All() (categories []Category) {
-    database.DB.Find(&categories)
-    return
+	database.DB.Find(&categories)
+	return
 }
 
 func IsExist(field, value string) bool {
-    var count int64
-    database.DB.Model(Category{}).Where("? = ?", field, value).Count(&count)
-    return count > 0
+	var count int64
+	database.DB.Model(Category{}).Where("? = ?", field, value).Count(&count)
+	return count > 0
 }
 
 func Paginate(c *gin.Context, perPage int) (categories []Category, paging paginator.Paging) {
-    paging = paginator.Paginate(
-        c,
-        database.DB.Model(Category{}),
-        &categories,
-        app.V1URL(database.TableName(&Category{})),
-        perPage,
-    )
-    return
+	paging = paginator.Paginate(
+		c,
+		database.DB.Model(Category{}),
+		&categories,
+		app.V1URL(database.TableName(&Category{})),
+		perPage,
+	)
+	return
 }
