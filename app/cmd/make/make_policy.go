@@ -3,6 +3,7 @@ package make
 import (
 	"fmt"
 	"github.com/spf13/cobra"
+	"gohub/pkg/logger"
 	"os"
 )
 
@@ -16,7 +17,10 @@ var CmdMakePolicy = &cobra.Command{
 func runMakePolicy(cmd *cobra.Command, args []string) {
 	model := makeModelFromString(args[0])
 
-	os.MkdirAll("app/policies", os.ModePerm)
+	err := os.MkdirAll("app/policies", os.ModePerm)
+	if err != nil {
+		logger.LogIf(err)
+	}
 
 	filePath := fmt.Sprintf("app/policies/%s_policy.go", model.PackageName)
 

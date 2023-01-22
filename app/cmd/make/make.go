@@ -69,11 +69,12 @@ func init() {
 	// Register make subcommands
 	Make.AddCommand(
 		CMD,
-		CmdMakeModel,
 		CmdMakeApiController,
-		CmdMakeRequest,
-		CmdMakeMigration,
 		CmdMakeFactory,
+		CmdMakeMigration,
+		CmdMakeModel,
+		CmdMakePolicy,
+		CmdMakeRequest,
 		CmdMakeSeeder,
 	)
 }

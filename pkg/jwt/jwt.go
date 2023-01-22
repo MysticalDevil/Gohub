@@ -13,12 +13,12 @@ import (
 )
 
 var (
-	ErrTokenExpired           error = errors.New("token has expired")
-	ErrTokenExpiredMaxRefresh error = errors.New("token has passed the maximum refresh time")
-	ErrTokenMalformed         error = errors.New("malformed request token")
-	ErrTokenInvalid           error = errors.New("invalid request token")
-	ErrHeaderEmpty            error = errors.New("authentication is required to access")
-	ErrHeaderMalformed        error = errors.New("bad format for 'Authorization' in request header")
+	ErrTokenExpired           = errors.New("token has expired")
+	ErrTokenExpiredMaxRefresh = errors.New("token has passed the maximum refresh time")
+	ErrTokenMalformed         = errors.New("malformed request token")
+	ErrTokenInvalid           = errors.New("invalid request token")
+	ErrHeaderEmpty            = errors.New("authentication is required to access")
+	ErrHeaderMalformed        = errors.New("bad format for 'Authorization' in request header")
 )
 
 // JWT define a jwt object
