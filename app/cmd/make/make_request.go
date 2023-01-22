@@ -12,7 +12,7 @@ var CmdMakeRequest = &cobra.Command{
 	Args:  cobra.ExactArgs(1),
 }
 
-func runMakeRequest(cmd *cobra.Command, args []string) {
+func runMakeRequest(_ *cobra.Command, args []string) {
 	model := makeModelFromString(args[0])
 
 	filePath := fmt.Sprintf("app/requests/%s_request.go", model.PackageName)

@@ -14,7 +14,7 @@ var CmdMakeApiController = &cobra.Command{
 	Args:  cobra.ExactArgs(1),
 }
 
-func runMakeApiController(cmd *cobra.Command, args []string) {
+func runMakeApiController(_ *cobra.Command, args []string) {
 	// handle parameters, require an accompanying API version (v1 or v2)
 	array := strings.Split(args[0], "/")
 	if len(array) != 2 {

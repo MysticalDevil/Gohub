@@ -12,7 +12,7 @@ type LoginByPhoneRequest struct {
 }
 
 // LoginByPhone Validate the form
-func LoginByPhone(data any, c *gin.Context) map[string][]string {
+func LoginByPhone(data any, _ *gin.Context) map[string][]string {
 	rules := govalidator.MapData{
 		"phone":       []string{"required", "digits:11"},
 		"verify_code": []string{"required", "digits:6"},
@@ -46,7 +46,7 @@ type LoginByPasswordRequest struct {
 }
 
 // LoginByPassword Validate the form
-func LoginByPassword(data any, c *gin.Context) map[string][]string {
+func LoginByPassword(data any, _ *gin.Context) map[string][]string {
 	rules := govalidator.MapData{
 		"login_id":       []string{"required", "min:3"},
 		"password":       []string{"required", "min:6"},

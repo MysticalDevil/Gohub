@@ -35,12 +35,12 @@ func init() {
 	_ = CacheForget.MarkFlagRequired("key")
 }
 
-func runCacheClear(cmd *cobra.Command, args []string) {
+func runCacheClear(_ *cobra.Command, _ []string) {
 	cache.Flush()
 	console.Success("Cache cleared.")
 }
 
-func runCacheForget(cmd *cobra.Command, args []string) {
+func runCacheForget(_ *cobra.Command, _ []string) {
 	cache.Forget(cacheKey)
 	console.Success(fmt.Sprintf("Cache key [%s] deleted.", cacheKey))
 }

@@ -6,7 +6,7 @@ import (
 )
 
 // BeforeSave Gorm's model hook, called before creating and updating models
-func (userModel *User) BeforeSave(tx *gorm.DB) (err error) {
+func (userModel *User) BeforeSave(_ *gorm.DB) (err error) {
 	if !hash.BcryptIsHashed(userModel.Password) {
 		userModel.Password = hash.BcryptHash(userModel.Password)
 	}

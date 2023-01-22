@@ -49,7 +49,7 @@ func validate(data any, rules, messages govalidator.MapData) map[string][]string
 	return govalidator.New(opts).ValidateStruct()
 }
 
-func validateFile(c *gin.Context, data any, rules, messages govalidator.MapData) map[string][]string {
+func validateFile(c *gin.Context, _ any, rules, messages govalidator.MapData) map[string][]string {
 	opts := govalidator.Options{
 		Request:       c.Request,
 		Rules:         rules,

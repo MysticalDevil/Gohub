@@ -12,7 +12,7 @@ var CmdMakeFactory = &cobra.Command{
 	Args:  cobra.ExactArgs(1),
 }
 
-func runMakeFactory(cmd *cobra.Command, args []string) {
+func runMakeFactory(_ *cobra.Command, args []string) {
 	model := makeModelFromString(args[0])
 
 	filePath := fmt.Sprintf("database/factories/%s_factory.go", model.PackageName)

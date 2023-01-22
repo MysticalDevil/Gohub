@@ -14,7 +14,7 @@ var CmdMakeMigration = &cobra.Command{
 	Args:  cobra.ExactArgs(1),
 }
 
-func runMakeMigration(cmd *cobra.Command, args []string) {
+func runMakeMigration(_ *cobra.Command, args []string) {
 	// Date Formatting
 	timeStr := app.TimenowInTimezone().Format("2006_01_02_150405")
 

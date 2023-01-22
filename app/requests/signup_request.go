@@ -62,7 +62,7 @@ type SignupUsingPhoneRequest struct {
 	PasswordConfirm string `json:"password_confirm,omitempty" valid:"password_confirm"`
 }
 
-func SignupUsingPhone(data any, c *gin.Context) map[string][]string {
+func SignupUsingPhone(data any, _ *gin.Context) map[string][]string {
 	rules := govalidator.MapData{
 		"phone":            []string{"required", "digits:11", "not_exists:users,phone"},
 		"name":             []string{"required", "alpha_num", "between:3,20", "not_exists:users,name"},
@@ -112,7 +112,7 @@ type SignupUsingEmailRequest struct {
 	PasswordConfirm string `json:"password_confirm,omitempty" valid:"password_confirm"`
 }
 
-func SignupUsingEmail(data any, c *gin.Context) map[string][]string {
+func SignupUsingEmail(data any, _ *gin.Context) map[string][]string {
 	rules := govalidator.MapData{
 		"email":            []string{"required", "min:4", "max:30", "email", "not_exists:users,email"},
 		"name":             []string{"required", "alpha_num", "between:3,20", "not_exists:users,name"},

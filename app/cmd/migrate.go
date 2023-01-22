@@ -34,7 +34,7 @@ var MigrateUp = &cobra.Command{
 	Run:   runUp,
 }
 
-func runUp(cmd *cobra.Command, args []string) {
+func runUp(_ *cobra.Command, _ []string) {
 	migrator().Up()
 }
 
@@ -45,7 +45,7 @@ var MigrateRollback = &cobra.Command{
 	Run:     runDown,
 }
 
-func runDown(cmd *cobra.Command, args []string) {
+func runDown(_ *cobra.Command, _ []string) {
 	migrator().Rollback()
 }
 
@@ -55,7 +55,7 @@ var MigrateReset = &cobra.Command{
 	Run:   runReset,
 }
 
-func runReset(cmd *cobra.Command, args []string) {
+func runReset(_ *cobra.Command, _ []string) {
 	migrator().Reset()
 }
 
@@ -65,7 +65,7 @@ var MigrateRefresh = &cobra.Command{
 	Run:   runRefresh,
 }
 
-func runRefresh(cmd *cobra.Command, args []string) {
+func runRefresh(_ *cobra.Command, _ []string) {
 	migrator().Refresh()
 }
 
@@ -75,6 +75,6 @@ var MigrateFresh = &cobra.Command{
 	Run:   runFresh,
 }
 
-func runFresh(cmd *cobra.Command, args []string) {
+func runFresh(_ *cobra.Command, _ []string) {
 	migrator().Fresh()
 }

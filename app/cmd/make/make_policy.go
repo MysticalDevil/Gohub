@@ -14,7 +14,7 @@ var CmdMakePolicy = &cobra.Command{
 	Args:  cobra.ExactArgs(1),
 }
 
-func runMakePolicy(cmd *cobra.Command, args []string) {
+func runMakePolicy(_ *cobra.Command, args []string) {
 	model := makeModelFromString(args[0])
 
 	err := os.MkdirAll("app/policies", os.ModePerm)

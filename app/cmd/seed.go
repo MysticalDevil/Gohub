@@ -14,7 +14,7 @@ var DBSeed = &cobra.Command{
 	Args:  cobra.MaximumNArgs(1),
 }
 
-func runSeeders(cmd *cobra.Command, args []string) {
+func runSeeders(_ *cobra.Command, args []string) {
 	seeders.Initialize()
 	if len(args) > 0 {
 		name := args[0]

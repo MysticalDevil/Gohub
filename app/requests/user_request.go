@@ -128,7 +128,7 @@ type UserUpdatePasswordRequest struct {
 	NewPasswordConfirm string `json:"new_password_confirm,omitempty" valid:"new_password_confirm"`
 }
 
-func UserUpdatePassword(data any, c *gin.Context) map[string][]string {
+func UserUpdatePassword(data any, _ *gin.Context) map[string][]string {
 	rules := govalidator.MapData{
 		"password":             []string{"required", "min:6"},
 		"new_password":         []string{"required", "min:6"},

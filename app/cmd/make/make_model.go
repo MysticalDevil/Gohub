@@ -14,7 +14,7 @@ var CmdMakeModel = &cobra.Command{
 	Args:  cobra.ExactArgs(1),
 }
 
-func runMakeModel(cmd *cobra.Command, args []string) {
+func runMakeModel(_ *cobra.Command, args []string) {
 	// format the model name and return a Model object
 	model := makeModelFromString(args[0])
 

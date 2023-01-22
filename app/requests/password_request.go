@@ -13,7 +13,7 @@ type ResetByPhoneRequest struct {
 }
 
 // ResetByPhone Validate the form
-func ResetByPhone(data any, c *gin.Context) map[string][]string {
+func ResetByPhone(data any, _ *gin.Context) map[string][]string {
 	rules := govalidator.MapData{
 		"phone":       []string{"required", "digits:11"},
 		"verify_code": []string{"required", "digits:6"},
@@ -50,7 +50,7 @@ type ResetByEmailRequest struct {
 }
 
 // ResetByEmail Validate the form
-func ResetByEmail(data any, c *gin.Context) map[string][]string {
+func ResetByEmail(data any, _ *gin.Context) map[string][]string {
 	rules := govalidator.MapData{
 		"email":       []string{"required", "min:4", "max:30", "email"},
 		"verify_code": []string{"required", "digits:6"},

@@ -17,7 +17,7 @@ var Serve = &cobra.Command{
 	Args:  cobra.NoArgs,
 }
 
-func runWeb(cmd *cobra.Command, args []string) {
+func runWeb(_ *cobra.Command, _ []string) {
 	// Set the running mode of gin, support debug, release, test
 	// release mod will block debugging information
 	gin.SetMode(gin.ReleaseMode)

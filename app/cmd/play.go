@@ -10,5 +10,5 @@ var Play = &cobra.Command{
 	Run:   runPlay,
 }
 
-func runPlay(cmd *cobra.Command, args []string) {
+func runPlay(_ *cobra.Command, _ []string) {
 }

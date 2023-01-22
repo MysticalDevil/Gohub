@@ -13,7 +13,7 @@ var CMD = &cobra.Command{
 	Args:  cobra.ExactArgs(1), // Only one parameter is allowed and must be passed
 }
 
-func runMakeCMD(cmd *cobra.Command, args []string) {
+func runMakeCMD(_ *cobra.Command, args []string) {
 	// format the model name and return a Model object
 	model := makeModelFromString(args[0])
 

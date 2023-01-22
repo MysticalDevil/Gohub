@@ -53,7 +53,7 @@ func ValidateVerifyCode(key, answer string, errs map[string][]string) map[string
 }
 
 // ValidateFieldNotExist Customize rules, verify that the field already exists in the table
-func ValidateFieldNotExist(field, rules, message string, value any) error {
+func ValidateFieldNotExist(_, rules, message string, value any) error {
 	rng := strings.Split(strings.TrimPrefix(rules, "not_exists:"), ",")
 
 	// The first parameter, the table name, such as users
@@ -90,7 +90,7 @@ func ValidateFieldNotExist(field, rules, message string, value any) error {
 }
 
 // ValidateFieldExist Customize rules, verify that the field exists in the table
-func ValidateFieldExist(field, rule, message string, value any) error {
+func ValidateFieldExist(_, rule, message string, value any) error {
 	rng := strings.Split(strings.TrimPrefix(rule, "exists:"), ",")
 
 	// The first parameter, the table name
@@ -116,7 +116,7 @@ func ValidateFieldExist(field, rule, message string, value any) error {
 }
 
 // ValidateMaxCn Customize rules, verify the maximum length of Chinese characters
-func ValidateMaxCn(field, rule, message string, value any) error {
+func ValidateMaxCn(_, rule, message string, value any) error {
 	valLength := utf8.RuneCountInString(value.(string))
 	l, _ := strconv.Atoi(strings.TrimPrefix(rule, "max_cn:"))
 	if valLength > l {
@@ -129,7 +129,7 @@ func ValidateMaxCn(field, rule, message string, value any) error {
 }
 
 // ValidateMinCn Customize rules, verify the minimum length of Chinese characters
-func ValidateMinCn(field, rule, message string, value any) error {
+func ValidateMinCn(_, rule, message string, value any) error {
 	valLength := utf8.RuneCountInString(value.(string))
 	l, _ := strconv.Atoi(strings.TrimPrefix(rule, "min_cn:"))
 	if valLength < l {

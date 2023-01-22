@@ -13,7 +13,7 @@ var Key = &cobra.Command{
 	Args:  cobra.NoArgs, // parameter passing is not allowed
 }
 
-func runKeyGenerate(cmd *cobra.Command, args []string) {
+func runKeyGenerate(_ *cobra.Command, _ []string) {
 	console.Success("---")
 	console.Success("App Key:")
 	console.Success(helpers.RandomString(32))
