@@ -71,6 +71,16 @@ func validateWithRules(data any, rules, messages MapData) map[string][]string {
 			if isEmptyValue(value) && ruleName != "required" {
 				continue
 			}
+			if ruleName == "ext" || ruleName == "size" {
+				if !validators.ValidateFileRuleValue(ruleName, value, ruleParam) {
+					msg := msgLookup[fieldName][ruleName]
+					if msg == "" {
+						msg = "validation failed"
+					}
+					errs[fieldName] = append(errs[fieldName], msg)
+				}
+				continue
+			}
 			if err := v.Var(value, buildTag(ruleName, ruleParam)); err != nil {
 				msg := msgLookup[fieldName][ruleName]
 				if msg == "" {
@@ -105,7 +115,9 @@ func buildTag(name, param string) string {
 	if param == "" {
 		return name
 	}
-	return name + "=" + param
+	safeParam := strings.ReplaceAll(param, ",", "_")
+	safeParam = strings.ReplaceAll(safeParam, "|", "_")
+	return name + "=" + safeParam
 }
 
 func buildMessageLookup(messages MapData) map[string]map[string]string {

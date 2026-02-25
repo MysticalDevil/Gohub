@@ -55,7 +55,7 @@ func ValidateVerifyCode(key, answer string, errs map[string][]string) map[string
 
 // ValidateFieldNotExist Customize rules, verify that the field already exists in the table
 func ValidateFieldNotExist(field validator.FieldLevel) bool {
-	rng := strings.Split(field.Param(), ",")
+	rng := splitParam(field.Param())
 	if len(rng) < 2 {
 		return false
 	}
@@ -88,7 +88,7 @@ func ValidateFieldNotExist(field validator.FieldLevel) bool {
 
 // ValidateFieldExist Customize rules, verify that the field exists in the table
 func ValidateFieldExist(field validator.FieldLevel) bool {
-	rng := strings.Split(field.Param(), ",")
+	rng := splitParam(field.Param())
 	if len(rng) < 2 {
 		return false
 	}
@@ -145,7 +145,7 @@ func ValidateDigits(field validator.FieldLevel) bool {
 }
 
 func ValidateBetween(field validator.FieldLevel) bool {
-	parts := strings.Split(field.Param(), ",")
+	parts := splitParam(field.Param())
 	if len(parts) != 2 {
 		return false
 	}
@@ -162,7 +162,7 @@ func ValidateBetween(field validator.FieldLevel) bool {
 }
 
 func ValidateNumericBetween(field validator.FieldLevel) bool {
-	parts := strings.Split(field.Param(), ",")
+	parts := splitParam(field.Param())
 	if len(parts) != 2 {
 		return false
 	}
@@ -183,7 +183,7 @@ func ValidateNumericBetween(field validator.FieldLevel) bool {
 
 func ValidateIn(field validator.FieldLevel) bool {
 	value := fmt.Sprint(field.Field().Interface())
-	for _, item := range strings.Split(field.Param(), ",") {
+	for _, item := range splitParam(field.Param()) {
 		if value == item {
 			return true
 		}
@@ -193,7 +193,7 @@ func ValidateIn(field validator.FieldLevel) bool {
 
 func ValidateNotIn(field validator.FieldLevel) bool {
 	value := fmt.Sprint(field.Field().Interface())
-	for _, item := range strings.Split(field.Param(), ",") {
+	for _, item := range splitParam(field.Param()) {
 		if value == item {
 			return false
 		}
@@ -202,27 +202,59 @@ func ValidateNotIn(field validator.FieldLevel) bool {
 }
 
 func ValidateFileExt(field validator.FieldLevel) bool {
-	file, ok := field.Field().Interface().(*multipart.FileHeader)
-	if !ok || file == nil {
-		return true
-	}
-	ext := strings.TrimPrefix(strings.ToLower(filepath.Ext(file.Filename)), ".")
-	for _, allowed := range strings.Split(field.Param(), ",") {
-		if strings.ToLower(allowed) == ext {
-			return true
-		}
-	}
-	return false
+	return ValidateFileRuleValue("ext", field.Field().Interface(), field.Param())
 }
 
 func ValidateFileSize(field validator.FieldLevel) bool {
-	file, ok := field.Field().Interface().(*multipart.FileHeader)
-	if !ok || file == nil {
+	return ValidateFileRuleValue("size", field.Field().Interface(), field.Param())
+}
+
+func splitParam(param string) []string {
+	if strings.Contains(param, "_") {
+		return strings.Split(param, "_")
+	}
+	if strings.Contains(param, "|") {
+		return strings.Split(param, "|")
+	}
+	return strings.Split(param, ",")
+}
+
+// ValidateFileRuleValue validates file rules without relying on validator tags.
+func ValidateFileRuleValue(ruleName string, value any, param string) bool {
+	file := normalizeFileHeader(value)
+	if file == nil {
 		return true
 	}
-	limit, err := strconv.ParseInt(field.Param(), 10, 64)
-	if err != nil {
+
+	switch ruleName {
+	case "ext":
+		ext := strings.TrimPrefix(strings.ToLower(filepath.Ext(file.Filename)), ".")
+		for _, allowed := range splitParam(param) {
+			if strings.ToLower(allowed) == ext {
+				return true
+			}
+		}
 		return false
+	case "size":
+		limit, err := strconv.ParseInt(param, 10, 64)
+		if err != nil {
+			return false
+		}
+		return file.Size <= limit
+	default:
+		return true
 	}
-	return file.Size <= limit
+}
+
+func normalizeFileHeader(value any) *multipart.FileHeader {
+	if value == nil {
+		return nil
+	}
+	if file, ok := value.(*multipart.FileHeader); ok {
+		return file
+	}
+	if file, ok := value.(multipart.FileHeader); ok {
+		return &file
+	}
+	return nil
 }
