@@ -4,6 +4,7 @@ import (
 	"os"
 	"testing"
 
+	"github.com/stretchr/testify/require"
 	appconfig "gohub/config"
 	pkgconfig "gohub/pkg/config"
 )
@@ -26,12 +27,8 @@ func TestFormatBaseURL(t *testing.T) {
 	initTestConfig(t)
 
 	p := &Paginator{}
-	if got := p.formatBaseURL("/topics"); got != "/topics?page=" {
-		t.Fatalf("unexpected url: %s", got)
-	}
-	if got := p.formatBaseURL("/topics?order=asc"); got != "/topics?order=asc&page=" {
-		t.Fatalf("unexpected url: %s", got)
-	}
+	require.Equal(t, "/topics?page=", p.formatBaseURL("/topics"))
+	require.Equal(t, "/topics?order=asc&page=", p.formatBaseURL("/topics?order=asc"))
 }
 
 func TestGetPageLink(t *testing.T) {
@@ -43,9 +40,7 @@ func TestGetPageLink(t *testing.T) {
 		Order:   "desc",
 		PerPage: 20,
 	}
-	if got := p.getPageLink(2); got != "/topics?page=2&sort=created_at&order=desc&per_page=20" {
-		t.Fatalf("unexpected page link: %s", got)
-	}
+	require.Equal(t, "/topics?page=2&sort=created_at&order=desc&per_page=20", p.getPageLink(2))
 }
 
 func TestPrevNextLinks(t *testing.T) {
@@ -59,22 +54,14 @@ func TestPrevNextLinks(t *testing.T) {
 		TotalPage: 3,
 		Page:      2,
 	}
-	if got := p.getPrevPageURL(); got != "/topics?page=1&sort=id&order=asc&per_page=10" {
-		t.Fatalf("unexpected prev link: %s", got)
-	}
-	if got := p.getNextPageURL(); got != "/topics?page=3&sort=id&order=asc&per_page=10" {
-		t.Fatalf("unexpected next link: %s", got)
-	}
+	require.Equal(t, "/topics?page=1&sort=id&order=asc&per_page=10", p.getPrevPageURL())
+	require.Equal(t, "/topics?page=3&sort=id&order=asc&per_page=10", p.getNextPageURL())
 }
 
 func TestPrevNextLinksBounds(t *testing.T) {
 	initTestConfig(t)
 
 	p := &Paginator{BaseURL: "/topics?page=", Sort: "id", Order: "asc", PerPage: 10, TotalPage: 1, Page: 1}
-	if got := p.getPrevPageURL(); got != "" {
-		t.Fatalf("expected empty prev link")
-	}
-	if got := p.getNextPageURL(); got != "" {
-		t.Fatalf("expected empty next link")
-	}
+	require.Equal(t, "", p.getPrevPageURL())
+	require.Equal(t, "", p.getNextPageURL())
 }

@@ -7,16 +7,13 @@ import (
 	"testing"
 
 	"github.com/gin-gonic/gin"
+	"github.com/stretchr/testify/require"
 	"gohub/pkg/logger"
 )
 
 func TestDefaultMessage(t *testing.T) {
-	if got := defaultMessage("default"); got != "default" {
-		t.Fatalf("unexpected default message: %s", got)
-	}
-	if got := defaultMessage("default", "custom"); got != "custom" {
-		t.Fatalf("unexpected override message: %s", got)
-	}
+	require.Equal(t, "default", defaultMessage("default"))
+	require.Equal(t, "custom", defaultMessage("default", "custom"))
 }
 
 func TestSuccessResponse(t *testing.T) {
@@ -24,9 +21,7 @@ func TestSuccessResponse(t *testing.T) {
 	c, _ := gin.CreateTestContext(w)
 
 	Success(c)
-	if w.Code != http.StatusOK {
-		t.Fatalf("expected status 200, got %d", w.Code)
-	}
+	require.Equal(t, http.StatusOK, w.Code)
 }
 
 func TestAbort404(t *testing.T) {
@@ -34,9 +29,7 @@ func TestAbort404(t *testing.T) {
 	c, _ := gin.CreateTestContext(w)
 
 	Abort404(c)
-	if w.Code != http.StatusNotFound {
-		t.Fatalf("expected status 404, got %d", w.Code)
-	}
+	require.Equal(t, http.StatusNotFound, w.Code)
 }
 
 func TestBadRequest(t *testing.T) {
@@ -47,9 +40,7 @@ func TestBadRequest(t *testing.T) {
 	logger.InitLogger(logFile, 1, 1, 1, false, "single", "error")
 
 	BadRequest(c, errTest{})
-	if w.Code != http.StatusBadRequest {
-		t.Fatalf("expected status 400, got %d", w.Code)
-	}
+	require.Equal(t, http.StatusBadRequest, w.Code)
 }
 
 type errTest struct{}

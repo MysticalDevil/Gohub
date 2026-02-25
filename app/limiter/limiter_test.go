@@ -1,6 +1,10 @@
 package limiter
 
-import "testing"
+import (
+	"testing"
+
+	"github.com/stretchr/testify/require"
+)
 
 func TestRouteToKeyString(t *testing.T) {
 	cases := map[string]string{
@@ -12,8 +16,6 @@ func TestRouteToKeyString(t *testing.T) {
 		"/api/v1/topics/:id/edit": "-api-v1-topics-_id-edit",
 	}
 	for input, expected := range cases {
-		if got := routeToKeyString(input); got != expected {
-			t.Fatalf("routeToKeyString(%q) = %q, want %q", input, got, expected)
-		}
+		require.Equal(t, expected, routeToKeyString(input))
 	}
 }

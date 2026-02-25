@@ -1,24 +1,18 @@
 package str
 
-import "testing"
+import (
+	"testing"
+
+	"github.com/stretchr/testify/require"
+)
 
 func TestPluralSingular(t *testing.T) {
-	if got := Plural("user"); got != "users" {
-		t.Fatalf("unexpected plural: %s", got)
-	}
-	if got := Singular("users"); got != "user" {
-		t.Fatalf("unexpected singular: %s", got)
-	}
+	require.Equal(t, "users", Plural("user"))
+	require.Equal(t, "user", Singular("users"))
 }
 
 func TestCaseConversions(t *testing.T) {
-	if got := Snake("TopicComment"); got != "topic_comment" {
-		t.Fatalf("unexpected snake: %s", got)
-	}
-	if got := Camel("topic_comment"); got != "TopicComment" {
-		t.Fatalf("unexpected camel: %s", got)
-	}
-	if got := LowerCamel("TopicComment"); got != "topicComment" {
-		t.Fatalf("unexpected lower camel: %s", got)
-	}
+	require.Equal(t, "topic_comment", Snake("TopicComment"))
+	require.Equal(t, "TopicComment", Camel("topic_comment"))
+	require.Equal(t, "topicComment", LowerCamel("TopicComment"))
 }

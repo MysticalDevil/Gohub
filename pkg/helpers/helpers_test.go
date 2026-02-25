@@ -4,63 +4,37 @@ import (
 	"strings"
 	"testing"
 	"time"
+
+	"github.com/stretchr/testify/require"
 )
 
 func TestEmpty(t *testing.T) {
-	if !Empty("") {
-		t.Fatalf("expected empty string")
-	}
-	if Empty("x") {
-		t.Fatalf("expected non-empty string")
-	}
-	if !Empty([]string{}) {
-		t.Fatalf("expected empty slice")
-	}
-	if Empty([]string{"a"}) {
-		t.Fatalf("expected non-empty slice")
-	}
-	if !Empty(0) {
-		t.Fatalf("expected empty int")
-	}
-	if Empty(1) {
-		t.Fatalf("expected non-empty int")
-	}
-	if !Empty(false) {
-		t.Fatalf("expected empty bool")
-	}
-	if Empty(true) {
-		t.Fatalf("expected non-empty bool")
-	}
+	require.True(t, Empty(""))
+	require.False(t, Empty("x"))
+	require.True(t, Empty([]string{}))
+	require.False(t, Empty([]string{"a"}))
+	require.True(t, Empty(0))
+	require.False(t, Empty(1))
+	require.True(t, Empty(false))
+	require.False(t, Empty(true))
 }
 
 func TestMicrosecondStr(t *testing.T) {
-	if got := MicrosecondStr(1500 * time.Microsecond); got != "1.500ms" {
-		t.Fatalf("unexpected format: %s", got)
-	}
+	require.Equal(t, "1.500ms", MicrosecondStr(1500*time.Microsecond))
 }
 
 func TestRandomNumber(t *testing.T) {
 	s := RandomNumber(8)
-	if len(s) != 8 {
-		t.Fatalf("unexpected length: %d", len(s))
-	}
-	if strings.Trim(s, "0123456789") != "" {
-		t.Fatalf("expected numeric string, got %q", s)
-	}
+	require.Len(t, s, 8)
+	require.Empty(t, strings.Trim(s, "0123456789"))
 }
 
 func TestRandomString(t *testing.T) {
 	s := RandomString(12)
-	if len(s) != 12 {
-		t.Fatalf("unexpected length: %d", len(s))
-	}
+	require.Len(t, s, 12)
 }
 
 func TestFirstElement(t *testing.T) {
-	if got := FirstElement([]string{}); got != "" {
-		t.Fatalf("expected empty result")
-	}
-	if got := FirstElement([]string{"a"}); got != "a" {
-		t.Fatalf("unexpected result: %s", got)
-	}
+	require.Equal(t, "", FirstElement([]string{}))
+	require.Equal(t, "a", FirstElement([]string{"a"}))
 }

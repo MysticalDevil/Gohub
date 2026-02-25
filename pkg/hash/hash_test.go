@@ -1,26 +1,20 @@
 package hash
 
-import "testing"
+import (
+	"testing"
+
+	"github.com/stretchr/testify/require"
+)
 
 func TestBcryptHashAndCheck(t *testing.T) {
 	password := "secret123"
 	hashed := BcryptHash(password)
-	if len(hashed) != 60 {
-		t.Fatalf("unexpected hash length: %d", len(hashed))
-	}
-	if !BcryptCheck(password, hashed) {
-		t.Fatalf("expected password to match hash")
-	}
-	if BcryptCheck("wrong", hashed) {
-		t.Fatalf("expected password mismatch")
-	}
+	require.Len(t, hashed, 60)
+	require.True(t, BcryptCheck(password, hashed))
+	require.False(t, BcryptCheck("wrong", hashed))
 }
 
 func TestBcryptIsHashed(t *testing.T) {
-	if !BcryptIsHashed(BcryptHash("x")) {
-		t.Fatalf("expected hash to be detected")
-	}
-	if BcryptIsHashed("plain") {
-		t.Fatalf("did not expect plain string to be treated as hash")
-	}
+	require.True(t, BcryptIsHashed(BcryptHash("x")))
+	require.False(t, BcryptIsHashed("plain"))
 }

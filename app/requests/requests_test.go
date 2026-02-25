@@ -3,6 +3,8 @@ package requests
 import (
 	"mime/multipart"
 	"testing"
+
+	"github.com/stretchr/testify/require"
 )
 
 type validateTestStruct struct {
@@ -19,9 +21,7 @@ func TestValidateSkipsEmptyNonRequired(t *testing.T) {
 		"name": []string{"min:Name too short"},
 	}
 	errMap := validate(data, rules, messages)
-	if len(errMap) != 0 {
-		t.Fatalf("expected no errors, got %v", errMap)
-	}
+	require.Empty(t, errMap)
 }
 
 func TestValidateRequired(t *testing.T) {
@@ -33,12 +33,8 @@ func TestValidateRequired(t *testing.T) {
 		"name": []string{"required:Name required"},
 	}
 	errMap := validate(data, rules, messages)
-	if len(errMap["name"]) == 0 {
-		t.Fatalf("expected required error")
-	}
-	if errMap["name"][0] != "Name required" {
-		t.Fatalf("unexpected message: %v", errMap["name"][0])
-	}
+	require.NotEmpty(t, errMap["name"])
+	require.Equal(t, "Name required", errMap["name"][0])
 }
 
 func TestValidateMinRule(t *testing.T) {
@@ -50,9 +46,7 @@ func TestValidateMinRule(t *testing.T) {
 		"name": []string{"min:Name too short"},
 	}
 	errMap := validate(data, rules, messages)
-	if len(errMap["name"]) == 0 {
-		t.Fatalf("expected min error")
-	}
+	require.NotEmpty(t, errMap["name"])
 }
 
 func TestValidateFileRequired(t *testing.T) {
@@ -64,7 +58,5 @@ func TestValidateFileRequired(t *testing.T) {
 		"avatar": []string{"required:Avatar required"},
 	}
 	errMap := validateFile(nil, data, rules, messages)
-	if len(errMap["avatar"]) == 0 {
-		t.Fatalf("expected avatar required error")
-	}
+	require.NotEmpty(t, errMap["avatar"])
 }

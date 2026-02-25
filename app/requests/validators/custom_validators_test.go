@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/go-playground/validator/v10"
+	"github.com/stretchr/testify/require"
 )
 
 func newTestValidator() *validator.Validate {
@@ -15,58 +16,34 @@ func newTestValidator() *validator.Validate {
 
 func TestValidateDigits(t *testing.T) {
 	v := newTestValidator()
-	if err := v.Var("123456", "digits=6"); err != nil {
-		t.Fatalf("expected valid digits, got %v", err)
-	}
-	if err := v.Var("12345a", "digits=6"); err == nil {
-		t.Fatalf("expected invalid digits")
-	}
+	require.NoError(t, v.Var("123456", "digits=6"))
+	require.Error(t, v.Var("12345a", "digits=6"))
 }
 
 func TestValidateBetween(t *testing.T) {
 	v := newTestValidator()
-	if err := v.Var("abcd", "between=3_4"); err != nil {
-		t.Fatalf("expected valid between, got %v", err)
-	}
-	if err := v.Var("ab", "between=3_4"); err == nil {
-		t.Fatalf("expected invalid between")
-	}
+	require.NoError(t, v.Var("abcd", "between=3_4"))
+	require.Error(t, v.Var("ab", "between=3_4"))
 }
 
 func TestValidateNumericBetween(t *testing.T) {
 	v := newTestValidator()
-	if err := v.Var("10", "numeric_between=2_100"); err != nil {
-		t.Fatalf("expected valid numeric_between, got %v", err)
-	}
-	if err := v.Var("1", "numeric_between=2_100"); err == nil {
-		t.Fatalf("expected invalid numeric_between")
-	}
+	require.NoError(t, v.Var("10", "numeric_between=2_100"))
+	require.Error(t, v.Var("1", "numeric_between=2_100"))
 }
 
 func TestValidateInNotIn(t *testing.T) {
 	v := newTestValidator()
-	if err := v.Var("asc", "in=asc_desc"); err != nil {
-		t.Fatalf("expected valid in, got %v", err)
-	}
-	if err := v.Var("foo", "in=asc_desc"); err == nil {
-		t.Fatalf("expected invalid in")
-	}
-	if err := v.Var("foo", "not_in=asc_desc"); err != nil {
-		t.Fatalf("expected valid not_in, got %v", err)
-	}
-	if err := v.Var("asc", "not_in=asc_desc"); err == nil {
-		t.Fatalf("expected invalid not_in")
-	}
+	require.NoError(t, v.Var("asc", "in=asc_desc"))
+	require.Error(t, v.Var("foo", "in=asc_desc"))
+	require.NoError(t, v.Var("foo", "not_in=asc_desc"))
+	require.Error(t, v.Var("asc", "not_in=asc_desc"))
 }
 
 func TestValidateCnLength(t *testing.T) {
 	v := newTestValidator()
-	if err := v.Var("中文", "min_cn=2"); err != nil {
-		t.Fatalf("expected valid min_cn, got %v", err)
-	}
-	if err := v.Var("中文", "max_cn=1"); err == nil {
-		t.Fatalf("expected invalid max_cn")
-	}
+	require.NoError(t, v.Var("中文", "min_cn=2"))
+	require.Error(t, v.Var("中文", "max_cn=1"))
 }
 
 func TestValidateFileRuleValue(t *testing.T) {
@@ -74,16 +51,8 @@ func TestValidateFileRuleValue(t *testing.T) {
 		Filename: "avatar.png",
 		Size:     1024,
 	}
-	if !ValidateFileRuleValue("ext", file, "png_jpg") {
-		t.Fatalf("expected valid ext")
-	}
-	if ValidateFileRuleValue("ext", file, "gif") {
-		t.Fatalf("expected invalid ext")
-	}
-	if !ValidateFileRuleValue("size", file, "2048") {
-		t.Fatalf("expected valid size")
-	}
-	if ValidateFileRuleValue("size", file, "10") {
-		t.Fatalf("expected invalid size")
-	}
+	require.True(t, ValidateFileRuleValue("ext", file, "png_jpg"))
+	require.False(t, ValidateFileRuleValue("ext", file, "gif"))
+	require.True(t, ValidateFileRuleValue("size", file, "2048"))
+	require.False(t, ValidateFileRuleValue("size", file, "10"))
 }
