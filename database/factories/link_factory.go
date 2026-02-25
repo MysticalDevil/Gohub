@@ -8,7 +8,7 @@ import (
 func MakeLinks(count int) []link.Link {
 	var objs []link.Link
 
-	for i := 0; i < count; i++ {
+	for range count {
 		linkModel := link.Link{
 			Name: faker.Username(),
 			URL:  faker.URL(),

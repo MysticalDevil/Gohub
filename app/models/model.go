@@ -13,8 +13,8 @@ type BaseModel struct {
 
 // CommonTimestampsField TimeStamp
 type CommonTimestampsField struct {
-	CreatedAt time.Time `gorm:"created_at;index;" json:"created_at,omitempty"`
-	UpdatedAt time.Time `gorm:"updated_at;index;" json:"updated_at,omitempty"`
+	CreatedAt time.Time `gorm:"created_at;index;" json:"created_at"`
+	UpdatedAt time.Time `gorm:"updated_at;index;" json:"updated_at"`
 }
 
 // GetStringID Get ID in string format

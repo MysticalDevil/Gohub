@@ -13,7 +13,7 @@ func MakeUsers(times int) []user.User {
 	// Set unique value
 	faker.SetGenerateUniqueValues(true)
 
-	for i := 0; i < times; i++ {
+	for range times {
 		model := user.User{
 			Name:     faker.Username(),
 			Email:    faker.Email(),

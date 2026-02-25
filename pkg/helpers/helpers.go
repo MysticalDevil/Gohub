@@ -30,7 +30,7 @@ func Empty(val any) bool {
 		return v.Uint() == 0
 	case reflect.Float32, reflect.Float64:
 		return v.Float() == 0
-	case reflect.Interface, reflect.Ptr:
+	case reflect.Interface, reflect.Pointer:
 		return v.IsNil()
 	}
 	return reflect.DeepEqual(val, reflect.Zero(v.Type()).Interface())
@@ -49,7 +49,7 @@ func RandomNumber(length int) string {
 	if n != length {
 		panic(err)
 	}
-	for i := 0; i < len(b); i++ {
+	for i := range b {
 		b[i] = table[int(b[i])%len(table)]
 	}
 	return string(b)

@@ -8,7 +8,7 @@ import (
 func MakeTopics(count int) []topic.Topic {
 	var objs []topic.Topic
 
-	for i := 0; i < count; i++ {
+	for range count {
 		topicModel := topic.Topic{
 			Title:      faker.Sentence(),
 			Body:       faker.Paragraph(),

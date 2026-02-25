@@ -10,7 +10,7 @@ func MakeCategories(count int) []category.Category {
 
 	faker.SetGenerateUniqueValues(true)
 
-	for i := 0; i < count; i++ {
+	for range count {
 		categoryModel := category.Category{
 			Name:        faker.Username(),
 			Description: faker.Sentence(),
