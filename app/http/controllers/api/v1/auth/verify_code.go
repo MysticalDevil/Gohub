@@ -2,12 +2,12 @@ package auth
 
 import (
 	"github.com/gin-gonic/gin"
+	"gohub/app/captcha"
 	v1 "gohub/app/http/controllers/api/v1"
 	"gohub/app/requests"
-	"gohub/pkg/captcha"
+	"gohub/app/verifycode"
 	"gohub/pkg/logger"
 	"gohub/pkg/response"
-	"gohub/pkg/verifycode"
 )
 
 // VerifyController  User controller

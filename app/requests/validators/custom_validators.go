@@ -10,9 +10,9 @@ import (
 	"unicode/utf8"
 
 	"github.com/go-playground/validator/v10"
-	"gohub/pkg/captcha"
+	"gohub/app/captcha"
+	"gohub/app/verifycode"
 	"gohub/pkg/database"
-	"gohub/pkg/verifycode"
 )
 
 // RegisterCustomValidations registers custom validation rules.

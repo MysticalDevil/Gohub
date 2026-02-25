@@ -5,8 +5,8 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/cast"
+	"gohub/app/limiter"
 	"gohub/pkg/app"
-	"gohub/pkg/limiter"
 	"gohub/pkg/logger"
 	"gohub/pkg/response"
 )
