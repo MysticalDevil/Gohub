@@ -26,7 +26,7 @@ func (ctrl *TopicsController) Store(c *gin.Context) {
 		UserID:     auth.CurrentUID(c),
 	}
 
-	topicModel.Create()
+	topicModel.Create(c.Request.Context())
 	if topicModel.ID > 0 {
 		response.Created(c, topicModel)
 	} else {
@@ -35,7 +35,7 @@ func (ctrl *TopicsController) Store(c *gin.Context) {
 }
 
 func (ctrl *TopicsController) Update(c *gin.Context) {
-	topicModel := topic.Get(c.Param("id"))
+	topicModel := topic.Get(c.Request.Context(), c.Param("id"))
 	if topicModel.ID == 0 {
 		response.Abort404(c)
 		return
@@ -55,7 +55,7 @@ func (ctrl *TopicsController) Update(c *gin.Context) {
 	topicModel.Body = request.Body
 	topicModel.CategoryID = request.CategoryID
 
-	rowsAffected := topicModel.Save()
+	rowsAffected := topicModel.Save(c.Request.Context())
 	if rowsAffected > 0 {
 		response.Data(c, topicModel)
 	} else {
@@ -64,7 +64,7 @@ func (ctrl *TopicsController) Update(c *gin.Context) {
 }
 
 func (ctrl *TopicsController) Delete(c *gin.Context) {
-	topicModel := topic.Get(c.Param("id"))
+	topicModel := topic.Get(c.Request.Context(), c.Param("id"))
 	if topicModel.ID == 0 {
 		response.Abort404(c)
 		return
@@ -75,7 +75,7 @@ func (ctrl *TopicsController) Delete(c *gin.Context) {
 		return
 	}
 
-	rowsAffected := topicModel.Delete()
+	rowsAffected := topicModel.Delete(c.Request.Context())
 	if rowsAffected > 0 {
 		response.Success(c)
 		return
@@ -90,15 +90,12 @@ func (ctrl *TopicsController) Index(c *gin.Context) {
 		return
 	}
 
-	data, pager := topic.Paginate(c, 10)
-	response.JSON(c, gin.H{
-		"data":  data,
-		"pager": pager,
-	})
+	data, pager := topic.Paginate(c.Request.Context(), c, 10)
+	response.Paginated(c, data, pager)
 }
 
 func (ctrl *TopicsController) Show(c *gin.Context) {
-	topicModel := topic.Get(c.Param("id"))
+	topicModel := topic.Get(c.Request.Context(), c.Param("id"))
 	if topicModel.ID == 0 {
 		response.Abort404(c)
 		return

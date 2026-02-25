@@ -18,7 +18,7 @@ type VerifyCodeEmailRequest struct {
 }
 
 // VerifyCodePhone Validate the form, return the length equal to zero to pass
-func VerifyCodePhone(data any, _ *gin.Context) map[string][]string {
+func VerifyCodePhone(data any, c *gin.Context) map[string][]string {
 	rules := MapData{
 		"phone":          []string{"required", "digits:11"},
 		"captcha_id":     []string{"required"},
@@ -39,7 +39,7 @@ func VerifyCodePhone(data any, _ *gin.Context) map[string][]string {
 		},
 	}
 
-	errs := validate(data, rules, messages)
+	errs := validate(c, data, rules, messages)
 
 	// Image verify code
 	_data := data.(*VerifyCodePhoneRequest)
@@ -49,7 +49,7 @@ func VerifyCodePhone(data any, _ *gin.Context) map[string][]string {
 }
 
 // VerifyCodeEmail Validate the form, return the length equal to zero to pass
-func VerifyCodeEmail(data any, _ *gin.Context) map[string][]string {
+func VerifyCodeEmail(data any, c *gin.Context) map[string][]string {
 	rules := MapData{
 		"email":          []string{"required", "min:4", "max:30", "email"},
 		"captcha_id":     []string{"required"},
@@ -72,7 +72,7 @@ func VerifyCodeEmail(data any, _ *gin.Context) map[string][]string {
 		},
 	}
 
-	errs := validate(data, rules, messages)
+	errs := validate(c, data, rules, messages)
 
 	// Image verify code
 	_data := data.(*VerifyCodeEmailRequest)

@@ -2,16 +2,39 @@
 package response
 
 import (
+	"errors"
+	"fmt"
+	"maps"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
 	"gohub/pkg/logger"
+	"gohub/pkg/paginator"
 	"gorm.io/gorm"
 )
 
-// JSON response 200 and JSON data
+const (
+	CodeOK            = "OK"
+	CodeCreated       = "CREATED"
+	CodeBadRequest    = "ERR_BAD_REQUEST"
+	CodeUnauthorized  = "ERR_UNAUTHORIZED"
+	CodeForbidden     = "ERR_FORBIDDEN"
+	CodeNotFound      = "ERR_NOT_FOUND"
+	CodeValidation    = "ERR_VALIDATION"
+	CodeUnprocessable = "ERR_UNPROCESSABLE"
+	CodeInternal      = "ERR_INTERNAL"
+)
+
+type envelope struct {
+	Data   any                 `json:"data,omitempty"`
+	Msg    string              `json:"msg"`
+	Code   string              `json:"code"`
+	Errors map[string][]string `json:"errors,omitempty"`
+}
+
+// JSON response 200 and JSON data (standard envelope)
 func JSON(c *gin.Context, data any) {
-	c.JSON(http.StatusOK, data)
+	Data(c, data)
 }
 
 // Success
@@ -19,10 +42,7 @@ func JSON(c *gin.Context, data any) {
 // It is called after a [change] operation without [specific return data] is successful,
 // such as deletion, password modification, and mobile phone number modification.
 func Success(c *gin.Context) {
-	JSON(c, gin.H{
-		"success": true,
-		"message": "Successful operation",
-	})
+	respond(c, http.StatusOK, CodeOK, "Successful operation", nil, nil)
 }
 
 // Data
@@ -30,10 +50,18 @@ func Success(c *gin.Context) {
 // Called after the execution of the [update operation] is successful,
 // such as updating the topic, and returning the updated topic after success
 func Data(c *gin.Context, data any) {
-	JSON(c, gin.H{
-		"success": true,
-		"data":    data,
-	})
+	respond(c, http.StatusOK, CodeOK, "OK", data, nil)
+}
+
+// Paginated
+// Response 200 and JSON data in offset/limit pagination format
+func Paginated(c *gin.Context, items any, paging paginator.Paging) {
+	respond(c, http.StatusOK, CodeOK, "OK", gin.H{
+		"items":  items,
+		"offset": paging.Offset,
+		"limit":  paging.Limit,
+		"total":  paging.Total,
+	}, nil)
 }
 
 // Created
@@ -41,43 +69,37 @@ func Data(c *gin.Context, data any) {
 // Called after the execution of the [update operation] is successful,
 // such as updating the topic, and returning the updated topic after success
 func Created(c *gin.Context, data any) {
-	c.JSON(http.StatusCreated, gin.H{
-		"success": true,
-		"data":    data,
-	})
+	respond(c, http.StatusCreated, CodeCreated, "Created", data, nil)
 }
 
 // CreatedJSON
-// Response 201 and JSON data
+// Response 201 and JSON data (standard envelope)
 func CreatedJSON(c *gin.Context, data any) {
-	c.JSON(http.StatusCreated, data)
+	Created(c, data)
 }
 
 // Abort404
 // Response 404
 // Use the default message when no msg parameter is passed
 func Abort404(c *gin.Context, msg ...string) {
-	c.AbortWithStatusJSON(http.StatusNotFound, gin.H{
-		"message": defaultMessage("The data does not exist, please confirm that the request is correct", msg...),
-	})
+	errorResponse(c, http.StatusNotFound, CodeNotFound,
+		defaultMessage("The data does not exist, please confirm that the request is correct", msg...), nil)
 }
 
 // Abort403
 // Response 403
 // Use the default message when no msg parameter is passed
 func Abort403(c *gin.Context, msg ...string) {
-	c.AbortWithStatusJSON(http.StatusForbidden, gin.H{
-		"message": defaultMessage("Insufficient permissions, please confirm that you have the corresponding permissions", msg...),
-	})
+	errorResponse(c, http.StatusForbidden, CodeForbidden,
+		defaultMessage("Insufficient permissions, please confirm that you have the corresponding permissions", msg...), nil)
 }
 
 // Abort500
 // Response 500
 // Use the default message when no msg parameter is passed
 func Abort500(c *gin.Context, msg ...string) {
-	c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
-		"message": defaultMessage("Internal server error, please try again later", msg...),
-	})
+	errorResponse(c, http.StatusInternalServerError, CodeInternal,
+		defaultMessage("Internal server error, please try again later", msg...), nil)
 }
 
 // BadRequest
@@ -85,14 +107,12 @@ func Abort500(c *gin.Context, msg ...string) {
 // Called when parsing a user request, the format or method of the request is not as expected
 func BadRequest(c *gin.Context, err error, msg ...string) {
 	logger.LogIf(err)
-	c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
-		"message": defaultMessage(
+	errorResponse(c, http.StatusBadRequest, CodeBadRequest,
+		defaultMessage(
 			"Request parsing error, please confirm whether the request format is correct. "+
 				"Please use the 'multipart' header for uploading files and use JSON format for parameters",
 			msg...,
-		),
-		"error": err.Error(),
-	})
+		), map[string][]string{"error": {err.Error()}})
 }
 
 // Error
@@ -107,32 +127,55 @@ func Error(c *gin.Context, err error, msg ...string) {
 		return
 	}
 
-	c.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{
-		"message": defaultMessage("Request processing failed, please check the value of error", msg...),
-		"error":   err.Error(),
-	})
+	errorResponse(c, http.StatusUnprocessableEntity, CodeUnprocessable,
+		defaultMessage("Request processing failed, please check the value of error", msg...),
+		map[string][]string{"error": {err.Error()}})
 }
 
 // ValidationError
 // Handling form validation failure errors
-func ValidationError(c *gin.Context, errors map[string][]string) {
-	c.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{
-		"message": "Request verification failed, please see errors for details",
-		"errors":  errors,
-	})
+func ValidationError(c *gin.Context, errs map[string][]string) {
+	joined := joinValidationErrors(errs)
+	logger.LogIf(joined)
+	errorResponse(c, http.StatusUnprocessableEntity, CodeValidation,
+		"Request verification failed, please see errors for details",
+		maps.Clone(errs))
 }
 
 // Unauthorized
 // Response 401, use the default message when no msg parameter is passed
 // Called when login fails and jwt parsing fails
 func Unauthorized(c *gin.Context, msg ...string) {
-	c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
-		"message": defaultMessage(
-			"Request parsing error, please confirm whether the request format is correct. "+
-				"Please use the 'multipart' header for uploading files and use JSON format for parameters",
-			msg...,
-		),
-	})
+	errorResponse(c, http.StatusUnauthorized, CodeUnauthorized,
+		defaultMessage("Unauthorized", msg...), nil)
+}
+
+func respond(c *gin.Context, status int, code string, msg string, data any, errs map[string][]string) {
+	payload := envelope{Msg: msg, Code: code, Data: data, Errors: errs}
+	c.JSON(status, payload)
+}
+
+func errorResponse(c *gin.Context, status int, code string, msg string, errs map[string][]string) {
+	if errs == nil {
+		errs = map[string][]string{}
+	}
+	payload := envelope{Msg: msg, Code: code, Errors: errs}
+	c.AbortWithStatusJSON(status, payload)
+}
+
+func joinValidationErrors(errs map[string][]string) error {
+	if len(errs) == 0 {
+		return nil
+	}
+
+	joined := make([]error, 0, len(errs))
+	for field, messages := range errs {
+		for _, message := range messages {
+			joined = append(joined, fmt.Errorf("%s: %s", field, message))
+		}
+	}
+
+	return errors.Join(joined...)
 }
 
 // defaultMessage

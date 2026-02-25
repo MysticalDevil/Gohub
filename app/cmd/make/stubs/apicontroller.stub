@@ -14,12 +14,12 @@ type {{StructNamePlural}}Controller struct {
 }
 
 func (ctrl *{{StructNamePlural}}Controller) Index(c *gin.Context) {
-    {{VariableNamePlural}} := {{PackageName}}.All()
+    {{VariableNamePlural}} := {{PackageName}}.All(c.Request.Context())
     response.Data(c, {{VariableNamePlural}})
 }
 
 func (ctrl *{{StructNamePlural}}Controller) Show(c *gin.Context) {
-    {{VariableName}}Model := {{PackageName}}.Get(c.Param("id"))
+    {{VariableName}}Model := {{PackageName}}.Get(c.Request.Context(), c.Param("id"))
     if {{VariableName}}Model.ID == 0 {
         response.Abort404(c)
         return
@@ -37,7 +37,7 @@ func (ctrl *{{StructNamePlural}}Controller) Store(c *gin.Context) {
         FieldName: request.FieldName,
     }
 
-    {{VariableName}}Model.Create()
+    {{VariableName}}Model.Create(c.Request.Context())
     if {{VariableName}}Model.ID > 0 {
         response.Created(c, {{VariableName}}Model)
     } else {
@@ -46,29 +46,24 @@ func (ctrl *{{StructNamePlural}}Controller) Store(c *gin.Context) {
 }
 
 func (ctrl *{{StructNamePlural}}Controller) Update(c *gin.Context) {
-    {{VariableName}}Model := {{PackageName}}.Get(c.Param("id"))
+    {{VariableName}}Model := {{PackageName}}.Get(c.Request.Context(), c.Param("id"))
     if {{VariableName}}Model.ID == 0 {
-        response.Abort404(C)
+        response.Abort404(c)
         return
     }
 
-    if ok := policies.CanModify{{StructName}}(c, {{VariableName}}model); !ok {
-        response.Abort403(C)
+    if ok := policies.CanModify{{StructName}}(c, {{VariableName}}Model); !ok {
+        response.Abort403(c)
         return
     }
 
     request := requests.{{StructName}}Request{}
-    bindOk, errs := requests.Validate(c, &request, requests.{{StructName}}Save)
-    if !bindOk {
-        return
-    }
-    if len(errs) > 0 {
-        response.ValidationError(c, errs)
+    if ok := requests.Validate(c, &request, requests.{{StructName}}Save); !ok {
         return
     }
 
     {{VariableName}}Model.FieldName = request.FieldName
-    rowsAffected := {{VariableName}}Model.Save()
+    rowsAffected := {{VariableName}}Model.Save(c.Request.Context())
     if rowsAffected > 0 {
         response.Data(c, {{VariableName}}Model)
     } else {
@@ -77,18 +72,18 @@ func (ctrl *{{StructNamePlural}}Controller) Update(c *gin.Context) {
 }
 
 func (ctrl *{{StructNamePlural}}Controller) Delete(c *gin.Context) {
-    {{VariableName}}Model := {{PackageName}}.Get(c.Param("id"))
+    {{VariableName}}Model := {{PackageName}}.Get(c.Request.Context(), c.Param("id"))
     if {{VariableName}}Model.ID == 0 {
         response.Abort404(c)
         return
     }
 
-    if ok := polices.CanModify{{StructName}}(c, {{VariableName}}Model); !ok {
+    if ok := policies.CanModify{{StructName}}(c, {{VariableName}}Model); !ok {
         response.Abort403(c)
         return
     }
 
-    rowsAffected := {{VariableName}}Model.Save()
+    rowsAffected := {{VariableName}}Model.Delete(c.Request.Context())
     if rowsAffected > 0 {
         response.Success(c)
         return

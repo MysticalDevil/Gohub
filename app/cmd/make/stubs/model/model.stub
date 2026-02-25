@@ -2,6 +2,8 @@
 package {{PackageName}}
 
 import (
+    "context"
+
     "gohub/app/models"
     "gohub/pkg/database"
 )
@@ -15,16 +17,16 @@ type {{StructName}} struct {
     models.CommonTimestampsField
 }
 
-func ({{VariableName}} *{{StructName}}) Create() {
-    database.DB.Create(&{{VariableName}})
+func ({{VariableName}} *{{StructName}}) Create(ctx context.Context) {
+    database.DBWithContext(ctx).Create(&{{VariableName}})
 }
 
-func ({{VariableName}} *{{StructName}}) Save() (rowsAffected int64) {
-    result := database.DB.Save(&{{VariableName}})
+func ({{VariableName}} *{{StructName}}) Save(ctx context.Context) (rowsAffected int64) {
+    result := database.DBWithContext(ctx).Save(&{{VariableName}})
     return result.RowsAffected
 }
 
-func ({{VariableName}} *{{StructName}}) Delete() (rowsAffected int64) {
-    result := database.DB.Delete(&{{VariableName}})
+func ({{VariableName}} *{{StructName}}) Delete(ctx context.Context) (rowsAffected int64) {
+    result := database.DBWithContext(ctx).Delete(&{{VariableName}})
     return result.RowsAffected
 }

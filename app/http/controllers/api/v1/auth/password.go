@@ -20,12 +20,12 @@ func (pc *PasswordController) ResetByPhone(c *gin.Context) {
 		return
 	}
 
-	userModel := user.GetByPhone(request.Phone)
+	userModel := user.GetByPhone(c.Request.Context(), request.Phone)
 	if userModel.ID == 0 {
 		response.Abort404(c)
 	} else {
 		userModel.Password = request.Password
-		userModel.Save()
+		userModel.Save(c.Request.Context())
 
 		response.Success(c)
 	}
@@ -38,12 +38,12 @@ func (pc *PasswordController) ResetByEmail(c *gin.Context) {
 		return
 	}
 
-	userModel := user.GetByEmail(request.Email)
+	userModel := user.GetByEmail(c.Request.Context(), request.Email)
 	if userModel.ID == 0 {
 		response.Abort404(c)
 	} else {
 		userModel.Password = request.Password
-		userModel.Save()
+		userModel.Save(c.Request.Context())
 
 		response.Success(c)
 	}

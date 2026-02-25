@@ -5,7 +5,7 @@
 
 - [`gin`](https://github.com/gin-gonic/gin) 路由、路由组、中间件
 
-- [`zap`](https://github.com/gin-contrib/zap) 高性能日志方案
+- `log/slog` 标准库日志
 
 - [`gorm`](https://github.com/go-gorm/gorm) ORM 数据操作
 
@@ -15,7 +15,7 @@
 
 - [`cast`](https://github.com/spf13/cast) 类型转换
 
-- [`redis`](https://github.com/go-redis/redis) Redis 操作
+- [`redis`](https://github.com/redis/go-redis) Redis 操作
 
 - [`jwt`](https://github.com/golang-jwt/jwt) JWT 操作
 
@@ -93,6 +93,41 @@ Use "Gohub [command] --help" for more information about a command.
 `APP_KEY` 必须是安全随机值。可通过 `go run main.go key` 生成并填入 `.env`。
 `APP_ENV_PATH` 可指定自定义 env 文件路径（例如测试场景），优先级高于 `-e/--env` 与默认 `.env`。
 测试中若设置 `CONSOLE_SILENT=1`，将静默控制台输出（仅在 `APP_ENV=testing` 时生效）。
+
+## API 响应格式
+统一响应结构：
+```json
+{
+  "code": "OK",
+  "msg": "OK",
+  "data": {}
+}
+```
+
+校验/处理失败：
+```json
+{
+  "code": "ERR_VALIDATION",
+  "msg": "Request verification failed, please see errors for details",
+  "errors": {
+    "field": ["message"]
+  }
+}
+```
+
+分页使用 `offset/limit`，返回：
+```json
+{
+  "code": "OK",
+  "msg": "OK",
+  "data": {
+    "items": [],
+    "offset": 0,
+    "limit": 20,
+    "total": 200
+  }
+}
+```
 
 # TODO
 Postman 文档书写

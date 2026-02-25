@@ -24,8 +24,8 @@ func (sc *SignupController) IsPhoneExist(c *gin.Context) {
 	}
 
 	// Check database and return response
-	response.JSON(c, gin.H{
-		"exist": user.IsPhoneExist(request.Phone),
+	response.Data(c, gin.H{
+		"exist": user.IsPhoneExist(c.Request.Context(), request.Phone),
 	})
 }
 
@@ -36,8 +36,8 @@ func (sc *SignupController) IsEmailExist(c *gin.Context) {
 		return
 	}
 
-	response.JSON(c, gin.H{
-		"exist": user.IsEmailExist(request.Email),
+	response.Data(c, gin.H{
+		"exist": user.IsEmailExist(c.Request.Context(), request.Email),
 	})
 }
 
@@ -53,13 +53,13 @@ func (sc *SignupController) SignupUsingPhone(c *gin.Context) {
 		Phone:    request.Phone,
 		Password: request.Password,
 	}
-	userModel.Create()
+	userModel.Create(c.Request.Context())
 
 	if userModel.ID > 0 {
 		token := jwt.NewJWT().IssueToken(userModel.GetStringID(), userModel.Name)
-		response.CreatedJSON(c, gin.H{
-			"toke": token,
-			"data": userModel,
+		response.Created(c, gin.H{
+			"token": token,
+			"user":  userModel,
 		})
 	} else {
 		response.Abort500(c, "Failed to create user, please try later~")
@@ -78,13 +78,13 @@ func (sc *SignupController) SignupUsingEmail(c *gin.Context) {
 		Email:    request.Email,
 		Password: request.Password,
 	}
-	userModel.Create()
+	userModel.Create(c.Request.Context())
 
 	if userModel.ID > 0 {
 		token := jwt.NewJWT().IssueToken(userModel.GetStringID(), userModel.Name)
-		response.CreatedJSON(c, gin.H{
-			"toke": token,
-			"data": userModel,
+		response.Created(c, gin.H{
+			"token": token,
+			"user":  userModel,
 		})
 	} else {
 		response.Abort500(c, "Failed to create user, please try later~")

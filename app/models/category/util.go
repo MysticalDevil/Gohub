@@ -1,40 +1,29 @@
 package category
 
 import (
+	"context"
+
 	"github.com/gin-gonic/gin"
-	"gohub/pkg/app"
-	"gohub/pkg/database"
+	"gohub/app/models"
 	"gohub/pkg/paginator"
 )
 
-func Get(idStr string) (category Category) {
-	database.DB.Where("id", idStr).First(&category)
-	return
+func Get(ctx context.Context, idStr string) (category Category) {
+	return models.Get[Category](ctx, idStr)
 }
 
-func GetBy(field, value string) (category Category) {
-	database.DB.Where("? = ?", field, value).First(&category)
-	return
+func GetBy(ctx context.Context, field, value string) (category Category) {
+	return models.GetBy[Category](ctx, field, value)
 }
 
-func All() (categories []Category) {
-	database.DB.Find(&categories)
-	return
+func All(ctx context.Context) (categories []Category) {
+	return models.All[Category](ctx)
 }
 
-func IsExist(field, value string) bool {
-	var count int64
-	database.DB.Model(Category{}).Where("? = ?", field, value).Count(&count)
-	return count > 0
+func IsExist(ctx context.Context, field, value string) bool {
+	return models.Exists[Category](ctx, field, value)
 }
 
-func Paginate(c *gin.Context, perPage int) (categories []Category, paging paginator.Paging) {
-	paging = paginator.Paginate(
-		c,
-		database.DB.Model(Category{}),
-		&categories,
-		app.V1URL(database.TableName(&Category{})),
-		perPage,
-	)
-	return
+func Paginate(ctx context.Context, c *gin.Context, limit int) (categories []Category, paging paginator.Paging) {
+	return models.Paginate[Category](ctx, c, limit)
 }

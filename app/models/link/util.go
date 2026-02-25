@@ -1,49 +1,37 @@
 package link
 
 import (
+	"context"
 	"time"
 
 	"github.com/gin-gonic/gin"
-	"gohub/pkg/app"
+	"gohub/app/models"
 	"gohub/pkg/cache"
-	"gohub/pkg/database"
 	"gohub/pkg/helpers"
 	"gohub/pkg/paginator"
 )
 
-func Get(idStr string) (link Link) {
-	database.DB.Where("id", idStr).First(&link)
-	return
+func Get(ctx context.Context, idStr string) (link Link) {
+	return models.Get[Link](ctx, idStr)
 }
 
-func GetBy(field, value string) (link Link) {
-	database.DB.Where("? = ?", field, value).First(&link)
-	return
+func GetBy(ctx context.Context, field, value string) (link Link) {
+	return models.GetBy[Link](ctx, field, value)
 }
 
-func All() (links []Link) {
-	database.DB.Find(&links)
-	return
+func All(ctx context.Context) (links []Link) {
+	return models.All[Link](ctx)
 }
 
-func IsExist(field, value string) bool {
-	var count int64
-	database.DB.Model(Link{}).Where("? = ?", field, value).Count(&count)
-	return count > 0
+func IsExist(ctx context.Context, field, value string) bool {
+	return models.Exists[Link](ctx, field, value)
 }
 
-func Paginate(c *gin.Context, perPage int) (links []Link, paging paginator.Paging) {
-	paging = paginator.Paginate(
-		c,
-		database.DB.Model(Link{}),
-		&links,
-		app.V1URL(database.TableName(&Link{})),
-		perPage,
-	)
-	return
+func Paginate(ctx context.Context, c *gin.Context, limit int) (links []Link, paging paginator.Paging) {
+	return models.Paginate[Link](ctx, c, limit)
 }
 
-func AllCached() (links []Link) {
+func AllCached(ctx context.Context) (links []Link) {
 	// Set cache key
 	cacheKey := "links:all"
 	// Set expire time
@@ -52,7 +40,7 @@ func AllCached() (links []Link) {
 	cache.GetObject(cacheKey, &links)
 
 	if helpers.Empty(links) {
-		links = All()
+		links = All(ctx)
 		if helpers.Empty(links) {
 			return
 		}

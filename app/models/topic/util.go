@@ -1,41 +1,32 @@
 package topic
 
 import (
+	"context"
+
 	"github.com/gin-gonic/gin"
-	"gohub/pkg/app"
+	"gohub/app/models"
 	"gohub/pkg/database"
 	"gohub/pkg/paginator"
 	"gorm.io/gorm/clause"
 )
 
-func Get(idStr string) (topic Topic) {
-	database.DB.Preload(clause.Associations).Where("id", idStr).First(&topic)
+func Get(ctx context.Context, idStr string) (topic Topic) {
+	database.DBWithContext(ctx).Preload(clause.Associations).Where("id", idStr).First(&topic)
 	return
 }
 
-func GetBy(field, value string) (topic Topic) {
-	database.DB.Where("? = ?", field, value).First(&topic)
-	return
+func GetBy(ctx context.Context, field, value string) (topic Topic) {
+	return models.GetBy[Topic](ctx, field, value)
 }
 
-func All() (topics []Topic) {
-	database.DB.Find(&topics)
-	return
+func All(ctx context.Context) (topics []Topic) {
+	return models.All[Topic](ctx)
 }
 
-func IsExist(field, value string) bool {
-	var count int64
-	database.DB.Model(Topic{}).Where("? = ?", field, value).Count(&count)
-	return count > 0
+func IsExist(ctx context.Context, field, value string) bool {
+	return models.Exists[Topic](ctx, field, value)
 }
 
-func Paginate(c *gin.Context, perPage int) (topics []Topic, paging paginator.Paging) {
-	paging = paginator.Paginate(
-		c,
-		database.DB.Model(Topic{}),
-		&topics,
-		app.V1URL(database.TableName(&Topic{})),
-		perPage,
-	)
-	return
+func Paginate(ctx context.Context, c *gin.Context, limit int) (topics []Topic, paging paginator.Paging) {
+	return models.Paginate[Topic](ctx, c, limit)
 }

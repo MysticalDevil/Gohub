@@ -2,6 +2,7 @@ package migrate
 
 import (
 	"database/sql"
+	"slices"
 
 	"gorm.io/gorm"
 )
@@ -30,20 +31,17 @@ func Add(name string, up migrationFunc, down migrationFunc) {
 
 // getMigrationFile Get the MigrationFile object by the name of the migration file
 func getMigrationFile(name string) MigrationFile {
-	for _, mfile := range migrationFiles {
-		if name == mfile.FileName {
-			return mfile
-		}
+	if idx := slices.IndexFunc(migrationFiles, func(mfile MigrationFile) bool {
+		return mfile.FileName == name
+	}); idx >= 0 {
+		return migrationFiles[idx]
 	}
 	return MigrationFile{}
 }
 
 // isNotMigrated Determine if the migration has been executed
 func (mfile MigrationFile) isNotMigrated(migrations []Migration) bool {
-	for _, migration := range migrations {
-		if migration.Migration == mfile.FileName {
-			return false
-		}
-	}
-	return true
+	return !slices.ContainsFunc(migrations, func(migration Migration) bool {
+		return migration.Migration == mfile.FileName
+	})
 }

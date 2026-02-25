@@ -22,7 +22,7 @@ func (ctrl *CategoriesController) Store(c *gin.Context) {
 		Description: request.Description,
 	}
 
-	categoryModel.Create()
+	categoryModel.Create(c.Request.Context())
 	if categoryModel.ID > 0 {
 		response.Created(c, categoryModel)
 	} else {
@@ -32,7 +32,7 @@ func (ctrl *CategoriesController) Store(c *gin.Context) {
 
 func (ctrl *CategoriesController) Update(c *gin.Context) {
 	// Verify that the url parameter id is correct
-	categoryModel := category.Get(c.Param("id"))
+	categoryModel := category.Get(c.Request.Context(), c.Param("id"))
 	if categoryModel.ID == 0 {
 		response.Abort404(c)
 		return
@@ -45,7 +45,7 @@ func (ctrl *CategoriesController) Update(c *gin.Context) {
 
 	categoryModel.Name = request.Name
 	categoryModel.Description = request.Description
-	rowsAffected := categoryModel.Save()
+	rowsAffected := categoryModel.Save(c.Request.Context())
 
 	if rowsAffected > 0 {
 		response.Data(c, categoryModel)
@@ -60,21 +60,18 @@ func (ctrl *CategoriesController) Index(c *gin.Context) {
 		return
 	}
 
-	data, pager := category.Paginate(c, 10)
-	response.JSON(c, gin.H{
-		"data":  data,
-		"pager": pager,
-	})
+	data, pager := category.Paginate(c.Request.Context(), c, 10)
+	response.Paginated(c, data, pager)
 }
 
 func (ctrl *CategoriesController) Delete(c *gin.Context) {
-	categoryModel := category.Get(c.Param("id"))
+	categoryModel := category.Get(c.Request.Context(), c.Param("id"))
 	if categoryModel.ID == 0 {
 		response.Abort404(c)
 		return
 	}
 
-	rowsAffected := categoryModel.Delete()
+	rowsAffected := categoryModel.Delete(c.Request.Context())
 	if rowsAffected > 0 {
 		response.Success(c)
 		return

@@ -21,13 +21,13 @@ func (lc *LoginController) LoginByPhone(c *gin.Context) {
 		return
 	}
 
-	user, err := auth.LoginByPhone(request.Phone)
+	user, err := auth.LoginByPhone(c.Request.Context(), request.Phone)
 	if err != nil {
 		response.Error(c, err, "Account does not exist")
 	} else {
 		token := jwt.NewJWT().IssueToken(user.GetStringID(), user.Name)
 
-		response.JSON(c, gin.H{
+		response.Data(c, gin.H{
 			"token": token,
 		})
 	}
@@ -40,12 +40,12 @@ func (lc *LoginController) LoginByPassword(c *gin.Context) {
 		return
 	}
 
-	user, err := auth.Attempt(request.LoginID, request.Password)
+	user, err := auth.Attempt(c.Request.Context(), request.LoginID, request.Password)
 	if err != nil {
 		response.Unauthorized(c, "The account does not exist or the password is wrong")
 	} else {
 		token := jwt.NewJWT().IssueToken(user.GetStringID(), user.Name)
-		response.JSON(c, gin.H{
+		response.Data(c, gin.H{
 			"token": token,
 		})
 	}
@@ -58,7 +58,7 @@ func (lc *LoginController) RefreshToken(c *gin.Context) {
 	if err != nil {
 		response.Error(c, err, "Refresh Access Token failed")
 	} else {
-		response.JSON(c, gin.H{
+		response.Data(c, gin.H{
 			"token": token,
 		})
 	}

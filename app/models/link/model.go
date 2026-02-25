@@ -2,6 +2,8 @@
 package link
 
 import (
+	"context"
+
 	"gohub/app/models"
 	"gohub/pkg/database"
 )
@@ -15,16 +17,16 @@ type Link struct {
 	models.CommonTimestampsField
 }
 
-func (link *Link) Create() {
-	database.DB.Create(&link)
+func (link *Link) Create(ctx context.Context) {
+	database.DBWithContext(ctx).Create(&link)
 }
 
-func (link *Link) Save() (rowsAffected int64) {
-	result := database.DB.Save(&link)
+func (link *Link) Save(ctx context.Context) (rowsAffected int64) {
+	result := database.DBWithContext(ctx).Save(&link)
 	return result.RowsAffected
 }
 
-func (link *Link) Delete() (rowsAffected int64) {
-	result := database.DB.Delete(&link)
+func (link *Link) Delete(ctx context.Context) (rowsAffected int64) {
+	result := database.DBWithContext(ctx).Delete(&link)
 	return result.RowsAffected
 }

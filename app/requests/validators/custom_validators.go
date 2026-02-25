@@ -2,9 +2,11 @@
 package validators
 
 import (
+	"context"
 	"fmt"
 	"mime/multipart"
 	"path/filepath"
+	"slices"
 	"strconv"
 	"strings"
 	"unicode/utf8"
@@ -17,8 +19,8 @@ import (
 
 // RegisterCustomValidations registers custom validation rules.
 func RegisterCustomValidations(v *validator.Validate) {
-	v.RegisterValidation("not_exists", ValidateFieldNotExist)
-	v.RegisterValidation("exists", ValidateFieldExist)
+	v.RegisterValidationCtx("not_exists", ValidateFieldNotExist)
+	v.RegisterValidationCtx("exists", ValidateFieldExist)
 	v.RegisterValidation("max_cn", ValidateMaxCn)
 	v.RegisterValidation("min_cn", ValidateMinCn)
 	v.RegisterValidation("digits", ValidateDigits)
@@ -55,7 +57,7 @@ func ValidateVerifyCode(key, answer string, errs map[string][]string) map[string
 }
 
 // ValidateFieldNotExist Customize rules, verify that the field already exists in the table
-func ValidateFieldNotExist(field validator.FieldLevel) bool {
+func ValidateFieldNotExist(ctx context.Context, field validator.FieldLevel) bool {
 	rng := splitParam(field.Param())
 	if len(rng) < 2 {
 		return false
@@ -75,7 +77,7 @@ func ValidateFieldNotExist(field validator.FieldLevel) bool {
 	requestValue := fmt.Sprint(field.Field().Interface())
 
 	// Splicing SQL
-	query := database.DB.Table(tableName).Where(dbField+" = ?", requestValue)
+	query := database.DBWithContext(ctx).Table(tableName).Where(dbField+" = ?", requestValue)
 
 	if len(exceptID) > 0 {
 		query.Where("id != ?", exceptID)
@@ -88,7 +90,7 @@ func ValidateFieldNotExist(field validator.FieldLevel) bool {
 }
 
 // ValidateFieldExist Customize rules, verify that the field exists in the table
-func ValidateFieldExist(field validator.FieldLevel) bool {
+func ValidateFieldExist(ctx context.Context, field validator.FieldLevel) bool {
 	rng := splitParam(field.Param())
 	if len(rng) < 2 {
 		return false
@@ -104,7 +106,7 @@ func ValidateFieldExist(field validator.FieldLevel) bool {
 
 	// Query database
 	var count int64
-	database.DB.Table(tableName).Where(dbField+"= ?", requestValue).Count(&count)
+	database.DBWithContext(ctx).Table(tableName).Where(dbField+"= ?", requestValue).Count(&count)
 
 	return count > 0
 }
@@ -184,22 +186,12 @@ func ValidateNumericBetween(field validator.FieldLevel) bool {
 
 func ValidateIn(field validator.FieldLevel) bool {
 	value := fmt.Sprint(field.Field().Interface())
-	for _, item := range splitParam(field.Param()) {
-		if value == item {
-			return true
-		}
-	}
-	return false
+	return slices.Contains(splitParam(field.Param()), value)
 }
 
 func ValidateNotIn(field validator.FieldLevel) bool {
 	value := fmt.Sprint(field.Field().Interface())
-	for _, item := range splitParam(field.Param()) {
-		if value == item {
-			return false
-		}
-	}
-	return true
+	return !slices.Contains(splitParam(field.Param()), value)
 }
 
 func ValidateFileExt(field validator.FieldLevel) bool {
@@ -230,12 +222,9 @@ func ValidateFileRuleValue(ruleName string, value any, param string) bool {
 	switch ruleName {
 	case "ext":
 		ext := strings.TrimPrefix(strings.ToLower(filepath.Ext(file.Filename)), ".")
-		for _, allowed := range splitParam(param) {
-			if strings.ToLower(allowed) == ext {
-				return true
-			}
-		}
-		return false
+		return slices.ContainsFunc(splitParam(param), func(allowed string) bool {
+			return strings.ToLower(allowed) == ext
+		})
 	case "size":
 		limit, err := strconv.ParseInt(param, 10, 64)
 		if err != nil {

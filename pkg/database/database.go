@@ -2,6 +2,7 @@
 package database
 
 import (
+	"context"
 	"database/sql"
 	"errors"
 	"fmt"
@@ -139,4 +140,11 @@ func TableName(obj any) string {
 		logger.LogIf(err)
 	}
 	return stmt.Schema.Table
+}
+
+func DBWithContext(ctx context.Context) *gorm.DB {
+	if ctx == nil {
+		return DB
+	}
+	return DB.WithContext(ctx)
 }

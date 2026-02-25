@@ -24,7 +24,7 @@ func AuthJWT() gin.HandlerFunc {
 		}
 
 		// JWT parsed successfully, set user information
-		userModel := user.Get(claims.UserID)
+		userModel := user.Get(c.Request.Context(), claims.UserID)
 		if userModel.ID == 0 {
 			response.Unauthorized(c, "Could not find corresponding user, user may have been deleted")
 			return

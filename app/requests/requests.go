@@ -1,6 +1,7 @@
 package requests
 
 import (
+	"context"
 	"fmt"
 	"reflect"
 	"strings"
@@ -49,15 +50,15 @@ func Validate(c *gin.Context, obj any, handler ValidatorFunc) bool {
 	return true
 }
 
-func validate(data any, rules, messages MapData) map[string][]string {
-	return validateWithRules(data, rules, messages)
+func validate(c *gin.Context, data any, rules, messages MapData) map[string][]string {
+	return validateWithRules(requestContext(c), data, rules, messages)
 }
 
-func validateFile(_ *gin.Context, data any, rules, messages MapData) map[string][]string {
-	return validateWithRules(data, rules, messages)
+func validateFile(c *gin.Context, data any, rules, messages MapData) map[string][]string {
+	return validateWithRules(requestContext(c), data, rules, messages)
 }
 
-func validateWithRules(data any, rules, messages MapData) map[string][]string {
+func validateWithRules(ctx context.Context, data any, rules, messages MapData) map[string][]string {
 	errs := make(map[string][]string)
 	msgLookup := buildMessageLookup(messages)
 	v := getValidator()
@@ -84,7 +85,7 @@ func validateWithRules(data any, rules, messages MapData) map[string][]string {
 				}
 				continue
 			}
-			if err := v.Var(value, buildTag(ruleName, ruleParam)); err != nil {
+			if err := v.VarCtx(ctx, value, buildTag(ruleName, ruleParam)); err != nil {
 				msg := msgLookup[fieldName][ruleName]
 				if msg == "" {
 					msg = err.Error()
@@ -95,6 +96,13 @@ func validateWithRules(data any, rules, messages MapData) map[string][]string {
 	}
 
 	return errs
+}
+
+func requestContext(c *gin.Context) context.Context {
+	if c == nil || c.Request == nil {
+		return context.Background()
+	}
+	return c.Request.Context()
 }
 
 func getValidator() *validator.Validate {

@@ -5,16 +5,18 @@ import (
 )
 
 type PaginationRequest struct {
-	Sort    string `valid:"sort" form:"sort"`
-	Order   string `valid:"order" form:"order"`
-	PerPage string `valid:"per_page" from:"per_page"`
+	Sort   string `valid:"sort" form:"sort"`
+	Order  string `valid:"order" form:"order"`
+	Offset string `valid:"offset" form:"offset"`
+	Limit  string `valid:"limit" form:"limit"`
 }
 
-func Pagination(data any, _ *gin.Context) map[string][]string {
+func Pagination(data any, c *gin.Context) map[string][]string {
 	rules := MapData{
-		"sort":     []string{"in:id,created_at,updated_at"},
-		"order":    []string{"in:asc,desc"},
-		"per_page": []string{"numeric_between:2,100"},
+		"sort":   []string{"in:id,created_at,updated_at"},
+		"order":  []string{"in:asc,desc"},
+		"offset": []string{"numeric_between:0,1000000"},
+		"limit":  []string{"numeric_between:1,100"},
 	}
 
 	messages := MapData{
@@ -24,10 +26,13 @@ func Pagination(data any, _ *gin.Context) map[string][]string {
 		"order": []string{
 			"in:Sort fields only support asc (positive order), desc (reverse order)",
 		},
-		"per_page": []string{
-			"numeric_between:The number of entries per page has a value between 2 and 100",
+		"offset": []string{
+			"numeric_between:Offset must be between 0 and 1,000,000",
+		},
+		"limit": []string{
+			"numeric_between:Limit must be between 1 and 100",
 		},
 	}
 
-	return validate(data, rules, messages)
+	return validate(c, data, rules, messages)
 }

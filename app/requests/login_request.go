@@ -11,7 +11,7 @@ type LoginByPhoneRequest struct {
 }
 
 // LoginByPhone Validate the form
-func LoginByPhone(data any, _ *gin.Context) map[string][]string {
+func LoginByPhone(data any, c *gin.Context) map[string][]string {
 	rules := MapData{
 		"phone":       []string{"required", "digits:11"},
 		"verify_code": []string{"required", "digits:6"},
@@ -28,7 +28,7 @@ func LoginByPhone(data any, _ *gin.Context) map[string][]string {
 		},
 	}
 
-	errs := validate(data, rules, messages)
+	errs := validate(c, data, rules, messages)
 
 	_data := data.(*LoginByPhoneRequest)
 	errs = validators.ValidateVerifyCode(_data.Phone, _data.VerifyCode, errs)
@@ -45,7 +45,7 @@ type LoginByPasswordRequest struct {
 }
 
 // LoginByPassword Validate the form
-func LoginByPassword(data any, _ *gin.Context) map[string][]string {
+func LoginByPassword(data any, c *gin.Context) map[string][]string {
 	rules := MapData{
 		"login_id":       []string{"required", "min:3"},
 		"password":       []string{"required", "min:6"},
@@ -71,7 +71,7 @@ func LoginByPassword(data any, _ *gin.Context) map[string][]string {
 		},
 	}
 
-	errs := validate(data, rules, messages)
+	errs := validate(c, data, rules, messages)
 
 	_data := data.(*LoginByPasswordRequest)
 	errs = validators.ValidateCaptcha(_data.CaptchaID, _data.CaptchaAnswer, errs)

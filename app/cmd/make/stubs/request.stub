@@ -28,5 +28,5 @@ func {{StructName}}Save(data any, c *gin.Context) map[string][]string {
         // },
     }
 
-    return validate(data, rules, messages)
+    return validate(c, data, rules, messages)
 }

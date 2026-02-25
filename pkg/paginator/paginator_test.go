@@ -1,10 +1,13 @@
 package paginator
 
 import (
+	"net/http"
+	"net/http/httptest"
 	"os"
 	"path/filepath"
 	"testing"
 
+	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/require"
 	appconfig "gohub/config"
 	pkgconfig "gohub/pkg/config"
@@ -33,45 +36,46 @@ func initTestConfig(t *testing.T) {
 	pkgconfig.InitConfig("")
 }
 
-func TestFormatBaseURL(t *testing.T) {
+func TestGetLimitDefaults(t *testing.T) {
 	initTestConfig(t)
 
-	p := &Paginator{}
-	require.Equal(t, "/topics?page=", p.formatBaseURL("/topics"))
-	require.Equal(t, "/topics?order=asc&page=", p.formatBaseURL("/topics?order=asc"))
+	w := httptest.NewRecorder()
+	c, _ := gin.CreateTestContext(w)
+	c.Request = httptest.NewRequest(http.MethodGet, "/", nil)
+
+	p := &Paginator{ctx: c}
+	require.Equal(t, 10, p.getLimit(0))
 }
 
-func TestGetPageLink(t *testing.T) {
+func TestGetLimitFromQuery(t *testing.T) {
 	initTestConfig(t)
 
-	p := &Paginator{
-		BaseURL: "/topics?page=",
-		Sort:    "created_at",
-		Order:   "desc",
-		PerPage: 20,
-	}
-	require.Equal(t, "/topics?page=2&sort=created_at&order=desc&per_page=20", p.getPageLink(2))
+	w := httptest.NewRecorder()
+	c, _ := gin.CreateTestContext(w)
+	c.Request = httptest.NewRequest(http.MethodGet, "/?limit=25", nil)
+
+	p := &Paginator{ctx: c}
+	require.Equal(t, 25, p.getLimit(0))
 }
 
-func TestPrevNextLinks(t *testing.T) {
+func TestGetOffset(t *testing.T) {
 	initTestConfig(t)
 
-	p := &Paginator{
-		BaseURL:   "/topics?page=",
-		Sort:      "id",
-		Order:     "asc",
-		PerPage:   10,
-		TotalPage: 3,
-		Page:      2,
-	}
-	require.Equal(t, "/topics?page=1&sort=id&order=asc&per_page=10", p.getPrevPageURL())
-	require.Equal(t, "/topics?page=3&sort=id&order=asc&per_page=10", p.getNextPageURL())
+	w := httptest.NewRecorder()
+	c, _ := gin.CreateTestContext(w)
+	c.Request = httptest.NewRequest(http.MethodGet, "/?offset=30", nil)
+
+	p := &Paginator{ctx: c}
+	require.Equal(t, 30, p.getOffset())
 }
 
-func TestPrevNextLinksBounds(t *testing.T) {
+func TestGetOffsetNegative(t *testing.T) {
 	initTestConfig(t)
 
-	p := &Paginator{BaseURL: "/topics?page=", Sort: "id", Order: "asc", PerPage: 10, TotalPage: 1, Page: 1}
-	require.Equal(t, "", p.getPrevPageURL())
-	require.Equal(t, "", p.getNextPageURL())
+	w := httptest.NewRecorder()
+	c, _ := gin.CreateTestContext(w)
+	c.Request = httptest.NewRequest(http.MethodGet, "/?offset=-5", nil)
+
+	p := &Paginator{ctx: c}
+	require.Equal(t, 0, p.getOffset())
 }

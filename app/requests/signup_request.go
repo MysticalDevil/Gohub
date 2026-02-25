@@ -11,7 +11,7 @@ type SignupPhoneExistRequest struct {
 }
 
 // SignupPhoneExist Phone number registration validator
-func SignupPhoneExist(data any, _ *gin.Context) map[string][]string {
+func SignupPhoneExist(data any, c *gin.Context) map[string][]string {
 	// Custom validation rules
 	rules := MapData{
 		"phone": []string{"required", "digits:11"},
@@ -25,7 +25,7 @@ func SignupPhoneExist(data any, _ *gin.Context) map[string][]string {
 		},
 	}
 
-	return validate(data, rules, messages)
+	return validate(c, data, rules, messages)
 }
 
 type SignupEmailExistRequest struct {
@@ -33,7 +33,7 @@ type SignupEmailExistRequest struct {
 }
 
 // SignupEmailExist Email registration validator
-func SignupEmailExist(data any, _ *gin.Context) map[string][]string {
+func SignupEmailExist(data any, c *gin.Context) map[string][]string {
 	// Custom validation rules
 	rules := MapData{
 		"email": []string{"required", "min:4", "max:30", "email"},
@@ -49,7 +49,7 @@ func SignupEmailExist(data any, _ *gin.Context) map[string][]string {
 		},
 	}
 
-	return validate(data, rules, messages)
+	return validate(c, data, rules, messages)
 }
 
 // SignupUsingPhoneRequest Request information via mobile phone registration
@@ -61,7 +61,7 @@ type SignupUsingPhoneRequest struct {
 	PasswordConfirm string `json:"password_confirm,omitempty" valid:"password_confirm"`
 }
 
-func SignupUsingPhone(data any, _ *gin.Context) map[string][]string {
+func SignupUsingPhone(data any, c *gin.Context) map[string][]string {
 	rules := MapData{
 		"phone":            []string{"required", "digits:11", "not_exists:users,phone"},
 		"name":             []string{"required", "alphanum", "between:3,20", "not_exists:users,name"},
@@ -93,7 +93,7 @@ func SignupUsingPhone(data any, _ *gin.Context) map[string][]string {
 		},
 	}
 
-	errs := validate(data, rules, messages)
+	errs := validate(c, data, rules, messages)
 
 	_data := data.(*SignupUsingPhoneRequest)
 	errs = validators.ValidatePasswordConfirm(_data.Password, _data.PasswordConfirm, errs)
@@ -111,7 +111,7 @@ type SignupUsingEmailRequest struct {
 	PasswordConfirm string `json:"password_confirm,omitempty" valid:"password_confirm"`
 }
 
-func SignupUsingEmail(data any, _ *gin.Context) map[string][]string {
+func SignupUsingEmail(data any, c *gin.Context) map[string][]string {
 	rules := MapData{
 		"email":            []string{"required", "min:4", "max:30", "email", "not_exists:users,email"},
 		"name":             []string{"required", "alphanum", "between:3,20", "not_exists:users,name"},
@@ -146,7 +146,7 @@ func SignupUsingEmail(data any, _ *gin.Context) map[string][]string {
 		},
 	}
 
-	errs := validate(data, rules, messages)
+	errs := validate(c, data, rules, messages)
 
 	_data := data.(*SignupUsingEmailRequest)
 	errs = validators.ValidatePasswordConfirm(_data.Password, _data.PasswordConfirm, errs)

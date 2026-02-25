@@ -27,11 +27,8 @@ func (ctrl *UsersController) Index(c *gin.Context) {
 		return
 	}
 
-	data, pager := user.Paginate(c, 10)
-	response.JSON(c, gin.H{
-		"data":  data,
-		"pager": pager,
-	})
+	data, pager := user.Paginate(c.Request.Context(), c, 10)
+	response.Paginated(c, data, pager)
 }
 
 func (ctrl *UsersController) UpdateProfile(c *gin.Context) {
@@ -45,7 +42,7 @@ func (ctrl *UsersController) UpdateProfile(c *gin.Context) {
 	currentUser.City = request.City
 	currentUser.Introduction = request.Introduction
 
-	rowsAffected := currentUser.Save()
+	rowsAffected := currentUser.Save(c.Request.Context())
 	if rowsAffected > 0 {
 		response.Data(c, currentUser)
 	} else {
@@ -62,7 +59,7 @@ func (ctrl *UsersController) UpdateEmail(c *gin.Context) {
 	currentUser := auth.CurrentUser(c)
 	currentUser.Email = request.Email
 
-	rowsAffected := currentUser.Save()
+	rowsAffected := currentUser.Save(c.Request.Context())
 	if rowsAffected > 0 {
 		response.Success(c)
 	} else {
@@ -79,7 +76,7 @@ func (ctrl *UsersController) UpdatePhone(c *gin.Context) {
 	currentUser := auth.CurrentUser(c)
 	currentUser.Phone = request.Phone
 
-	rowsAffected := currentUser.Save()
+	rowsAffected := currentUser.Save(c.Request.Context())
 	if rowsAffected > 0 {
 		response.Success(c)
 	} else {
@@ -94,12 +91,12 @@ func (ctrl *UsersController) UpdatePassword(c *gin.Context) {
 	}
 
 	currentUser := auth.CurrentUser(c)
-	_, err := auth.Attempt(currentUser.Name, request.Password)
+	_, err := auth.Attempt(c.Request.Context(), currentUser.Name, request.Password)
 	if err != nil {
 		response.Unauthorized(c, "The original password is incorrect")
 	} else {
 		currentUser.Password = request.NewPassword
-		currentUser.Save()
+		currentUser.Save(c.Request.Context())
 
 		response.Success(c)
 	}
@@ -119,7 +116,7 @@ func (ctrl *UsersController) UpdateAvatar(c *gin.Context) {
 
 	currentUser := auth.CurrentUser(c)
 	currentUser.Avatar = config.GetString("app.url") + avatar
-	currentUser.Save()
+	currentUser.Save(c.Request.Context())
 
 	response.Data(c, currentUser)
 }

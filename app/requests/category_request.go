@@ -9,7 +9,7 @@ type CategoryRequest struct {
 	Description string `valid:"description" json:"description,omitempty"`
 }
 
-func CategorySave(data any, _ *gin.Context) map[string][]string {
+func CategorySave(data any, c *gin.Context) map[string][]string {
 	rules := MapData{
 		"name":        []string{"required", "min_cn:2", "max_cn:8", "not_exists:categories,name"},
 		"description": []string{"min_cn:3", "max_cn:255"},
@@ -27,5 +27,5 @@ func CategorySave(data any, _ *gin.Context) map[string][]string {
 		},
 	}
 
-	return validate(data, rules, messages)
+	return validate(c, data, rules, messages)
 }

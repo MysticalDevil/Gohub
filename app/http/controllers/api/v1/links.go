@@ -12,6 +12,6 @@ type LinksController struct {
 }
 
 func (ctrl *LinksController) Index(c *gin.Context) {
-	links := link.AllCached()
+	links := link.AllCached(c.Request.Context())
 	response.Data(c, links)
 }

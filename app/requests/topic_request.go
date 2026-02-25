@@ -10,7 +10,7 @@ type TopicRequest struct {
 	CategoryID string `json:"category_id,omitempty" valid:"category_id"`
 }
 
-func TopicSave(data any, _ *gin.Context) map[string][]string {
+func TopicSave(data any, c *gin.Context) map[string][]string {
 	rules := MapData{
 		"title":       []string{"required", "min_cn:3", "max_cn:40"},
 		"body":        []string{"required", "min_cn:10", "max_cn:50000"},
@@ -32,5 +32,5 @@ func TopicSave(data any, _ *gin.Context) map[string][]string {
 		},
 	}
 
-	return validate(data, rules, messages)
+	return validate(c, data, rules, messages)
 }

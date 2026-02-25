@@ -2,6 +2,8 @@
 package topic
 
 import (
+	"context"
+
 	"gohub/app/models"
 	"gohub/app/models/category"
 	"gohub/app/models/user"
@@ -25,16 +27,16 @@ type Topic struct {
 	models.CommonTimestampsField
 }
 
-func (topic *Topic) Create() {
-	database.DB.Create(&topic)
+func (topic *Topic) Create(ctx context.Context) {
+	database.DBWithContext(ctx).Create(&topic)
 }
 
-func (topic *Topic) Save() (rowsAffected int64) {
-	result := database.DB.Save(&topic)
+func (topic *Topic) Save(ctx context.Context) (rowsAffected int64) {
+	result := database.DBWithContext(ctx).Save(&topic)
 	return result.RowsAffected
 }
 
-func (topic *Topic) Delete() (rowsAffected int64) {
-	result := database.DB.Delete(&topic)
+func (topic *Topic) Delete(ctx context.Context) (rowsAffected int64) {
+	result := database.DBWithContext(ctx).Delete(&topic)
 	return result.RowsAffected
 }

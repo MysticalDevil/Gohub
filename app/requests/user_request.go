@@ -39,7 +39,7 @@ func UserUpdateProfile(data any, c *gin.Context) map[string][]string {
 		},
 	}
 
-	return validate(data, rules, messages)
+	return validate(c, data, rules, messages)
 }
 
 type UserUpdateEmailRequest struct {
@@ -77,7 +77,7 @@ func UserUpdateEmail(data any, c *gin.Context) map[string][]string {
 		},
 	}
 
-	errs := validate(data, rules, messages)
+	errs := validate(c, data, rules, messages)
 	_data := data.(*UserUpdateEmailRequest)
 	errs = validators.ValidateVerifyCode(_data.Email, _data.VerifyCode, errs)
 
@@ -115,7 +115,7 @@ func UserUpdatePhone(data any, c *gin.Context) map[string][]string {
 		},
 	}
 
-	errs := validate(data, rules, messages)
+	errs := validate(c, data, rules, messages)
 	_data := data.(*UserUpdatePhoneRequest)
 	errs = validators.ValidateVerifyCode(_data.Phone, _data.VerifyCode, errs)
 
@@ -128,7 +128,7 @@ type UserUpdatePasswordRequest struct {
 	NewPasswordConfirm string `json:"new_password_confirm,omitempty" valid:"new_password_confirm"`
 }
 
-func UserUpdatePassword(data any, _ *gin.Context) map[string][]string {
+func UserUpdatePassword(data any, c *gin.Context) map[string][]string {
 	rules := MapData{
 		"password":             []string{"required", "min:6"},
 		"new_password":         []string{"required", "min:6"},
@@ -150,7 +150,7 @@ func UserUpdatePassword(data any, _ *gin.Context) map[string][]string {
 		},
 	}
 
-	errs := validate(data, rules, messages)
+	errs := validate(c, data, rules, messages)
 	_data := data.(*UserUpdatePasswordRequest)
 	errs = validators.ValidatePasswordConfirm(_data.NewPassword, _data.NewPasswordConfirm, errs)
 

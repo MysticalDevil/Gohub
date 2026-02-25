@@ -12,7 +12,7 @@ type ResetByPhoneRequest struct {
 }
 
 // ResetByPhone Validate the form
-func ResetByPhone(data any, _ *gin.Context) map[string][]string {
+func ResetByPhone(data any, c *gin.Context) map[string][]string {
 	rules := MapData{
 		"phone":       []string{"required", "digits:11"},
 		"verify_code": []string{"required", "digits:6"},
@@ -34,7 +34,7 @@ func ResetByPhone(data any, _ *gin.Context) map[string][]string {
 		},
 	}
 
-	errs := validate(data, rules, messages)
+	errs := validate(c, data, rules, messages)
 
 	_data := data.(*ResetByPhoneRequest)
 	errs = validators.ValidateVerifyCode(_data.Phone, _data.VerifyCode, errs)
@@ -49,7 +49,7 @@ type ResetByEmailRequest struct {
 }
 
 // ResetByEmail Validate the form
-func ResetByEmail(data any, _ *gin.Context) map[string][]string {
+func ResetByEmail(data any, c *gin.Context) map[string][]string {
 	rules := MapData{
 		"email":       []string{"required", "min:4", "max:30", "email"},
 		"verify_code": []string{"required", "digits:6"},
@@ -73,7 +73,7 @@ func ResetByEmail(data any, _ *gin.Context) map[string][]string {
 		},
 	}
 
-	errs := validate(data, rules, messages)
+	errs := validate(c, data, rules, messages)
 
 	_data := data.(*ResetByEmailRequest)
 	errs = validators.ValidateVerifyCode(_data.Email, _data.VerifyCode, errs)

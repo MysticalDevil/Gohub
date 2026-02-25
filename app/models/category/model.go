@@ -2,6 +2,8 @@
 package category
 
 import (
+	"context"
+
 	"gohub/app/models"
 	"gohub/pkg/database"
 )
@@ -15,16 +17,16 @@ type Category struct {
 	models.CommonTimestampsField
 }
 
-func (category *Category) Create() {
-	database.DB.Create(&category)
+func (category *Category) Create(ctx context.Context) {
+	database.DBWithContext(ctx).Create(&category)
 }
 
-func (category *Category) Save() (rowsAffected int64) {
-	result := database.DB.Save(&category)
+func (category *Category) Save(ctx context.Context) (rowsAffected int64) {
+	result := database.DBWithContext(ctx).Save(&category)
 	return result.RowsAffected
 }
 
-func (category *Category) Delete() (rowsAffected int64) {
-	result := database.DB.Delete(&category)
+func (category *Category) Delete(ctx context.Context) (rowsAffected int64) {
+	result := database.DBWithContext(ctx).Delete(&category)
 	return result.RowsAffected
 }

@@ -1,6 +1,7 @@
 package routes_test
 
 import (
+	"context"
 	"net/http"
 	"testing"
 
@@ -119,7 +120,7 @@ func TestUsersUpdatePassword(t *testing.T) {
 		t.Fatalf("expected 200, got %d", rec.Code)
 	}
 
-	if _, err := auth.Attempt(user.Name, "password456"); err != nil {
+	if _, err := auth.Attempt(context.Background(), user.Name, "password456"); err != nil {
 		t.Fatalf("expected new password to work: %v", err)
 	}
 }

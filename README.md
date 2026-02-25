@@ -50,6 +50,41 @@ go run main.go key
 - `APP_ENV_PATH` points to an explicit env file path (useful for tests). It takes precedence over `--env` and the default `.env`.
 - In tests, setting `CONSOLE_SILENT=1` silences console output when `APP_ENV=testing`.
 
+## API Responses
+All API responses use a standard envelope:
+```json
+{
+  "code": "OK",
+  "msg": "OK",
+  "data": {}
+}
+```
+
+Validation or processing errors return:
+```json
+{
+  "code": "ERR_VALIDATION",
+  "msg": "Request verification failed, please see errors for details",
+  "errors": {
+    "field": ["message"]
+  }
+}
+```
+
+Pagination uses `offset/limit` and returns:
+```json
+{
+  "code": "OK",
+  "msg": "OK",
+  "data": {
+    "items": [],
+    "offset": 0,
+    "limit": 20,
+    "total": 200
+  }
+}
+```
+
 ## Notes
-- There are currently no test files; use `go test ./...` to validate compilation.
+- Use `go test ./...` to run tests and validate behavior.
 - Chinese documentation is in `README-zh.md`.

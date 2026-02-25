@@ -1,6 +1,7 @@
 package routes_test
 
 import (
+	"context"
 	"net/http"
 	"testing"
 
@@ -24,8 +25,9 @@ func TestAuthSignupPhoneExist(t *testing.T) {
 
 	var payload map[string]any
 	tests.DecodeJSON(t, rec, &payload)
-	if payload["exist"] != true {
-		t.Fatalf("expected exist=true, got %v", payload["exist"])
+	data, _ := payload["data"].(map[string]any)
+	if data["exist"] != true {
+		t.Fatalf("expected exist=true, got %v", data["exist"])
 	}
 }
 
@@ -45,8 +47,9 @@ func TestAuthSignupEmailExist(t *testing.T) {
 
 	var payload map[string]any
 	tests.DecodeJSON(t, rec, &payload)
-	if payload["exist"] != true {
-		t.Fatalf("expected exist=true, got %v", payload["exist"])
+	data, _ := payload["data"].(map[string]any)
+	if data["exist"] != true {
+		t.Fatalf("expected exist=true, got %v", data["exist"])
 	}
 }
 
@@ -68,7 +71,8 @@ func TestAuthSignupUsingPhone(t *testing.T) {
 
 	var payload map[string]any
 	tests.DecodeJSON(t, rec, &payload)
-	if payload["toke"] == "" {
+	data, _ := payload["data"].(map[string]any)
+	if data["token"] == "" {
 		t.Fatalf("expected token in response")
 	}
 }
@@ -91,7 +95,8 @@ func TestAuthSignupUsingEmail(t *testing.T) {
 
 	var payload map[string]any
 	tests.DecodeJSON(t, rec, &payload)
-	if payload["toke"] == "" {
+	data, _ := payload["data"].(map[string]any)
+	if data["token"] == "" {
 		t.Fatalf("expected token in response")
 	}
 }
@@ -107,7 +112,8 @@ func TestAuthVerifyCodes(t *testing.T) {
 
 	var captchaPayload map[string]any
 	tests.DecodeJSON(t, rec, &captchaPayload)
-	if captchaPayload["captcha_id"] == "" || captchaPayload["captcha_image"] == "" {
+	data, _ := captchaPayload["data"].(map[string]any)
+	if data["captcha_id"] == "" || data["captcha_image"] == "" {
 		t.Fatalf("expected captcha fields in response")
 	}
 
@@ -161,7 +167,8 @@ func TestAuthLoginAndRefresh(t *testing.T) {
 
 	var loginPayload map[string]any
 	tests.DecodeJSON(t, rec, &loginPayload)
-	token, _ := loginPayload["token"].(string)
+	data, _ := loginPayload["data"].(map[string]any)
+	token, _ := data["token"].(string)
 	if token == "" {
 		t.Fatalf("expected token")
 	}
@@ -192,7 +199,7 @@ func TestAuthPasswordReset(t *testing.T) {
 	if rec.Code != http.StatusOK {
 		t.Fatalf("expected 200, got %d", rec.Code)
 	}
-	if _, err := auth.Attempt(user.Phone, "newpassword123"); err != nil {
+	if _, err := auth.Attempt(context.Background(), user.Phone, "newpassword123"); err != nil {
 		t.Fatalf("expected password reset to succeed: %v", err)
 	}
 
@@ -204,7 +211,7 @@ func TestAuthPasswordReset(t *testing.T) {
 	if rec.Code != http.StatusOK {
 		t.Fatalf("expected 200, got %d", rec.Code)
 	}
-	if _, err := auth.Attempt(user.Email, "newpassword456"); err != nil {
+	if _, err := auth.Attempt(context.Background(), user.Email, "newpassword456"); err != nil {
 		t.Fatalf("expected password reset to succeed: %v", err)
 	}
 }

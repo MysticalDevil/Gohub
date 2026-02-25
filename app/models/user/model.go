@@ -2,6 +2,8 @@
 package user
 
 import (
+	"context"
+
 	"gohub/app/models"
 	"gohub/pkg/database"
 	"gohub/pkg/hash"
@@ -24,8 +26,8 @@ type User struct {
 	models.CommonTimestampsField
 }
 
-func (userModel *User) Create() {
-	database.DB.Create(&userModel)
+func (userModel *User) Create(ctx context.Context) {
+	database.DBWithContext(ctx).Create(&userModel)
 }
 
 // ComparePassword Is the password correct
@@ -33,7 +35,7 @@ func (userModel *User) ComparePassword(_password string) bool {
 	return hash.BcryptCheck(_password, userModel.Password)
 }
 
-func (userModel *User) Save() (rowsAffected int64) {
-	result := database.DB.Save(&userModel)
+func (userModel *User) Save(ctx context.Context) (rowsAffected int64) {
+	result := database.DBWithContext(ctx).Save(&userModel)
 	return result.RowsAffected
 }

@@ -2,6 +2,8 @@
 package seed
 
 import (
+	"slices"
+
 	"gohub/pkg/console"
 	"gohub/pkg/database"
 	"gorm.io/gorm"
@@ -39,10 +41,10 @@ func SetRunOrder(names []string) {
 
 // GetSeeder Get Seeder object by name
 func GetSeeder(name string) Seeder {
-	for _, sdr := range seeders {
-		if name == sdr.Name {
-			return sdr
-		}
+	if idx := slices.IndexFunc(seeders, func(sdr Seeder) bool {
+		return sdr.Name == name
+	}); idx >= 0 {
+		return seeders[idx]
 	}
 	return Seeder{}
 }
@@ -71,10 +73,9 @@ func RunAll() {
 
 // RunSeeder Run single Seeder
 func RunSeeder(name string) {
-	for _, sdr := range seeders {
-		if name == sdr.Name {
-			sdr.Func(database.DB)
-			break
-		}
+	if idx := slices.IndexFunc(seeders, func(sdr Seeder) bool {
+		return sdr.Name == name
+	}); idx >= 0 {
+		seeders[idx].Func(database.DB)
 	}
 }

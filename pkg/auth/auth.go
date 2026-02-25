@@ -2,6 +2,7 @@
 package auth
 
 import (
+	"context"
 	"errors"
 
 	"github.com/gin-gonic/gin"
@@ -10,8 +11,8 @@ import (
 )
 
 // Attempt Try to log in
-func Attempt(email, password string) (user.User, error) {
-	userModel := user.GetByUtil(email)
+func Attempt(ctx context.Context, email, password string) (user.User, error) {
+	userModel := user.GetByUtil(ctx, email)
 	if userModel.ID == 0 {
 		return user.User{}, errors.New("account does not exist")
 	}
@@ -24,8 +25,8 @@ func Attempt(email, password string) (user.User, error) {
 }
 
 // LoginByPhone Login specified user
-func LoginByPhone(phone string) (user.User, error) {
-	userModel := user.GetByPhone(phone)
+func LoginByPhone(ctx context.Context, phone string) (user.User, error) {
+	userModel := user.GetByPhone(ctx, phone)
 	if userModel.ID == 0 {
 		return user.User{}, errors.New("mobile number is not registered")
 	}
