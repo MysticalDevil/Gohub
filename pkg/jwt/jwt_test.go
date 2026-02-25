@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"os"
+	"path/filepath"
 	"testing"
 	"time"
 
@@ -18,11 +19,20 @@ func initJWTTestConfig(t *testing.T) {
 	t.Helper()
 
 	env := "APP_ENV=local\nAPP_DEBUG=false\nAPP_KEY=unit-test-key\nAPP_NAME=Gohub\nJWT_EXPIRE_TIME=1\nJWT_MAX_REFRESH_TIME=5\nTIMEZONE=UTC\n"
-	if err := os.WriteFile(".env", []byte(env), 0o644); err != nil {
+	tmpDir, err := os.MkdirTemp("", "gohub-jwt-test-")
+	if err != nil {
+		t.Fatalf("mkdir temp: %v", err)
+	}
+	envPath := filepath.Join(tmpDir, ".env")
+	if err := os.WriteFile(envPath, []byte(env), 0o644); err != nil {
 		t.Fatalf("write .env: %v", err)
 	}
+	if err := os.Setenv("APP_ENV_PATH", envPath); err != nil {
+		t.Fatalf("set APP_ENV_PATH: %v", err)
+	}
 	t.Cleanup(func() {
-		_ = os.Remove(".env")
+		_ = os.RemoveAll(tmpDir)
+		_ = os.Unsetenv("APP_ENV_PATH")
 	})
 
 	appconfig.Initialize()

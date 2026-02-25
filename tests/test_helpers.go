@@ -54,12 +54,6 @@ func repoRoot() string {
 func SetupTestEnv(t *testing.T) {
 	t.Helper()
 	setupOnce.Do(func() {
-		originalWD, err := os.Getwd()
-		if err != nil {
-			setupErr = err
-			return
-		}
-
 		root := repoRoot()
 		if root != "" {
 			if err := os.Chdir(root); err != nil {
@@ -74,17 +68,28 @@ func SetupTestEnv(t *testing.T) {
 			"APP_ENV=testing\nAPP_DEBUG=false\nAPP_KEY=unit-test-key\nAPP_NAME=Gohub\nAPP_URL=http://localhost:3000\nAPP_PORT=3000\nTIMEZONE=UTC\nDB_CONNECTION=sqlite\nDB_SQL_FILE=/tmp/gohub_test.db\nDB_MAX_IDLE_CONNECTIONS=1\nDB_MAX_OPEN_CONNECTIONS=1\nDB_MAX_LIFE_SECONDS=5\nREDIS_HOST=127.0.0.1\nREDIS_PORT=6379\nREDIS_PASSWORD=\nREDIS_MAIN_DB=1\nREDIS_CACHE_DB=0\nJWT_EXPIRE_TIME=1\nJWT_MAX_REFRESH_TIME=5\nVERIFY_CODE_LENGTH=6\nVERIFY_CODE_EXPIRE=15\n",
 		)
 
-		if err := os.WriteFile(".env", []byte(env), 0o644); err != nil {
+		tmpDir, err := os.MkdirTemp("", "gohub-test-")
+		if err != nil {
+			setupErr = err
+			return
+		}
+		t.Cleanup(func() {
+			_ = os.RemoveAll(tmpDir)
+			_ = os.Unsetenv("APP_ENV_PATH")
+			_ = os.Unsetenv("CONSOLE_SILENT")
+		})
+
+		envPath := filepath.Join(tmpDir, ".env")
+		if err := os.WriteFile(envPath, []byte(env), 0o644); err != nil {
 			setupErr = err
 			return
 		}
 
-		if root != "" && root != originalWD {
-			if err := os.WriteFile(filepath.Join(originalWD, ".env"), []byte(env), 0o644); err != nil {
-				setupErr = err
-				return
-			}
+		if err := os.Setenv("APP_ENV_PATH", envPath); err != nil {
+			setupErr = err
+			return
 		}
+		_ = os.Setenv("CONSOLE_SILENT", "1")
 
 		appconfig.Initialize()
 		config.InitConfig("")

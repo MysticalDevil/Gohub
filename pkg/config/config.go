@@ -49,6 +49,16 @@ func loadConfig() {
 }
 
 func loadEnv(envSuffix string) {
+	// Allow explicit env file path via APP_ENV_PATH
+	if envPath := os.Getenv("APP_ENV_PATH"); envPath != "" {
+		viper.SetConfigFile(envPath)
+		if err := viper.ReadInConfig(); err != nil {
+			panic(err)
+		}
+		viper.WatchConfig()
+		return
+	}
+
 	// Load .env file by default, if there is a parameter --env=name, load the .env.name file
 	envPath := ".env"
 	if len(envSuffix) > 0 {
