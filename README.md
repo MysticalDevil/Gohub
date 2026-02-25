@@ -47,6 +47,8 @@ go run main.go key
 ## Configuration
 - Use `.env.example` as the baseline.
 - `--env=testing` loads `.env.testing` (if present).
+- `APP_ENV_PATH` points to an explicit env file path (useful for tests). It takes precedence over `--env` and the default `.env`.
+- In tests, setting `CONSOLE_SILENT=1` silences console output when `APP_ENV=testing`.
 
 ## Notes
 - There are currently no test files; use `go test ./...` to validate compilation.

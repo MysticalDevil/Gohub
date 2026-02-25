@@ -39,7 +39,7 @@ func ExitIf(err error) {
 
 // colorOut For internal use, set the highlight color
 func colorOut(message, color string) {
-	if os.Getenv("CONSOLE_SILENT") != "" {
+	if os.Getenv("CONSOLE_SILENT") != "" && os.Getenv("APP_ENV") == "testing" {
 		return
 	}
 	_, err := fmt.Fprintln(os.Stdout, ansi.Color(message, color))

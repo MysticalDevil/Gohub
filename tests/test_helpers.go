@@ -33,35 +33,9 @@ var (
 	setupErr  error
 )
 
-func repoRoot() string {
-	wd, err := os.Getwd()
-	if err != nil {
-		return ""
-	}
-
-	for {
-		if _, err := os.Stat(filepath.Join(wd, "go.mod")); err == nil {
-			return wd
-		}
-		parent := filepath.Dir(wd)
-		if parent == wd {
-			return ""
-		}
-		wd = parent
-	}
-}
-
 func SetupTestEnv(t *testing.T) {
 	t.Helper()
 	setupOnce.Do(func() {
-		root := repoRoot()
-		if root != "" {
-			if err := os.Chdir(root); err != nil {
-				setupErr = err
-				return
-			}
-		}
-
 		gin.SetMode(gin.TestMode)
 
 		env := fmt.Sprintf(
@@ -77,6 +51,7 @@ func SetupTestEnv(t *testing.T) {
 			_ = os.RemoveAll(tmpDir)
 			_ = os.Unsetenv("APP_ENV_PATH")
 			_ = os.Unsetenv("CONSOLE_SILENT")
+			_ = os.Unsetenv("APP_ENV")
 		})
 
 		envPath := filepath.Join(tmpDir, ".env")
@@ -90,6 +65,7 @@ func SetupTestEnv(t *testing.T) {
 			return
 		}
 		_ = os.Setenv("CONSOLE_SILENT", "1")
+		_ = os.Setenv("APP_ENV", "testing")
 
 		appconfig.Initialize()
 		config.InitConfig("")

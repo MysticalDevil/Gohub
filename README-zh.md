@@ -91,6 +91,8 @@ Use "Gohub [command] --help" for more information about a command.
 
 ## 配置提示
 `APP_KEY` 必须是安全随机值。可通过 `go run main.go key` 生成并填入 `.env`。
+`APP_ENV_PATH` 可指定自定义 env 文件路径（例如测试场景），优先级高于 `-e/--env` 与默认 `.env`。
+测试中若设置 `CONSOLE_SILENT=1`，将静默控制台输出（仅在 `APP_ENV=testing` 时生效）。
 
 # TODO
 Postman 文档书写
