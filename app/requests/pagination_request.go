@@ -2,7 +2,6 @@ package requests
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/thedevsaddam/govalidator"
 )
 
 type PaginationRequest struct {
@@ -12,13 +11,13 @@ type PaginationRequest struct {
 }
 
 func Pagination(data any, _ *gin.Context) map[string][]string {
-	rules := govalidator.MapData{
+	rules := MapData{
 		"sort":     []string{"in:id,created_at,updated_at"},
 		"order":    []string{"in:asc,desc"},
 		"per_page": []string{"numeric_between:2,100"},
 	}
 
-	messages := govalidator.MapData{
+	messages := MapData{
 		"sort": []string{
 			"in:Sort fields only support id, created_at, updated_at",
 		},

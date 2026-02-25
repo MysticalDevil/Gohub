@@ -3,7 +3,6 @@ package requests
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/thedevsaddam/govalidator"
 	"gohub/app/requests/validators"
 )
 
@@ -14,12 +13,12 @@ type SignupPhoneExistRequest struct {
 // SignupPhoneExist Phone number registration validator
 func SignupPhoneExist(data any, _ *gin.Context) map[string][]string {
 	// Custom validation rules
-	rules := govalidator.MapData{
+	rules := MapData{
 		"phone": []string{"required", "digits:11"},
 	}
 
 	// Customize the prompt when there is an error in the validation
-	messages := govalidator.MapData{
+	messages := MapData{
 		"phone": []string{
 			"required:Phone number is required, parameter name: phone",
 			"digits:Phone number must be 11 digits long",
@@ -36,12 +35,12 @@ type SignupEmailExistRequest struct {
 // SignupEmailExist Email registration validator
 func SignupEmailExist(data any, _ *gin.Context) map[string][]string {
 	// Custom validation rules
-	rules := govalidator.MapData{
+	rules := MapData{
 		"email": []string{"required", "min:4", "max:30", "email"},
 	}
 
 	// Customize the prompt when there is an error in the validation
-	messages := govalidator.MapData{
+	messages := MapData{
 		"email": []string{
 			"required:Email is required, parameter name: email",
 			"min:Email length needs to be greater than 4",
@@ -63,22 +62,22 @@ type SignupUsingPhoneRequest struct {
 }
 
 func SignupUsingPhone(data any, _ *gin.Context) map[string][]string {
-	rules := govalidator.MapData{
+	rules := MapData{
 		"phone":            []string{"required", "digits:11", "not_exists:users,phone"},
-		"name":             []string{"required", "alpha_num", "between:3,20", "not_exists:users,name"},
+		"name":             []string{"required", "alphanum", "between:3,20", "not_exists:users,name"},
 		"password":         []string{"required", "min:6"},
 		"password_confirm": []string{"required"},
 		"verify_code":      []string{"required", "digits:6"},
 	}
 
-	messages := govalidator.MapData{
+	messages := MapData{
 		"phone": []string{
 			"required:The mobile phone number is required, and the parameter name is 'phone'",
 			"digits:Mobile number must be 11 digits long",
 		},
 		"name": []string{
 			"required:Username is required",
-			"alpha_num:Username is malformed, only numbers and English are allowed",
+			"alphanum:Username is malformed, only numbers and English are allowed",
 			"between:Username length must be between 3 and 20",
 		},
 		"password": []string{
@@ -113,15 +112,15 @@ type SignupUsingEmailRequest struct {
 }
 
 func SignupUsingEmail(data any, _ *gin.Context) map[string][]string {
-	rules := govalidator.MapData{
+	rules := MapData{
 		"email":            []string{"required", "min:4", "max:30", "email", "not_exists:users,email"},
-		"name":             []string{"required", "alpha_num", "between:3,20", "not_exists:users,name"},
+		"name":             []string{"required", "alphanum", "between:3,20", "not_exists:users,name"},
 		"password":         []string{"required", "min:6"},
 		"password_confirm": []string{"required"},
 		"verify_code":      []string{"required", "digits:6"},
 	}
 
-	messages := govalidator.MapData{
+	messages := MapData{
 		"email": []string{
 			"required:Email is required",
 			"min:Email length must be greater than 4",
@@ -131,7 +130,7 @@ func SignupUsingEmail(data any, _ *gin.Context) map[string][]string {
 		},
 		"name": []string{
 			"required:Username is required",
-			"alpha_num:Username is malformed, only numbers and English are allowed",
+			"alphanum:Username is malformed, only numbers and English are allowed",
 			"between:Username length must be between 3 and 20",
 		},
 		"password": []string{

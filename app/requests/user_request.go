@@ -2,7 +2,6 @@ package requests
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/thedevsaddam/govalidator"
 	"gohub/app/requests/validators"
 	"gohub/pkg/auth"
 	"mime/multipart"
@@ -16,16 +15,16 @@ type UserUpdateProfileRequest struct {
 
 func UserUpdateProfile(data any, c *gin.Context) map[string][]string {
 	uid := auth.CurrentUID(c)
-	rules := govalidator.MapData{
-		"name":         []string{"required", "alpha_num", "between:3,20", "not_exists:users,name," + uid},
+	rules := MapData{
+		"name":         []string{"required", "alphanum", "between:3,20", "not_exists:users,name," + uid},
 		"introduction": []string{"min_cn:4", "max_cn:240"},
 		"city":         []string{"min_cn:2", "max_cn:20"},
 	}
 
-	messages := govalidator.MapData{
+	messages := MapData{
 		"name": []string{
 			"required:Username is required",
-			"alpha_num:Username is malformed, only numbers and English are allowed",
+			"alphanum:Username is malformed, only numbers and English are allowed",
 			"between:Username length must be between 3 and 20",
 			"not_exists:Username already taken",
 		},
@@ -50,7 +49,7 @@ type UserUpdateEmailRequest struct {
 func UserUpdateEmail(data any, c *gin.Context) map[string][]string {
 	currentUser := auth.CurrentUser(c)
 
-	rules := govalidator.MapData{
+	rules := MapData{
 		"email": []string{
 			"required",
 			"min:4",
@@ -62,7 +61,7 @@ func UserUpdateEmail(data any, c *gin.Context) map[string][]string {
 		"verify_code": []string{"required", "digits:6"},
 	}
 
-	messages := govalidator.MapData{
+	messages := MapData{
 		"email": []string{
 			"required:Email is required",
 			"min:Email length must be greater than 4",
@@ -92,7 +91,7 @@ type UserUpdatePhoneRequest struct {
 func UserUpdatePhone(data any, c *gin.Context) map[string][]string {
 	currentUser := auth.CurrentUser(c)
 
-	rules := govalidator.MapData{
+	rules := MapData{
 		"phone": []string{
 			"required",
 			"digits:11",
@@ -102,7 +101,7 @@ func UserUpdatePhone(data any, c *gin.Context) map[string][]string {
 		"verify_code": []string{"required", "digits:6"},
 	}
 
-	messages := govalidator.MapData{
+	messages := MapData{
 		"phone": []string{
 			"required:The mobile phone number is required, and the parameter name is 'phone'",
 			"digits:Mobile number must be 11 digits long",
@@ -129,13 +128,13 @@ type UserUpdatePasswordRequest struct {
 }
 
 func UserUpdatePassword(data any, _ *gin.Context) map[string][]string {
-	rules := govalidator.MapData{
+	rules := MapData{
 		"password":             []string{"required", "min:6"},
 		"new_password":         []string{"required", "min:6"},
 		"new_password_confirm": []string{"required", "min:6"},
 	}
 
-	messages := govalidator.MapData{
+	messages := MapData{
 		"password": []string{
 			"required:Password is required",
 			"min:Password length must be greater than 6",
@@ -162,11 +161,11 @@ type UserUpdateAvatarRequest struct {
 }
 
 func UserUpdateAvatar(data any, c *gin.Context) map[string][]string {
-	rules := govalidator.MapData{
+	rules := MapData{
 		"file:avatar": []string{"ext:png,jpg,jpeg", "size:20971520", "required"},
 	}
 
-	messages := govalidator.MapData{
+	messages := MapData{
 		"file:avatar": []string{
 			"ext:The avatar can only upload pictures in png, jpg, jpeg format",
 			"size:The maximum size of the avatar cannot exceed 20MB",

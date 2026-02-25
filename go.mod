@@ -7,6 +7,7 @@ require (
 	github.com/gertd/go-pluralize v0.2.1
 	github.com/gin-gonic/gin v1.11.0
 	github.com/go-faker/faker/v4 v4.7.0
+	github.com/go-playground/validator/v10 v10.30.1
 	github.com/golang-jwt/jwt/v5 v5.3.1
 	github.com/iancoleman/strcase v0.3.0
 	github.com/jordan-wright/email v4.0.1-0.20210109023952-943e75fe5223+incompatible
@@ -16,7 +17,6 @@ require (
 	github.com/spf13/cast v1.10.0
 	github.com/spf13/cobra v1.10.2
 	github.com/spf13/viper v1.21.0
-	github.com/thedevsaddam/govalidator v1.9.10
 	github.com/ulule/limiter/v3 v3.11.2
 	go.uber.org/zap v1.27.1
 	golang.org/x/crypto v0.48.0
@@ -40,7 +40,6 @@ require (
 	github.com/gin-contrib/sse v1.1.0 // indirect
 	github.com/go-playground/locales v0.14.1 // indirect
 	github.com/go-playground/universal-translator v0.18.1 // indirect
-	github.com/go-playground/validator/v10 v10.30.1 // indirect
 	github.com/go-sql-driver/mysql v1.9.3 // indirect
 	github.com/go-viper/mapstructure/v2 v2.5.0 // indirect
 	github.com/goccy/go-json v0.10.5 // indirect

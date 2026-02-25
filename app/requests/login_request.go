@@ -2,7 +2,6 @@ package requests
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/thedevsaddam/govalidator"
 	"gohub/app/requests/validators"
 )
 
@@ -13,12 +12,12 @@ type LoginByPhoneRequest struct {
 
 // LoginByPhone Validate the form
 func LoginByPhone(data any, _ *gin.Context) map[string][]string {
-	rules := govalidator.MapData{
+	rules := MapData{
 		"phone":       []string{"required", "digits:11"},
 		"verify_code": []string{"required", "digits:6"},
 	}
 
-	messages := govalidator.MapData{
+	messages := MapData{
 		"phone": []string{
 			"required:The mobile phone number is required, and the parameter name is 'phone'",
 			"digits:Mobile number must be 11 digits long",
@@ -47,14 +46,14 @@ type LoginByPasswordRequest struct {
 
 // LoginByPassword Validate the form
 func LoginByPassword(data any, _ *gin.Context) map[string][]string {
-	rules := govalidator.MapData{
+	rules := MapData{
 		"login_id":       []string{"required", "min:3"},
 		"password":       []string{"required", "min:6"},
 		"captcha_id":     []string{"required"},
 		"captcha_answer": []string{"required", "digits:6"},
 	}
 
-	messages := govalidator.MapData{
+	messages := MapData{
 		"login_id": []string{
 			"required:The login ID is required, and supports mobile phone number, email address and user name",
 			"min:Login ID length must be greater than 3",

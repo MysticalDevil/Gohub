@@ -46,4 +46,4 @@
 - `github.com/redis/go-redis/v9` is the maintained Redis client; the older `github.com/go-redis/redis` repo redirects to it.
 - `github.com/golang-jwt/jwt` is the maintained JWT library; `dgrijalva/jwt-go` is archived.
 - `github.com/go-faker/faker` notes it was previously `bxcodec/faker`.
-- No archived banner found for: `gin-gonic/gin`, `gorm.io/gorm`, `spf13/viper`, `spf13/cobra`, `ulule/limiter`, `mojocn/base64Captcha`, `thedevsaddam/govalidator`, `mgutz/ansi`, `jordan-wright/email`, `gertd/go-pluralize`, `iancoleman/strcase`.
+- No archived banner found for: `gin-gonic/gin`, `gorm.io/gorm`, `spf13/viper`, `spf13/cobra`, `ulule/limiter`, `mojocn/base64Captcha`, `go-playground/validator`, `mgutz/ansi`, `jordan-wright/email`, `gertd/go-pluralize`, `iancoleman/strcase`.

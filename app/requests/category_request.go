@@ -2,7 +2,6 @@ package requests
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/thedevsaddam/govalidator"
 )
 
 type CategoryRequest struct {
@@ -11,11 +10,11 @@ type CategoryRequest struct {
 }
 
 func CategorySave(data any, _ *gin.Context) map[string][]string {
-	rules := govalidator.MapData{
+	rules := MapData{
 		"name":        []string{"required", "min_cn:2", "max_cn:8", "not_exists:categories,name"},
 		"description": []string{"min_cn:3", "max_cn:255"},
 	}
-	messages := govalidator.MapData{
+	messages := MapData{
 		"name": []string{
 			"required:Name is required",
 			"min_cn:Name length should be at least 2 words",

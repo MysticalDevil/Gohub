@@ -21,7 +21,7 @@
 
 - [`base64Captcha`](https://github.com/mojocn/base64Captcha) 图片验证码
 
-- [`govalidator`](https://github.com/thedevsaddam/govalidator) 请求验证器
+- [`validator`](https://github.com/go-playground/validator) 请求验证器
 
 - [`limiter`](https://github.com/ulule/limiter) 限流器
 
