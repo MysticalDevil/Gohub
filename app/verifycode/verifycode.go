@@ -27,6 +27,13 @@ var (
 // NewVerifyCode Singleton mode acquisition
 func NewVerifyCode() *VerifyCode {
 	once.Do(func() {
+		if app.IsTesting() {
+			internalVerifyCode = &VerifyCode{
+				Store: NewMemoryStore(),
+			}
+			return
+		}
+
 		internalVerifyCode = &VerifyCode{
 			Store: &RedisStore{
 				RedisClient: redis.Redis,

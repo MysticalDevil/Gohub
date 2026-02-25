@@ -6,7 +6,9 @@ import (
 
 	"github.com/gin-gonic/gin"
 	limiterLib "github.com/ulule/limiter/v3"
+	memoryStore "github.com/ulule/limiter/v3/drivers/store/memory"
 	sredis "github.com/ulule/limiter/v3/drivers/store/redis"
+	"gohub/pkg/app"
 	"gohub/pkg/config"
 	"gohub/pkg/logger"
 	"gohub/pkg/redis"
@@ -33,13 +35,19 @@ func CheckRate(c *gin.Context, key, formatted string) (limiterLib.Context, error
 	}
 
 	// Initialize the storage, using the shared redis.Redis object in the program
-	store, err := sredis.NewStoreWithOptions(redis.Redis.Client, limiterLib.StoreOptions{
-		// Set a prefix for limiter to keep redis data tidy
-		Prefix: config.GetString("app.name") + ":limiter",
-	})
-	if err != nil {
-		logger.LogIf(err)
-		return context, err
+	var store limiterLib.Store
+	if app.IsTesting() {
+		store = memoryStore.NewStore()
+	} else {
+		var err error
+		store, err = sredis.NewStoreWithOptions(redis.Redis.Client, limiterLib.StoreOptions{
+			// Set a prefix for limiter to keep redis data tidy
+			Prefix: config.GetString("app.name") + ":limiter",
+		})
+		if err != nil {
+			logger.LogIf(err)
+			return context, err
+		}
 	}
 
 	// Use the limiter.Rate object and storage object initialized above

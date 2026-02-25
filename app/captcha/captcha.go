@@ -26,10 +26,15 @@ func NewCaptcha() *Captcha {
 		// Initialize Captcha object
 		internalCaptcha = &Captcha{}
 
-		// Use the global Redis object and configure the prefix for storing the Key
-		store := RedisStore{
-			RedisClient: redis.Redis,
-			KeyPrefix:   config.GetString("app.name") + ":captcha:",
+		// Use in-memory store for tests to avoid external dependencies.
+		var store base64Captcha.Store
+		if app.IsTesting() {
+			store = NewMemoryStore()
+		} else {
+			store = &RedisStore{
+				RedisClient: redis.Redis,
+				KeyPrefix:   config.GetString("app.name") + ":captcha:",
+			}
 		}
 
 		// Configure base64Captcha driver information
@@ -42,7 +47,7 @@ func NewCaptcha() *Captcha {
 		)
 
 		// Instantiate base64Captcha and assign it to the internalCaptcha object used internally
-		internalCaptcha.Base64Captcha = base64Captcha.NewCaptcha(driver, &store)
+		internalCaptcha.Base64Captcha = base64Captcha.NewCaptcha(driver, store)
 	})
 	return internalCaptcha
 }
