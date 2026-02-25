@@ -2,6 +2,7 @@ package migrate
 
 import (
 	"database/sql"
+
 	"gorm.io/gorm"
 )
 

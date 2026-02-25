@@ -3,6 +3,7 @@ package auth
 
 import (
 	"errors"
+
 	"github.com/gin-gonic/gin"
 	"gohub/app/models/user"
 	"gohub/pkg/logger"

@@ -1,13 +1,14 @@
 package link
 
 import (
+	"time"
+
 	"github.com/gin-gonic/gin"
 	"gohub/pkg/app"
 	"gohub/pkg/cache"
 	"gohub/pkg/database"
 	"gohub/pkg/helpers"
 	"gohub/pkg/paginator"
-	"time"
 )
 
 func Get(idStr string) (link Link) {

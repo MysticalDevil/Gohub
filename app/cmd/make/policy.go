@@ -2,9 +2,10 @@ package make
 
 import (
 	"fmt"
+	"os"
+
 	"github.com/spf13/cobra"
 	"gohub/pkg/logger"
-	"os"
 )
 
 var CmdMakePolicy = &cobra.Command{

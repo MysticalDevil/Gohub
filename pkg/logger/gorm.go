@@ -3,14 +3,15 @@ package logger
 import (
 	"context"
 	"errors"
-	"go.uber.org/zap"
-	"gohub/pkg/helpers"
-	"gorm.io/gorm"
-	gormLogger "gorm.io/gorm/logger"
 	"path/filepath"
 	"runtime"
 	"strings"
 	"time"
+
+	"go.uber.org/zap"
+	"gohub/pkg/helpers"
+	"gorm.io/gorm"
+	gormLogger "gorm.io/gorm/logger"
 )
 
 // GormLogger operation object, implement gormLogger.Interface

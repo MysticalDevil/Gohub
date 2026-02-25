@@ -2,9 +2,10 @@ package make
 
 import (
 	"fmt"
+	"os"
+
 	"github.com/spf13/cobra"
 	"gohub/pkg/console"
-	"os"
 )
 
 var CmdMakeModel = &cobra.Command{

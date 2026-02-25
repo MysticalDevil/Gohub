@@ -3,14 +3,15 @@ package paginator
 
 import (
 	"fmt"
+	"math"
+	"strings"
+
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/cast"
 	"gohub/pkg/config"
 	"gohub/pkg/logger"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
-	"math"
-	"strings"
 )
 
 // Paging Data

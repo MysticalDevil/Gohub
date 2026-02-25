@@ -2,10 +2,11 @@
 package response
 
 import (
+	"net/http"
+
 	"github.com/gin-gonic/gin"
 	"gohub/pkg/logger"
 	"gorm.io/gorm"
-	"net/http"
 )
 
 // JSON response 200 and JSON data

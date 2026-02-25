@@ -2,10 +2,11 @@
 package config
 
 import (
+	"os"
+
 	"github.com/spf13/cast"
 	viperLib "github.com/spf13/viper"
 	"gohub/pkg/helpers"
-	"os"
 )
 
 // viper library example

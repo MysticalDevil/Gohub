@@ -3,6 +3,8 @@ package bootstrap
 import (
 	"errors"
 	"fmt"
+	"time"
+
 	"gohub/pkg/config"
 	"gohub/pkg/database"
 	"gohub/pkg/logger"
@@ -10,7 +12,6 @@ import (
 	"gorm.io/driver/postgres"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
-	"time"
 )
 
 // SetupDB Initialize database and ORM

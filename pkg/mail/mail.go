@@ -2,8 +2,9 @@
 package mail
 
 import (
-	"gohub/pkg/config"
 	"sync"
+
+	"gohub/pkg/config"
 )
 
 type From struct {
@@ -25,8 +26,10 @@ type Mailer struct {
 	Driver Driver
 }
 
-var once sync.Once
-var internalMailer *Mailer
+var (
+	once           sync.Once
+	internalMailer *Mailer
+)
 
 // NewMailer Singleton mode acquisition
 func NewMailer() *Mailer {

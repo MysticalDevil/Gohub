@@ -2,6 +2,7 @@ package migrations
 
 import (
 	"database/sql"
+
 	"gohub/app/models"
 	"gohub/pkg/migrate"
 

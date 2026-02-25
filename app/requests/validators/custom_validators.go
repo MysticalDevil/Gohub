@@ -3,15 +3,16 @@ package validators
 
 import (
 	"fmt"
-	"github.com/go-playground/validator/v10"
-	"gohub/pkg/captcha"
-	"gohub/pkg/database"
-	"gohub/pkg/verifycode"
 	"mime/multipart"
 	"path/filepath"
 	"strconv"
 	"strings"
 	"unicode/utf8"
+
+	"github.com/go-playground/validator/v10"
+	"gohub/pkg/captcha"
+	"gohub/pkg/database"
+	"gohub/pkg/verifycode"
 )
 
 // RegisterCustomValidations registers custom validation rules.

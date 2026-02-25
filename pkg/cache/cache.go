@@ -3,18 +3,21 @@ package cache
 
 import (
 	"encoding/json"
-	"github.com/spf13/cast"
-	"gohub/pkg/logger"
 	"sync"
 	"time"
+
+	"github.com/spf13/cast"
+	"gohub/pkg/logger"
 )
 
 type Service struct {
 	Store Store
 }
 
-var once sync.Once
-var Cache *Service
+var (
+	once  sync.Once
+	Cache *Service
+)
 
 func InitWithCacheStore(store Store) {
 	once.Do(func() {

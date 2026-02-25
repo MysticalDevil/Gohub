@@ -2,9 +2,10 @@ package mail
 
 import (
 	"fmt"
+	"net/smtp"
+
 	emailPKG "github.com/jordan-wright/email"
 	"gohub/pkg/logger"
-	"net/smtp"
 )
 
 // SMTP Implement the email.Driver interface
@@ -33,7 +34,6 @@ func (s *SMTP) Send(email Email, config map[string]string) bool {
 			config["host"],
 		),
 	)
-
 	if err != nil {
 		logger.ErrorString("Send Email", "Error sending email", err.Error())
 		return false

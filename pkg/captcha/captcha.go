@@ -2,11 +2,12 @@
 package captcha
 
 import (
+	"sync"
+
 	"github.com/mojocn/base64Captcha"
 	"gohub/pkg/app"
 	"gohub/pkg/config"
 	"gohub/pkg/redis"
-	"sync"
 )
 
 type Captcha struct {

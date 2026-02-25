@@ -3,9 +3,10 @@ package console
 
 import (
 	"fmt"
+	"os"
+
 	"github.com/mgutz/ansi"
 	"gohub/pkg/logger"
-	"os"
 )
 
 // Success Print a success message, green output

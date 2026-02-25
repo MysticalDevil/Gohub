@@ -2,6 +2,7 @@ package seeders
 
 import (
 	"fmt"
+
 	"gohub/database/factories"
 	"gohub/pkg/console"
 	"gohub/pkg/logger"

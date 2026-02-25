@@ -5,14 +5,17 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+
 	"gohub/pkg/config"
 	"gohub/pkg/logger"
 	"gorm.io/gorm"
 	gormLogger "gorm.io/gorm/logger"
 )
 
-var DB *gorm.DB
-var SQLDB *sql.DB
+var (
+	DB    *gorm.DB
+	SQLDB *sql.DB
+)
 
 // Connect To connect database
 func Connect(dbConfig gorm.Dialector, _logger gormLogger.Interface) {

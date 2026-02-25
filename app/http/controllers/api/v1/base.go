@@ -2,5 +2,4 @@
 package v1
 
 // BaseAPIController Base controller
-type BaseAPIController struct {
-}
+type BaseAPIController struct{}

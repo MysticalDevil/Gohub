@@ -2,6 +2,7 @@ package middlewares
 
 import (
 	"fmt"
+
 	"github.com/gin-gonic/gin"
 	"gohub/app/models/user"
 	"gohub/pkg/config"
@@ -12,7 +13,6 @@ import (
 func AuthJWT() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		claims, err := jwt.NewJWT().ParseToken(c)
-
 		// JWT parsing failed, an error occurred
 		if err != nil {
 			response.Unauthorized(c,
@@ -24,7 +24,7 @@ func AuthJWT() gin.HandlerFunc {
 		}
 
 		// JWT parsed successfully, set user information
-		var userModel = user.Get(claims.UserID)
+		userModel := user.Get(claims.UserID)
 		if userModel.ID == 0 {
 			response.Unauthorized(c, "Could not find corresponding user, user may have been deleted")
 			return

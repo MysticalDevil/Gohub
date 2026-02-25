@@ -2,11 +2,12 @@
 package bootstrap
 
 import (
+	"net/http"
+	"strings"
+
 	"github.com/gin-gonic/gin"
 	"gohub/app/http/middlewares"
 	"gohub/routes"
-	"net/http"
-	"strings"
 )
 
 // SetupRoute Initialize route

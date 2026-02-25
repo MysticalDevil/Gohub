@@ -2,12 +2,13 @@
 package migrate
 
 import (
+	"os"
+
 	"gohub/pkg/console"
 	"gohub/pkg/database"
 	"gohub/pkg/file"
 	"gohub/pkg/logger"
 	"gorm.io/gorm"
-	"os"
 )
 
 // Migrator Data migration operation class

@@ -3,6 +3,9 @@ package verifycode
 
 import (
 	"fmt"
+	"strings"
+	"sync"
+
 	"gohub/pkg/app"
 	"gohub/pkg/config"
 	"gohub/pkg/helpers"
@@ -10,16 +13,16 @@ import (
 	"gohub/pkg/mail"
 	"gohub/pkg/redis"
 	"gohub/pkg/sms"
-	"strings"
-	"sync"
 )
 
 type VerifyCode struct {
 	Store Store
 }
 
-var once sync.Once
-var internalVerifyCode *VerifyCode
+var (
+	once               sync.Once
+	internalVerifyCode *VerifyCode
+)
 
 // NewVerifyCode Singleton mode acquisition
 func NewVerifyCode() *VerifyCode {

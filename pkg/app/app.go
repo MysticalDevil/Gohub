@@ -2,8 +2,9 @@
 package app
 
 import (
-	"gohub/pkg/config"
 	"time"
+
+	"gohub/pkg/config"
 )
 
 func IsLocal() bool {

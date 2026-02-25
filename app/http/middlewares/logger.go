@@ -3,13 +3,14 @@ package middlewares
 
 import (
 	"bytes"
+	"io"
+	"time"
+
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/cast"
 	"go.uber.org/zap"
 	"gohub/pkg/helpers"
 	"gohub/pkg/logger"
-	"io"
-	"time"
 )
 
 type responseBodyWriter struct {

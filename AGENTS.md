@@ -20,7 +20,7 @@
 - `go build ./...` compiles all packages.
 
 ## Coding Style & Naming Conventions
-- Use standard Go formatting (`gofmt`); tabs for indentation.
+- Use `gofumpt` for formatting (superset of `gofmt`); tabs for indentation.
 - Package names are lowercase and short (for example `pkg/jwt`, `app/requests`).
 - Files follow snake case in existing areas (for example `topic_request.go`).
 - Keep API handlers in `app/http/controllers/api/v1` and requests in `app/requests`.

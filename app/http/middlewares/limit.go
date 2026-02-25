@@ -1,13 +1,14 @@
 package middlewares
 
 import (
+	"net/http"
+
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/cast"
 	"gohub/pkg/app"
 	"gohub/pkg/limiter"
 	"gohub/pkg/logger"
 	"gohub/pkg/response"
-	"net/http"
 )
 
 // LimitIP Global current limiting middleware, limiting current for IP

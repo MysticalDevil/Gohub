@@ -2,6 +2,8 @@ package main
 
 import (
 	"fmt"
+	"os"
+
 	"github.com/spf13/cobra"
 	"gohub/app/cmd"
 	"gohub/app/cmd/make"
@@ -9,7 +11,6 @@ import (
 	btsConfig "gohub/config"
 	"gohub/pkg/config"
 	"gohub/pkg/console"
-	"os"
 )
 
 func init() {
@@ -19,7 +20,7 @@ func init() {
 
 func main() {
 	// Application entry, the command cmd.CmdServer is called by default
-	var rootCmd = &cobra.Command{
+	rootCmd := &cobra.Command{
 		Use:   "Gohub",
 		Short: "A simple forum project",
 		Long:  `Default will run "serve" command, you can use "-h" flag to see all subcommands`,

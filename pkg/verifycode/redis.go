@@ -1,10 +1,11 @@
 package verifycode
 
 import (
+	"time"
+
 	"gohub/pkg/app"
 	"gohub/pkg/config"
 	"gohub/pkg/redis"
-	"time"
 )
 
 // RedisStore Implement the verifycode.Store interface

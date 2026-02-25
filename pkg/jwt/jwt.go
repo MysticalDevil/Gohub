@@ -3,13 +3,14 @@ package jwt
 
 import (
 	"errors"
+	"strings"
+	"time"
+
 	"github.com/gin-gonic/gin"
 	jwtPkg "github.com/golang-jwt/jwt/v5"
 	"gohub/pkg/app"
 	"gohub/pkg/config"
 	"gohub/pkg/logger"
-	"strings"
-	"time"
 )
 
 var (
@@ -54,7 +55,6 @@ func (jwt *JWT) ParseToken(c *gin.Context) (*CustomClaims, error) {
 	}
 
 	token, err := jwt.parseTokenString(tokenString)
-
 	if err != nil {
 		if errors.Is(err, jwtPkg.ErrTokenMalformed) {
 			return nil, ErrTokenMalformed
@@ -81,7 +81,6 @@ func (jwt *JWT) RefreshToken(c *gin.Context) (string, error) {
 	}
 
 	token, err := jwt.parseTokenString(tokenString)
-
 	if err != nil {
 		if !errors.Is(err, jwtPkg.ErrTokenExpired) {
 			return "", err
@@ -112,10 +111,10 @@ func (jwt *JWT) IssueToken(userID, userName string) string {
 		userName,
 		expireAtTime,
 		jwtPkg.RegisteredClaims{
-			NotBefore: jwtPkg.NewNumericDate(now),                              // Signature effective time
-			IssuedAt:  jwtPkg.NewNumericDate(now),                              // First signature time
-			ExpiresAt: jwtPkg.NewNumericDate(time.Unix(expireAtTime, 0)),       // Signature expiration time
-			Issuer:    config.GetString("app.name"),                            // Signature issuer
+			NotBefore: jwtPkg.NewNumericDate(now),                        // Signature effective time
+			IssuedAt:  jwtPkg.NewNumericDate(now),                        // First signature time
+			ExpiresAt: jwtPkg.NewNumericDate(time.Unix(expireAtTime, 0)), // Signature expiration time
+			Issuer:    config.GetString("app.name"),                      // Signature issuer
 		},
 	}
 

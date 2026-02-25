@@ -2,13 +2,14 @@ package requests
 
 import (
 	"fmt"
+	"reflect"
+	"strings"
+	"sync"
+
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
 	"gohub/app/requests/validators"
 	"gohub/pkg/response"
-	"reflect"
-	"strings"
-	"sync"
 )
 
 // ValidatorFunc Validate function type
@@ -16,8 +17,10 @@ type ValidatorFunc func(any, *gin.Context) map[string][]string
 
 type MapData map[string][]string
 
-var validateOnce sync.Once
-var validateEngine *validator.Validate
+var (
+	validateOnce   sync.Once
+	validateEngine *validator.Validate
+)
 
 // Validate Controller call example:
 //

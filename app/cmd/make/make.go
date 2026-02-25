@@ -4,12 +4,13 @@ package make
 import (
 	"embed"
 	"fmt"
+	"strings"
+
 	"github.com/iancoleman/strcase"
 	"github.com/spf13/cobra"
 	"gohub/pkg/console"
 	"gohub/pkg/file"
 	"gohub/pkg/str"
-	"strings"
 )
 
 // Model parameter explanation

@@ -4,13 +4,14 @@ package logger
 import (
 	"encoding/json"
 	"fmt"
+	"os"
+	"strings"
+	"time"
+
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 	"gohub/pkg/app"
 	"gopkg.in/natefinch/lumberjack.v2"
-	"os"
-	"strings"
-	"time"
 )
 
 // Logger Global logger object

@@ -1,9 +1,10 @@
 package cache
 
 import (
+	"time"
+
 	"gohub/pkg/config"
 	"gohub/pkg/redis"
-	"time"
 )
 
 // RedisStore Implement the cache.Store interface

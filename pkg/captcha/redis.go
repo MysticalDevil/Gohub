@@ -2,10 +2,11 @@ package captcha
 
 import (
 	"errors"
+	"time"
+
 	"gohub/pkg/app"
 	"gohub/pkg/config"
 	"gohub/pkg/redis"
-	"time"
 )
 
 // RedisStore Implement the base64Captcha.Store interface

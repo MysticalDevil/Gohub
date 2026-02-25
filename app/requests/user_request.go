@@ -1,10 +1,11 @@
 package requests
 
 import (
+	"mime/multipart"
+
 	"github.com/gin-gonic/gin"
 	"gohub/app/requests/validators"
 	"gohub/pkg/auth"
-	"mime/multipart"
 )
 
 type UserUpdateProfileRequest struct {

@@ -2,8 +2,9 @@
 package sms
 
 import (
-	"gohub/pkg/logger"
 	"sync"
+
+	"gohub/pkg/logger"
 )
 
 // Message SMS struct

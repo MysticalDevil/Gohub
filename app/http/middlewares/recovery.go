@@ -1,15 +1,16 @@
 package middlewares
 
 import (
-	"github.com/gin-gonic/gin"
-	"go.uber.org/zap"
-	"gohub/pkg/logger"
-	"gohub/pkg/response"
 	"net"
 	"net/http/httputil"
 	"os"
 	"strings"
 	"time"
+
+	"github.com/gin-gonic/gin"
+	"go.uber.org/zap"
+	"gohub/pkg/logger"
+	"gohub/pkg/response"
 )
 
 // Recovery Use zap.Error() to log panic and call stack

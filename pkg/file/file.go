@@ -3,20 +3,21 @@ package file
 
 import (
 	"fmt"
+	"mime/multipart"
+	"os"
+	"path/filepath"
+	"strings"
+
 	"github.com/disintegration/imaging"
 	"github.com/gin-gonic/gin"
 	"gohub/pkg/app"
 	"gohub/pkg/auth"
 	"gohub/pkg/helpers"
-	"mime/multipart"
-	"os"
-	"path/filepath"
-	"strings"
 )
 
 // Put Save data to file
 func Put(data []byte, to string) error {
-	err := os.WriteFile(to, data, 0644)
+	err := os.WriteFile(to, data, 0o644)
 	if err != nil {
 		return err
 	}
@@ -44,7 +45,7 @@ func SaveUploadAvatar(c *gin.Context, file *multipart.FileHeader) (string, error
 		app.TimenowInTimezone().Format("2006/01/02"),
 		auth.CurrentUID(c),
 	)
-	if err := os.MkdirAll(publicPath+dirName, 0755); err != nil {
+	if err := os.MkdirAll(publicPath+dirName, 0o755); err != nil {
 		return avatar, err
 	}
 

@@ -3,10 +3,11 @@ package redis
 
 import (
 	"context"
-	"github.com/redis/go-redis/v9"
-	"gohub/pkg/logger"
 	"sync"
 	"time"
+
+	"github.com/redis/go-redis/v9"
+	"gohub/pkg/logger"
 )
 
 // Client Redis serve

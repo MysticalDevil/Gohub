@@ -2,9 +2,10 @@ package make
 
 import (
 	"fmt"
+	"strings"
+
 	"github.com/spf13/cobra"
 	"gohub/pkg/console"
-	"strings"
 )
 
 var CmdMakeApiController = &cobra.Command{
