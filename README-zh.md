@@ -27,8 +27,6 @@
 
 - [`email`](https://github.com/jordan-wright/email) SMTP 邮件发送
 
-- [`aliyun-communicate`](https://github.com/KenmyZhang/aliyun-communicate) 发送阿里云短信
-
 - [`ansi`](https://github.com/mgutz/ansi) 终端高亮输出
 
 - [`strcase`](https://github.com/iancoleman/strcase) 字符串大小写操作

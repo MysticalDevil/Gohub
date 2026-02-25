@@ -2,7 +2,7 @@
 package sms
 
 import (
-	"gohub/pkg/config"
+	"gohub/pkg/logger"
 	"sync"
 )
 
@@ -29,7 +29,7 @@ var internalSMS *SMS
 func NewSMS() *SMS {
 	once.Do(func() {
 		internalSMS = &SMS{
-			Driver: &Aliyun{},
+			Driver: &Noop{},
 		}
 	})
 
@@ -37,5 +37,13 @@ func NewSMS() *SMS {
 }
 
 func (sms *SMS) Send(phone string, message Message) bool {
-	return sms.Driver.Send(phone, message, config.GetStringMapString("sms.aliyun"))
+	return sms.Driver.Send(phone, message, map[string]string{})
+}
+
+// Noop driver disables SMS sending when no provider is configured.
+type Noop struct{}
+
+func (noop *Noop) Send(phone string, message Message, _ map[string]string) bool {
+	logger.WarnString("SMS", "Send", "SMS provider disabled; message not sent")
+	return false
 }

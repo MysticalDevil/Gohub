@@ -48,8 +48,9 @@ func (vc *VerifyCode) SendSMS(phone string) bool {
 
 	// Send sms
 	return sms.NewSMS().Send(phone, sms.Message{
-		Template: config.GetString("sms.aliyun.template_code"),
+		Template: "",
 		Data:     map[string]string{"code": code},
+		Content:  fmt.Sprintf("Your verification code is %v", code),
 	})
 }
 
