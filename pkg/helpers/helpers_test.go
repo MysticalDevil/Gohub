@@ -34,6 +34,11 @@ func TestRandomString(t *testing.T) {
 	require.Len(t, s, 12)
 }
 
+func TestSecureRandomString(t *testing.T) {
+	s := SecureRandomString(12)
+	require.Len(t, s, 12)
+}
+
 func TestFirstElement(t *testing.T) {
 	require.Equal(t, "", FirstElement([]string{}))
 	require.Equal(t, "a", FirstElement([]string{"a"}))

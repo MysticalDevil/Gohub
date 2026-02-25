@@ -89,6 +89,9 @@ Flags:
 Use "Gohub [command] --help" for more information about a command.
 ```
 
+## 配置提示
+`APP_KEY` 必须是安全随机值。可通过 `go run main.go key` 生成并填入 `.env`。
+
 # TODO
 Postman 文档书写
 支持多种缓存中间件，目前只支持 Redis

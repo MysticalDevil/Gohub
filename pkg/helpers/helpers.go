@@ -73,3 +73,17 @@ func RandomString(length int) string {
 	}
 	return string(b)
 }
+
+// SecureRandomString Generate a cryptographically secure random string of length 'length'
+func SecureRandomString(length int) string {
+	letters := "qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM"
+	b := make([]byte, length)
+	n, err := io.ReadAtLeast(rand.Reader, b, length)
+	if n != length {
+		panic(err)
+	}
+	for i := range b {
+		b[i] = letters[int(b[i])%len(letters)]
+	}
+	return string(b)
+}

@@ -15,7 +15,7 @@ func init() {
 			// Application service port
 			"port": config.Env("APP_PORT", "3000"),
 			// Encrypted session, JWT encryption
-			"key": config.Env("APP_KEY", "8f9603f2be2480ecc6ac3a47fc4888e15be260e290b865582c613fc7b065c02a"),
+			"key": config.Env("APP_KEY"),
 			// To generate links
 			"url": config.Env("APP_URL", "http://localhost:3000"),
 			// Set time zone
