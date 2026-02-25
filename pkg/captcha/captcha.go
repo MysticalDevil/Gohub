@@ -48,7 +48,8 @@ func NewCaptcha() *Captcha {
 
 // GenerateCaptcha Generate image verification code
 func (c *Captcha) GenerateCaptcha() (id string, b64s string, err error) {
-	return c.Base64Captcha.Generate()
+	id, b64s, _, err = c.Base64Captcha.Generate()
+	return id, b64s, err
 }
 
 // VerifyCaptcha Verify that the image verification code is correct
