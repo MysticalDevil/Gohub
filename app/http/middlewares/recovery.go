@@ -1,19 +1,19 @@
 package middlewares
 
 import (
+	"log/slog"
 	"net"
 	"net/http/httputil"
 	"os"
+	"runtime/debug"
 	"strings"
-	"time"
 
 	"github.com/gin-gonic/gin"
-	"go.uber.org/zap"
 	"gohub/pkg/logger"
 	"gohub/pkg/response"
 )
 
-// Recovery Use zap.Error() to log panic and call stack
+// Recovery Use slog to log panic and call stack
 func Recovery() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		defer func() {
@@ -37,9 +37,8 @@ func Recovery() gin.HandlerFunc {
 				// In the event of a broken link
 				if brokenPipe {
 					logger.Error(c.Request.URL.Path,
-						zap.Time("time", time.Now()),
-						zap.Any("error", err),
-						zap.String("request", string(httpRequest)),
+						slog.Any("error", err),
+						slog.String("request", string(httpRequest)),
 					)
 					_ = c.Error(err.(error))
 					c.Abort()
@@ -48,10 +47,9 @@ func Recovery() gin.HandlerFunc {
 				}
 				// If it is not a link break, start recording stack information
 				logger.Error("recovery from panic",
-					zap.Time("time", time.Now()),
-					zap.Any("error", err),
-					zap.String("request", string(httpRequest)),
-					zap.Stack("stacktrace"),
+					slog.Any("error", err),
+					slog.String("request", string(httpRequest)),
+					slog.String("stacktrace", string(debug.Stack())),
 				)
 
 				// return 500 status code

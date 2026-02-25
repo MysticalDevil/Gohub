@@ -4,11 +4,11 @@ package middlewares
 import (
 	"bytes"
 	"io"
+	"log/slog"
 	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/cast"
-	"go.uber.org/zap"
 	"gohub/pkg/helpers"
 	"gohub/pkg/logger"
 )
@@ -48,22 +48,22 @@ func Logger() gin.HandlerFunc {
 		cost := time.Since(start)
 		responseStatus := c.Writer.Status()
 
-		logFields := []zap.Field{
-			zap.Int("status", responseStatus),
-			zap.String("request", c.Request.Method+""+c.Request.URL.String()),
-			zap.String("query", c.Request.URL.RawQuery),
-			zap.String("ip", c.ClientIP()),
-			zap.String("user-agent", c.Request.UserAgent()),
-			zap.String("errors", c.Errors.ByType(gin.ErrorTypePrivate).String()),
-			zap.String("time", helpers.MicrosecondStr(cost)),
+		logFields := []slog.Attr{
+			slog.Int("status", responseStatus),
+			slog.String("request", c.Request.Method+""+c.Request.URL.String()),
+			slog.String("query", c.Request.URL.RawQuery),
+			slog.String("ip", c.ClientIP()),
+			slog.String("user-agent", c.Request.UserAgent()),
+			slog.String("errors", c.Errors.ByType(gin.ErrorTypePrivate).String()),
+			slog.String("time", helpers.MicrosecondStr(cost)),
 		}
 
 		if c.Request.Method == "POST" || c.Request.Method == "PUT" || c.Request.Method == "DELETE" {
 			// Request content
-			logFields = append(logFields, zap.String("Request Body", string(requestBody)))
+			logFields = append(logFields, slog.String("request_body", string(requestBody)))
 
 			// Response content
-			logFields = append(logFields, zap.String("Response Body", w.body.String()))
+			logFields = append(logFields, slog.String("response_body", w.body.String()))
 		}
 
 		if responseStatus > 400 && responseStatus <= 499 {

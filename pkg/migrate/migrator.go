@@ -45,7 +45,7 @@ func (migrator *Migrator) createMigrationsTable() {
 	if !migrator.Migrator.HasTable(&migration) {
 		err := migrator.Migrator.CreateTable(&migration)
 		if err != nil {
-			logger.Error(err.Error())
+			logger.ErrorString("migrate", "error", err.Error())
 		}
 	}
 }
