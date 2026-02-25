@@ -4,7 +4,7 @@ package jwt
 import (
 	"errors"
 	"github.com/gin-gonic/gin"
-	jwtPkg "github.com/golang-jwt/jwt"
+	jwtPkg "github.com/golang-jwt/jwt/v5"
 	"gohub/pkg/app"
 	"gohub/pkg/config"
 	"gohub/pkg/logger"
@@ -36,7 +36,7 @@ type CustomClaims struct {
 	UserName     string `json:"user_name"`
 	ExpireAtTime int64  `json:"expire_time"`
 
-	jwtPkg.StandardClaims
+	jwtPkg.RegisteredClaims
 }
 
 func NewJWT() *JWT {
@@ -56,13 +56,11 @@ func (jwt *JWT) ParseToken(c *gin.Context) (*CustomClaims, error) {
 	token, err := jwt.parseTokenString(tokenString)
 
 	if err != nil {
-		validationErr, ok := err.(*jwtPkg.ValidationError)
-		if ok {
-			if validationErr.Errors == jwtPkg.ValidationErrorMalformed {
-				return nil, ErrTokenMalformed
-			} else if validationErr.Errors == jwtPkg.ValidationErrorExpired {
-				return nil, ErrTokenExpired
-			}
+		if errors.Is(err, jwtPkg.ErrTokenMalformed) {
+			return nil, ErrTokenMalformed
+		}
+		if errors.Is(err, jwtPkg.ErrTokenExpired) {
+			return nil, ErrTokenExpired
 		}
 		return nil, ErrTokenInvalid
 	}
@@ -85,8 +83,7 @@ func (jwt *JWT) RefreshToken(c *gin.Context) (string, error) {
 	token, err := jwt.parseTokenString(tokenString)
 
 	if err != nil {
-		validationErr, ok := err.(*jwtPkg.ValidationError)
-		if !ok || validationErr.Errors != jwtPkg.ValidationErrorExpired {
+		if !errors.Is(err, jwtPkg.ErrTokenExpired) {
 			return "", err
 		}
 	}
@@ -96,9 +93,9 @@ func (jwt *JWT) RefreshToken(c *gin.Context) (string, error) {
 
 	// Check if the [Maximum Allowed Refresh Time] has passed
 	x := app.TimenowInTimezone().Add(-jwt.MaxRefresh).Unix()
-	if claims.IssuedAt > x {
+	if claims.IssuedAt != nil && claims.IssuedAt.Time.Unix() > x {
 		// Modify expiration time
-		claims.StandardClaims.ExpiresAt = jwt.expireAtTime()
+		claims.RegisteredClaims.ExpiresAt = jwtPkg.NewNumericDate(time.Unix(jwt.expireAtTime(), 0))
 		return jwt.createToken(*claims)
 	}
 
@@ -109,16 +106,16 @@ func (jwt *JWT) RefreshToken(c *gin.Context) (string, error) {
 func (jwt *JWT) IssueToken(userID, userName string) string {
 	// Construct user claims information (load)
 	expireAtTime := jwt.expireAtTime()
+	now := app.TimenowInTimezone()
 	claims := CustomClaims{
 		userID,
 		userName,
 		expireAtTime,
-		jwtPkg.StandardClaims{
-			NotBefore: app.TimenowInTimezone().Unix(), // Signature effective time
-			IssuedAt:  app.TimenowInTimezone().Unix(), // First signature time
-			// (subsequent refreshes of the Token will not be updated)
-			ExpiresAt: expireAtTime,                 // Signature expiration time
-			Issuer:    config.GetString("app.name"), // Signature issuer
+		jwtPkg.RegisteredClaims{
+			NotBefore: jwtPkg.NewNumericDate(now),                              // Signature effective time
+			IssuedAt:  jwtPkg.NewNumericDate(now),                              // First signature time
+			ExpiresAt: jwtPkg.NewNumericDate(time.Unix(expireAtTime, 0)),       // Signature expiration time
+			Issuer:    config.GetString("app.name"),                            // Signature issuer
 		},
 	}
 
@@ -155,9 +152,14 @@ func (jwt *JWT) expireAtTime() int64 {
 
 // parseTokenString Use jwtPkg.ParseWithClaims to parse Token
 func (jwt *JWT) parseTokenString(tokenString string) (*jwtPkg.Token, error) {
-	return jwtPkg.ParseWithClaims(tokenString, &CustomClaims{}, func(token *jwtPkg.Token) (any, error) {
-		return jwt.SignKey, nil
-	})
+	return jwtPkg.ParseWithClaims(
+		tokenString,
+		&CustomClaims{},
+		func(token *jwtPkg.Token) (any, error) {
+			return jwt.SignKey, nil
+		},
+		jwtPkg.WithValidMethods([]string{jwtPkg.SigningMethodHS256.Alg()}),
+	)
 }
 
 // getTokenFromHeader Get token from request header
