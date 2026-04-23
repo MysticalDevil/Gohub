@@ -3,8 +3,10 @@ package middlewares
 
 import (
 	"bytes"
+	"encoding/json"
 	"io"
 	"log/slog"
+	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -21,6 +23,61 @@ type responseBodyWriter struct {
 func (r responseBodyWriter) Write(b []byte) (int, error) {
 	r.body.Write(b)
 	return r.ResponseWriter.Write(b)
+}
+
+var sensitiveFields = []string{
+	"password", "new_password", "new_password_confirm", "old_password", "current_password",
+	"token", "access_token", "refresh_token",
+	"verify_code", "verification_code", "code", "captcha_answer",
+}
+
+func isSensitiveField(key string) bool {
+	for _, f := range sensitiveFields {
+		if f == key {
+			return true
+		}
+	}
+	return false
+}
+
+func sanitizeJSONValue(v any) any {
+	switch val := v.(type) {
+	case map[string]any:
+		for k, v2 := range val {
+			if isSensitiveField(strings.ToLower(k)) {
+				val[k] = "[REDACTED]"
+			} else {
+				val[k] = sanitizeJSONValue(v2)
+			}
+		}
+		return val
+	case []any:
+		for i, v2 := range val {
+			val[i] = sanitizeJSONValue(v2)
+		}
+		return val
+	default:
+		return v
+	}
+}
+
+func sanitizeBody(bodyStr string) string {
+	bodyStr = strings.TrimSpace(bodyStr)
+	if bodyStr == "" {
+		return bodyStr
+	}
+
+	var data any
+	if err := json.Unmarshal([]byte(bodyStr), &data); err != nil {
+		return bodyStr
+	}
+
+	data = sanitizeJSONValue(data)
+	b, err := json.Marshal(data)
+	if err != nil {
+		return bodyStr
+	}
+	return string(b)
 }
 
 // Logger Log request
@@ -60,10 +117,10 @@ func Logger() gin.HandlerFunc {
 
 		if c.Request.Method == "POST" || c.Request.Method == "PUT" || c.Request.Method == "DELETE" {
 			// Request content
-			logFields = append(logFields, slog.String("request_body", string(requestBody)))
+			logFields = append(logFields, slog.String("request_body", sanitizeBody(string(requestBody))))
 
 			// Response content
-			logFields = append(logFields, slog.String("response_body", w.body.String()))
+			logFields = append(logFields, slog.String("response_body", sanitizeBody(w.body.String())))
 		}
 
 		if responseStatus > 400 && responseStatus <= 499 {
