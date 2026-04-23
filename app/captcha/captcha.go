@@ -64,5 +64,5 @@ func (c *Captcha) VerifyCaptcha(id, answer string) (match bool) {
 		return true
 	}
 	// The third parameter is whether to delete after verification
-	return c.Base64Captcha.Verify(id, answer, false)
+	return c.Base64Captcha.Verify(id, answer, true)
 }

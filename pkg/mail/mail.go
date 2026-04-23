@@ -45,3 +45,8 @@ func NewMailer() *Mailer {
 func (mailer *Mailer) Send(email Email) bool {
 	return mailer.Driver.Send(email, config.GetStringMapString("mail.smtp"))
 }
+
+// SetDriver replaces the underlying driver. Useful for testing.
+func (mailer *Mailer) SetDriver(driver Driver) {
+	mailer.Driver = driver
+}

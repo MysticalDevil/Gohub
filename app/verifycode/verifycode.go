@@ -2,6 +2,7 @@
 package verifycode
 
 import (
+	"errors"
 	"fmt"
 	"strings"
 	"sync"
@@ -9,7 +10,6 @@ import (
 	"gohub/pkg/app"
 	"gohub/pkg/config"
 	"gohub/pkg/helpers"
-	"gohub/pkg/logger"
 	"gohub/pkg/mail"
 	"gohub/pkg/redis"
 	"gohub/pkg/sms"
@@ -76,7 +76,7 @@ func (vc *VerifyCode) SendEmail(email string) error {
 	}
 	content := fmt.Sprintf("<h1>Your email verification code is %v </h1>", code)
 	// Send email
-	mail.NewMailer().Send(mail.Email{
+	ok := mail.NewMailer().Send(mail.Email{
 		From: mail.From{
 			Address: config.GetString("mail.from.address"),
 			Name:    config.GetString("mail.from.name"),
@@ -85,21 +85,22 @@ func (vc *VerifyCode) SendEmail(email string) error {
 		Subject: "Email verify code",
 		HTML:    []byte(content),
 	})
+	if !ok {
+		return errors.New("failed to send verification email")
+	}
 
 	return nil
 }
 
 // CheckAnswer Check whether the verification code submitted by the user is correct
 func (vc *VerifyCode) CheckAnswer(key, answer string) bool {
-	logger.DebugJSON("Verify Code", "Check verify code", map[string]string{key: answer})
-
 	if !app.IsProduction() &&
 		(strings.HasSuffix(key, config.GetString("verifycode.debug_email_suffix")) ||
 			strings.HasPrefix(key, config.GetString("verifycode.debug_phone_prefix"))) {
 		return true
 	}
 
-	return vc.Store.Verify(key, answer, false)
+	return vc.Store.Verify(key, answer, true)
 }
 
 // generateVerifyCode Generate verify code, and store in Redis
@@ -110,8 +111,6 @@ func (vc *VerifyCode) generateVerifyCode(key string) string {
 	if app.IsLocal() {
 		code = config.GetString("verifycode.debug_code")
 	}
-
-	logger.DebugJSON("Verify Code", "Generate verify code", map[string]string{key: code})
 
 	// Store the verification code and KEY in Redis and set the expiration time
 	vc.Store.Set(key, code)

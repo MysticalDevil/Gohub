@@ -23,16 +23,25 @@ func (s *SMTP) Send(email Email, config map[string]string) bool {
 	e.Text = email.Text
 	e.HTML = email.HTML
 
-	logger.DebugJSON("Send Email", "Send email details", e)
+	logger.DebugJSON("Send Email", "Send email details", map[string]any{
+		"from":    email.From,
+		"to":      email.To,
+		"subject": email.Subject,
+	})
 
-	err := e.Send(
-		fmt.Sprintf("%v:%v", config["host"], config["port"]),
-		smtp.PlainAuth(
+	var auth smtp.Auth
+	if config["username"] != "" {
+		auth = smtp.PlainAuth(
 			"",
 			config["username"],
 			config["password"],
 			config["host"],
-		),
+		)
+	}
+
+	err := e.Send(
+		fmt.Sprintf("%v:%v", config["host"], config["port"]),
+		auth,
 	)
 	if err != nil {
 		logger.ErrorString("Send Email", "Error sending email", err.Error())
