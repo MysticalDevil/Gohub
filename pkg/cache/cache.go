@@ -75,7 +75,7 @@ func IsAlive() error {
 func GetObject(key string, wanted any) {
 	val := Cache.Store.Get(key)
 	if len(val) > 0 {
-		err := json.Unmarshal([]byte(val), &wanted)
+		err := json.Unmarshal([]byte(val), wanted)
 		logger.LogIf(err)
 	}
 }
