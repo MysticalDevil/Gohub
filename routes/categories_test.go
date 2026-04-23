@@ -57,6 +57,66 @@ func TestCategoriesStoreUpdateDelete(t *testing.T) {
 	}
 }
 
+func TestCategoriesUpdateForbidden(t *testing.T) {
+	tests.ResetState(t)
+	router := tests.NewRouter()
+
+	owner := tests.SeedUser(t, tests.UserParams{Name: "owner"})
+	other := tests.SeedUser(t, tests.UserParams{Name: "other"})
+	category := tests.SeedCategory(t, tests.CategoryParams{Name: "protected", UserID: owner.GetStringID()})
+
+	otherToken := tests.IssueToken(other)
+
+	rec := tests.DoJSON(t, router, http.MethodPut, "/api/v1/categories/"+category.GetStringID(), map[string]any{
+		"name":        "hacked",
+		"description": "new desc",
+	}, map[string]string{
+		"Authorization": "Bearer " + otherToken,
+	})
+	if rec.Code != http.StatusForbidden {
+		t.Fatalf("expected 403, got %d", rec.Code)
+	}
+
+	// Owner should be able to update.
+	ownerToken := tests.IssueToken(owner)
+	rec = tests.DoJSON(t, router, http.MethodPut, "/api/v1/categories/"+category.GetStringID(), map[string]any{
+		"name":        "updated",
+		"description": "new desc",
+	}, map[string]string{
+		"Authorization": "Bearer " + ownerToken,
+	})
+	if rec.Code != http.StatusOK {
+		t.Fatalf("expected 200, got %d", rec.Code)
+	}
+}
+
+func TestCategoriesDeleteForbidden(t *testing.T) {
+	tests.ResetState(t)
+	router := tests.NewRouter()
+
+	owner := tests.SeedUser(t, tests.UserParams{Name: "owner"})
+	other := tests.SeedUser(t, tests.UserParams{Name: "other"})
+	category := tests.SeedCategory(t, tests.CategoryParams{Name: "protected", UserID: owner.GetStringID()})
+
+	otherToken := tests.IssueToken(other)
+
+	rec := tests.DoJSON(t, router, http.MethodDelete, "/api/v1/categories/"+category.GetStringID(), nil, map[string]string{
+		"Authorization": "Bearer " + otherToken,
+	})
+	if rec.Code != http.StatusForbidden {
+		t.Fatalf("expected 403, got %d", rec.Code)
+	}
+
+	// Owner should be able to delete.
+	ownerToken := tests.IssueToken(owner)
+	rec = tests.DoJSON(t, router, http.MethodDelete, "/api/v1/categories/"+category.GetStringID(), nil, map[string]string{
+		"Authorization": "Bearer " + ownerToken,
+	})
+	if rec.Code != http.StatusOK {
+		t.Fatalf("expected 200, got %d", rec.Code)
+	}
+}
+
 func TestCategoriesDeleteNotFound(t *testing.T) {
 	tests.ResetState(t)
 	router := tests.NewRouter()

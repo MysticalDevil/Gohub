@@ -3,7 +3,9 @@ package v1
 import (
 	"github.com/gin-gonic/gin"
 	"gohub/app/models/category"
+	"gohub/app/policies"
 	"gohub/app/requests"
+	"gohub/pkg/auth"
 	"gohub/pkg/response"
 )
 
@@ -20,6 +22,7 @@ func (ctrl *CategoriesController) Store(c *gin.Context) {
 	categoryModel := category.Category{
 		Name:        request.Name,
 		Description: request.Description,
+		UserID:      auth.CurrentUID(c),
 	}
 
 	categoryModel.Create(c.Request.Context())
@@ -35,6 +38,11 @@ func (ctrl *CategoriesController) Update(c *gin.Context) {
 	categoryModel := category.Get(c.Request.Context(), c.Param("id"))
 	if categoryModel.ID == 0 {
 		response.Abort404(c)
+		return
+	}
+
+	if ok := policies.CanModifyCategory(c, categoryModel); !ok {
+		response.Abort403(c)
 		return
 	}
 
@@ -68,6 +76,11 @@ func (ctrl *CategoriesController) Delete(c *gin.Context) {
 	categoryModel := category.Get(c.Request.Context(), c.Param("id"))
 	if categoryModel.ID == 0 {
 		response.Abort404(c)
+		return
+	}
+
+	if ok := policies.CanModifyCategory(c, categoryModel); !ok {
+		response.Abort403(c)
 		return
 	}
 

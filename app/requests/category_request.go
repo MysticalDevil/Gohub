@@ -10,8 +10,9 @@ type CategoryRequest struct {
 }
 
 func CategorySave(data any, c *gin.Context) map[string][]string {
+	id := c.Param("id")
 	rules := MapData{
-		"name":        []string{"required", "min_cn:2", "max_cn:8", "not_exists:categories,name"},
+		"name":        []string{"required", "min_cn:2", "max_cn:8", "not_exists:categories,name," + id},
 		"description": []string{"min_cn:3", "max_cn:255"},
 	}
 	messages := MapData{

@@ -53,6 +53,7 @@ func IssueToken(userModel user.User) string {
 type CategoryParams struct {
 	Name        string
 	Description string
+	UserID      string
 }
 
 func SeedCategory(t *testing.T, params CategoryParams) category.Category {
@@ -67,6 +68,7 @@ func SeedCategory(t *testing.T, params CategoryParams) category.Category {
 	model := category.Category{
 		Name:        params.Name,
 		Description: params.Description,
+		UserID:      params.UserID,
 	}
 	database.DB.Create(&model)
 	return model

@@ -13,6 +13,7 @@ type Category struct {
 
 	Name        string `json:"name,omitempty"`
 	Description string `json:"description,omitempty"`
+	UserID      string `json:"user_id,omitempty"`
 
 	models.CommonTimestampsField
 }
