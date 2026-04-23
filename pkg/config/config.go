@@ -25,8 +25,6 @@ func init() {
 	viper.SetConfigType("env")
 	// Path to look for the environment variable file
 	viper.AddConfigPath(".")
-	// Set environment variable prefix
-	viper.SetEnvPrefix("appEnv")
 	// Read environment variables
 	viper.AutomaticEnv()
 
