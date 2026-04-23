@@ -142,3 +142,24 @@ func TestUsersUpdateAvatar(t *testing.T) {
 		t.Fatalf("expected 200, got %d", rec.Code)
 	}
 }
+
+// TestUsersUpdateProfileSameName ensures that a user can update their own
+// profile without the not_exists validator rejecting their current name.
+func TestUsersUpdateProfileSameName(t *testing.T) {
+	tests.ResetState(t)
+	router := tests.NewRouter()
+
+	user := tests.SeedUser(t, tests.UserParams{Name: "sameuser"})
+	token := tests.IssueToken(user)
+
+	rec := tests.DoJSON(t, router, http.MethodPut, "/api/v1/users", map[string]any{
+		"name":         user.Name,
+		"city":         "newcity",
+		"introduction": "hello",
+	}, map[string]string{
+		"Authorization": "Bearer " + token,
+	})
+	if rec.Code != http.StatusOK {
+		t.Fatalf("expected 200, got %d", rec.Code)
+	}
+}

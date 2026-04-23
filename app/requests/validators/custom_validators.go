@@ -80,7 +80,7 @@ func ValidateFieldNotExist(ctx context.Context, field validator.FieldLevel) bool
 	query := database.DBWithContext(ctx).Table(tableName).Where(dbField+" = ?", requestValue)
 
 	if len(exceptID) > 0 {
-		query.Where("id != ?", exceptID)
+		query = query.Where("id != ?", exceptID)
 	}
 
 	var count int64
