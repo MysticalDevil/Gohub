@@ -1,0 +1,46 @@
+.git
+.gitignore
+.gitattributes
+
+# Build artifacts
+gohub
+*.exe
+*.dll
+*.so
+*.dylib
+
+# Test & temp files
+*.test
+*.tmp
+tmp/
+temp/
+*.db
+*.db-journal
+
+# Env files (except example)
+.env
+.env.*
+!.env.example
+!.env.docker
+
+# Storage
+storage/logs/*
+!storage/logs/.gitkeep
+public/uploads/*
+!public/uploads/.gitkeep
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Docker
+Dockerfile
+docker-compose*.yml
+.dockerignore

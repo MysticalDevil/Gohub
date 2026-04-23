@@ -1,0 +1,42 @@
+services:
+  app:
+    image: gohub-test
+    container_name: gohub-app
+    network_mode: host
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+
+  postgres:
+    image: postgres:18
+    container_name: gohub-postgres
+    network_mode: host
+    environment:
+      POSTGRES_USER: gohub
+      POSTGRES_PASSWORD: gohub
+      POSTGRES_DB: gohub
+    volumes:
+      - postgres_data:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U gohub -d gohub"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:8
+    container_name: gohub-redis
+    network_mode: host
+    volumes:
+      - redis_data:/data
+
+  mailpit:
+    image: axllent/mailpit
+    container_name: gohub-mailpit
+    network_mode: host
+
+volumes:
+  postgres_data:
+  redis_data:
