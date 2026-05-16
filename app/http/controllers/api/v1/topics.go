@@ -35,7 +35,11 @@ func (ctrl *TopicsController) Store(c *gin.Context) {
 }
 
 func (ctrl *TopicsController) Update(c *gin.Context) {
-	topicModel := topic.Get(c.Request.Context(), c.Param("id"))
+	topicModel, err := topic.Get(c.Request.Context(), c.Param("id"))
+	if err != nil {
+		response.Abort500(c, "Failed to query topic")
+		return
+	}
 	if topicModel.ID == 0 {
 		response.Abort404(c)
 		return
@@ -64,7 +68,11 @@ func (ctrl *TopicsController) Update(c *gin.Context) {
 }
 
 func (ctrl *TopicsController) Delete(c *gin.Context) {
-	topicModel := topic.Get(c.Request.Context(), c.Param("id"))
+	topicModel, err := topic.Get(c.Request.Context(), c.Param("id"))
+	if err != nil {
+		response.Abort500(c, "Failed to query topic")
+		return
+	}
 	if topicModel.ID == 0 {
 		response.Abort404(c)
 		return
@@ -95,7 +103,11 @@ func (ctrl *TopicsController) Index(c *gin.Context) {
 }
 
 func (ctrl *TopicsController) Show(c *gin.Context) {
-	topicModel := topic.Get(c.Request.Context(), c.Param("id"))
+	topicModel, err := topic.Get(c.Request.Context(), c.Param("id"))
+	if err != nil {
+		response.Abort500(c, "Failed to query topic")
+		return
+	}
 	if topicModel.ID == 0 {
 		response.Abort404(c)
 		return

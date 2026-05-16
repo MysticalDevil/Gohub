@@ -8,19 +8,19 @@ import (
 	"gohub/pkg/paginator"
 )
 
-func Get(ctx context.Context, idStr string) (category Category) {
+func Get(ctx context.Context, idStr string) (category Category, err error) {
 	return models.Get[Category](ctx, idStr)
 }
 
-func GetBy(ctx context.Context, field, value string) (category Category) {
+func GetBy(ctx context.Context, field, value string) (category Category, err error) {
 	return models.GetBy[Category](ctx, field, value)
 }
 
-func All(ctx context.Context) (categories []Category) {
+func All(ctx context.Context) (categories []Category, err error) {
 	return models.All[Category](ctx)
 }
 
-func IsExist(ctx context.Context, field, value string) bool {
+func IsExist(ctx context.Context, field, value string) (bool, error) {
 	return models.Exists[Category](ctx, field, value)
 }
 

@@ -34,8 +34,11 @@ func (ctrl *CategoriesController) Store(c *gin.Context) {
 }
 
 func (ctrl *CategoriesController) Update(c *gin.Context) {
-	// Verify that the url parameter id is correct
-	categoryModel := category.Get(c.Request.Context(), c.Param("id"))
+	categoryModel, err := category.Get(c.Request.Context(), c.Param("id"))
+	if err != nil {
+		response.Abort500(c, "Failed to query category")
+		return
+	}
 	if categoryModel.ID == 0 {
 		response.Abort404(c)
 		return
@@ -73,7 +76,11 @@ func (ctrl *CategoriesController) Index(c *gin.Context) {
 }
 
 func (ctrl *CategoriesController) Delete(c *gin.Context) {
-	categoryModel := category.Get(c.Request.Context(), c.Param("id"))
+	categoryModel, err := category.Get(c.Request.Context(), c.Param("id"))
+	if err != nil {
+		response.Abort500(c, "Failed to query category")
+		return
+	}
 	if categoryModel.ID == 0 {
 		response.Abort404(c)
 		return

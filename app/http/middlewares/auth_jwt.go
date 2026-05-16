@@ -13,7 +13,6 @@ import (
 func AuthJWT() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		claims, err := jwt.NewJWT().ParseToken(c)
-		// JWT parsing failed, an error occurred
 		if err != nil {
 			response.Unauthorized(c,
 				fmt.Sprintf("Please view the interface certification documents related to %v",
@@ -23,15 +22,16 @@ func AuthJWT() gin.HandlerFunc {
 			return
 		}
 
-		// JWT parsed successfully, set user information
-		userModel := user.Get(c.Request.Context(), claims.UserID)
+		userModel, err := user.Get(c.Request.Context(), claims.UserID)
+		if err != nil {
+			response.Abort500(c, "Failed to query user")
+			return
+		}
 		if userModel.ID == 0 {
 			response.Unauthorized(c, "Could not find corresponding user, user may have been deleted")
 			return
 		}
 
-		// Store the user information in gin.Context,
-		// and the subsequent auth package will get the current user data from here
 		c.Set("current_user_id", userModel.GetStringID())
 		c.Set("current_user_name", userModel.Name)
 		c.Set("current_user", userModel)

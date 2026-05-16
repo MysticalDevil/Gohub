@@ -11,19 +11,19 @@ import (
 	"gohub/pkg/paginator"
 )
 
-func Get(ctx context.Context, idStr string) (link Link) {
+func Get(ctx context.Context, idStr string) (link Link, err error) {
 	return models.Get[Link](ctx, idStr)
 }
 
-func GetBy(ctx context.Context, field, value string) (link Link) {
+func GetBy(ctx context.Context, field, value string) (link Link, err error) {
 	return models.GetBy[Link](ctx, field, value)
 }
 
-func All(ctx context.Context) (links []Link) {
+func All(ctx context.Context) (links []Link, err error) {
 	return models.All[Link](ctx)
 }
 
-func IsExist(ctx context.Context, field, value string) bool {
+func IsExist(ctx context.Context, field, value string) (bool, error) {
 	return models.Exists[Link](ctx, field, value)
 }
 
@@ -31,21 +31,20 @@ func Paginate(ctx context.Context, c *gin.Context, limit int) (links []Link, pag
 	return models.Paginate[Link](ctx, c, limit)
 }
 
-func AllCached(ctx context.Context) (links []Link) {
-	// Set cache key
+func AllCached(ctx context.Context) (links []Link, err error) {
 	cacheKey := "links:all"
-	// Set expire time
 	expireTime := 120 * time.Minute
-	// Get data
 	cache.GetObject(cacheKey, &links)
 
 	if helpers.Empty(links) {
-		links = All(ctx)
-		if helpers.Empty(links) {
-			return
+		links, err = All(ctx)
+		if err != nil {
+			return nil, err
 		}
-		// Set cache
+		if helpers.Empty(links) {
+			return links, nil
+		}
 		cache.Set(cacheKey, links, expireTime)
 	}
-	return
+	return links, nil
 }

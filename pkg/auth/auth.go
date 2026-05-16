@@ -1,4 +1,3 @@
-// Package auth Authorization related logic
 package auth
 
 import (
@@ -10,9 +9,11 @@ import (
 	"gohub/pkg/logger"
 )
 
-// Attempt Try to log in
 func Attempt(ctx context.Context, email, password string) (user.User, error) {
-	userModel := user.GetByUtil(ctx, email)
+	userModel, err := user.GetByUtil(ctx, email)
+	if err != nil {
+		return user.User{}, err
+	}
 	if userModel.ID == 0 {
 		return user.User{}, errors.New("account does not exist")
 	}
@@ -24,9 +25,11 @@ func Attempt(ctx context.Context, email, password string) (user.User, error) {
 	return userModel, nil
 }
 
-// LoginByPhone Login specified user
 func LoginByPhone(ctx context.Context, phone string) (user.User, error) {
-	userModel := user.GetByPhone(ctx, phone)
+	userModel, err := user.GetByPhone(ctx, phone)
+	if err != nil {
+		return user.User{}, err
+	}
 	if userModel.ID == 0 {
 		return user.User{}, errors.New("mobile number is not registered")
 	}
@@ -34,7 +37,6 @@ func LoginByPhone(ctx context.Context, phone string) (user.User, error) {
 	return userModel, nil
 }
 
-// CurrentUser Get the currently logged-in user from gin.Context
 func CurrentUser(c *gin.Context) user.User {
 	userModel, ok := c.MustGet("current_user").(user.User)
 	if !ok {
@@ -44,7 +46,6 @@ func CurrentUser(c *gin.Context) user.User {
 	return userModel
 }
 
-// CurrentUID Get the current login user ID from gin.Context
 func CurrentUID(c *gin.Context) string {
 	return c.GetString("current_user_id")
 }

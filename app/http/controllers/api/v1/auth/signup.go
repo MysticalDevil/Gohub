@@ -1,4 +1,3 @@
-// Package auth Handle user authentication related logic
 package auth
 
 import (
@@ -10,38 +9,42 @@ import (
 	"gohub/pkg/response"
 )
 
-// SignupController Register controller
 type SignupController struct {
 	v1.BaseAPIController
 }
 
-// IsPhoneExist Check if the phone number is registered
 func (sc *SignupController) IsPhoneExist(c *gin.Context) {
 	request := requests.SignupPhoneExistRequest{}
-	// Parse Json request
 	if ok := requests.Validate(c, &request, requests.SignupPhoneExist); !ok {
 		return
 	}
 
-	// Check database and return response
+	exist, err := user.IsPhoneExist(c.Request.Context(), request.Phone)
+	if err != nil {
+		response.Abort500(c, "Failed to check phone number")
+		return
+	}
 	response.Data(c, gin.H{
-		"exist": user.IsPhoneExist(c.Request.Context(), request.Phone),
+		"exist": exist,
 	})
 }
 
-// IsEmailExist  Check if the email is registered
 func (sc *SignupController) IsEmailExist(c *gin.Context) {
 	request := requests.SignupEmailExistRequest{}
 	if ok := requests.Validate(c, &request, requests.SignupEmailExist); !ok {
 		return
 	}
 
+	exist, err := user.IsEmailExist(c.Request.Context(), request.Email)
+	if err != nil {
+		response.Abort500(c, "Failed to check email")
+		return
+	}
 	response.Data(c, gin.H{
-		"exist": user.IsEmailExist(c.Request.Context(), request.Email),
+		"exist": exist,
 	})
 }
 
-// SignupUsingPhone Sign up with phone
 func (sc *SignupController) SignupUsingPhone(c *gin.Context) {
 	request := requests.SignupUsingPhoneRequest{}
 	if ok := requests.Validate(c, &request, requests.SignupUsingPhone); !ok {
@@ -66,7 +69,6 @@ func (sc *SignupController) SignupUsingPhone(c *gin.Context) {
 	}
 }
 
-// SignupUsingEmail Sign up with email
 func (sc *SignupController) SignupUsingEmail(c *gin.Context) {
 	request := requests.SignupUsingEmailRequest{}
 	if ok := requests.Validate(c, &request, requests.SignupUsingEmail); !ok {
