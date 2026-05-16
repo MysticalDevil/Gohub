@@ -20,7 +20,7 @@ func BcryptCheck(password, hash string) bool {
 	return err == nil
 }
 
-// BcryptIsHashed Determine if a string is hashed data
 func BcryptIsHashed(str string) bool {
-	return len(str) == 60
+	_, err := bcrypt.Cost([]byte(str))
+	return err == nil
 }

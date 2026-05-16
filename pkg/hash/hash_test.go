@@ -17,4 +17,6 @@ func TestBcryptHashAndCheck(t *testing.T) {
 func TestBcryptIsHashed(t *testing.T) {
 	require.True(t, BcryptIsHashed(BcryptHash("x")))
 	require.False(t, BcryptIsHashed("plain"))
+	require.False(t, BcryptIsHashed(""))
+	require.False(t, BcryptIsHashed("$2a$10$tooshort"))
 }
