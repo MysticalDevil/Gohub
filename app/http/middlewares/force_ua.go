@@ -17,6 +17,7 @@ func ForceUA() gin.HandlerFunc {
 				errors.New("User-Agent header not found"),
 				"Requests must be accompanied by a User-Agent header",
 			)
+			return
 		}
 
 		c.Next()
