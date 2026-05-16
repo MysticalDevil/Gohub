@@ -56,7 +56,7 @@ func (ctrl *CategoriesController) Update(c *gin.Context) {
 
 	categoryModel.Name = request.Name
 	categoryModel.Description = request.Description
-	rowsAffected := categoryModel.Save(c.Request.Context())
+	rowsAffected := categoryModel.UpdateFields(c.Request.Context(), request.Name, request.Description)
 
 	if rowsAffected > 0 {
 		response.Data(c, categoryModel)

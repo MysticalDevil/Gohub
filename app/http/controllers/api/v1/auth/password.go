@@ -28,8 +28,7 @@ func (pc *PasswordController) ResetByPhone(c *gin.Context) {
 		return
 	}
 
-	userModel.Password = request.Password
-	userModel.Save(c.Request.Context())
+	userModel.UpdatePassword(c.Request.Context(), request.Password)
 
 	response.Success(c)
 }
@@ -50,8 +49,7 @@ func (pc *PasswordController) ResetByEmail(c *gin.Context) {
 		return
 	}
 
-	userModel.Password = request.Password
-	userModel.Save(c.Request.Context())
+	userModel.UpdatePassword(c.Request.Context(), request.Password)
 
 	response.Success(c)
 }

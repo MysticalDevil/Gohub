@@ -36,6 +36,15 @@ func (topic *Topic) Save(ctx context.Context) (rowsAffected int64) {
 	return result.RowsAffected
 }
 
+func (topic *Topic) UpdateFields(ctx context.Context, title, body, categoryID string) (rowsAffected int64) {
+	result := database.DBWithContext(ctx).Model(&topic).Updates(map[string]any{
+		"title":       title,
+		"body":        body,
+		"category_id": categoryID,
+	})
+	return result.RowsAffected
+}
+
 func (topic *Topic) Delete(ctx context.Context) (rowsAffected int64) {
 	result := database.DBWithContext(ctx).Delete(&topic)
 	return result.RowsAffected

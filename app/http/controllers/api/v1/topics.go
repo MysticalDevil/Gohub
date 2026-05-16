@@ -59,7 +59,7 @@ func (ctrl *TopicsController) Update(c *gin.Context) {
 	topicModel.Body = request.Body
 	topicModel.CategoryID = request.CategoryID
 
-	rowsAffected := topicModel.Save(c.Request.Context())
+	rowsAffected := topicModel.UpdateFields(c.Request.Context(), request.Title, request.Body, request.CategoryID)
 	if rowsAffected > 0 {
 		response.Data(c, topicModel)
 	} else {

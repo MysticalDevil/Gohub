@@ -39,3 +39,33 @@ func (userModel *User) Save(ctx context.Context) (rowsAffected int64) {
 	result := database.DBWithContext(ctx).Save(&userModel)
 	return result.RowsAffected
 }
+
+func (userModel *User) UpdateProfile(ctx context.Context, name, city, introduction string) (rowsAffected int64) {
+	result := database.DBWithContext(ctx).Model(&userModel).Updates(map[string]any{
+		"name":         name,
+		"city":         city,
+		"introduction": introduction,
+	})
+	return result.RowsAffected
+}
+
+func (userModel *User) UpdateEmail(ctx context.Context, email string) (rowsAffected int64) {
+	result := database.DBWithContext(ctx).Model(&userModel).Update("email", email)
+	return result.RowsAffected
+}
+
+func (userModel *User) UpdatePhone(ctx context.Context, phone string) (rowsAffected int64) {
+	result := database.DBWithContext(ctx).Model(&userModel).Update("phone", phone)
+	return result.RowsAffected
+}
+
+func (userModel *User) UpdatePassword(ctx context.Context, password string) (rowsAffected int64) {
+	hashedPassword := hash.BcryptHash(password)
+	result := database.DBWithContext(ctx).Model(&userModel).Update("password", hashedPassword)
+	return result.RowsAffected
+}
+
+func (userModel *User) UpdateAvatar(ctx context.Context, avatar string) (rowsAffected int64) {
+	result := database.DBWithContext(ctx).Model(&userModel).Update("avatar", avatar)
+	return result.RowsAffected
+}

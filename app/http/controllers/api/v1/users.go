@@ -38,11 +38,8 @@ func (ctrl *UsersController) UpdateProfile(c *gin.Context) {
 	}
 
 	currentUser := auth.CurrentUser(c)
-	currentUser.Name = request.Name
-	currentUser.City = request.City
-	currentUser.Introduction = request.Introduction
 
-	rowsAffected := currentUser.Save(c.Request.Context())
+	rowsAffected := currentUser.UpdateProfile(c.Request.Context(), request.Name, request.City, request.Introduction)
 	if rowsAffected > 0 {
 		response.Data(c, currentUser)
 	} else {
@@ -57,9 +54,8 @@ func (ctrl *UsersController) UpdateEmail(c *gin.Context) {
 	}
 
 	currentUser := auth.CurrentUser(c)
-	currentUser.Email = request.Email
 
-	rowsAffected := currentUser.Save(c.Request.Context())
+	rowsAffected := currentUser.UpdateEmail(c.Request.Context(), request.Email)
 	if rowsAffected > 0 {
 		response.Success(c)
 	} else {
@@ -74,9 +70,8 @@ func (ctrl *UsersController) UpdatePhone(c *gin.Context) {
 	}
 
 	currentUser := auth.CurrentUser(c)
-	currentUser.Phone = request.Phone
 
-	rowsAffected := currentUser.Save(c.Request.Context())
+	rowsAffected := currentUser.UpdatePhone(c.Request.Context(), request.Phone)
 	if rowsAffected > 0 {
 		response.Success(c)
 	} else {
@@ -94,11 +89,14 @@ func (ctrl *UsersController) UpdatePassword(c *gin.Context) {
 	_, err := auth.Attempt(c.Request.Context(), currentUser.Name, request.Password)
 	if err != nil {
 		response.Unauthorized(c, "The original password is incorrect")
-	} else {
-		currentUser.Password = request.NewPassword
-		currentUser.Save(c.Request.Context())
+		return
+	}
 
+	rowsAffected := currentUser.UpdatePassword(c.Request.Context(), request.NewPassword)
+	if rowsAffected > 0 {
 		response.Success(c)
+	} else {
+		response.Abort500(c, "Failed to update password, please try later~")
 	}
 }
 
@@ -116,7 +114,11 @@ func (ctrl *UsersController) UpdateAvatar(c *gin.Context) {
 
 	currentUser := auth.CurrentUser(c)
 	currentUser.Avatar = config.GetString("app.url") + avatar
-	currentUser.Save(c.Request.Context())
+	rowsAffected := currentUser.UpdateAvatar(c.Request.Context(), currentUser.Avatar)
 
-	response.Data(c, currentUser)
+	if rowsAffected > 0 {
+		response.Data(c, currentUser)
+	} else {
+		response.Abort500(c, "Failed to update avatar, please try later~")
+	}
 }
