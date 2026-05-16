@@ -51,22 +51,11 @@ func (sc *SignupController) SignupUsingPhone(c *gin.Context) {
 		return
 	}
 
-	userModel := user.User{
+	sc.createUserAndRespond(c, user.User{
 		Name:     request.Name,
 		Phone:    request.Phone,
 		Password: request.Password,
-	}
-	userModel.Create(c.Request.Context())
-
-	if userModel.ID > 0 {
-		token := jwt.NewJWT().IssueToken(userModel.GetStringID(), userModel.Name)
-		response.Created(c, gin.H{
-			"token": token,
-			"user":  userModel,
-		})
-	} else {
-		response.Abort500(c, "Failed to create user, please try later~")
-	}
+	})
 }
 
 func (sc *SignupController) SignupUsingEmail(c *gin.Context) {
@@ -75,11 +64,14 @@ func (sc *SignupController) SignupUsingEmail(c *gin.Context) {
 		return
 	}
 
-	userModel := user.User{
+	sc.createUserAndRespond(c, user.User{
 		Name:     request.Name,
 		Email:    request.Email,
 		Password: request.Password,
-	}
+	})
+}
+
+func (sc *SignupController) createUserAndRespond(c *gin.Context, userModel user.User) {
 	userModel.Create(c.Request.Context())
 
 	if userModel.ID > 0 {
