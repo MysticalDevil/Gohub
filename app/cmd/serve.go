@@ -18,9 +18,11 @@ var Serve = &cobra.Command{
 }
 
 func runWeb(_ *cobra.Command, _ []string) {
-	// Set the running mode of gin, support debug, release, test
-	// release mod will block debugging information
-	gin.SetMode(gin.ReleaseMode)
+	if config.GetBool("app.debug") {
+		gin.SetMode(gin.DebugMode)
+	} else {
+		gin.SetMode(gin.ReleaseMode)
+	}
 
 	router := gin.New()
 
