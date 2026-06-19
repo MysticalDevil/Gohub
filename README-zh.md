@@ -1,7 +1,8 @@
 # Gohub
+
 基于 Gin 框架的 Go 语言论坛 API 项目
 
-# 使用到的开源库
+## 使用到的开源库
 
 - [`gin`](https://github.com/gin-gonic/gin) 路由、路由组、中间件
 
@@ -37,7 +38,7 @@
 
 - [`imaging`](https://github.com/disintegration/imaging) 图片裁切
 
-# 自定义包
+## 自定义包
 
 - app 应用对象
 - auth 用户授权
@@ -62,7 +63,7 @@
 - str 字符串处理
 - verifycode 数字验证码
 
-# 支持的指令
+## 支持的指令
 
 ```shell
 $ go run main.go -h
@@ -83,19 +84,51 @@ Available Commands:
   serve       Start web server
 
 Flags:
-  -e, --env string   load .env file, example: --env=testing will use .env.testing file
+  -e, --env string   load .env file, example:
+                     --env=testing will use .env.testing file
   -h, --help         help for Gohub
 
 Use "Gohub [command] --help" for more information about a command.
 ```
 
-## 配置提示
-`APP_KEY` 必须是安全随机值。可通过 `go run main.go key` 生成并填入 `.env`。
-`APP_ENV_PATH` 可指定自定义 env 文件路径（例如测试场景），优先级高于 `-e/--env` 与默认 `.env`。
-测试中若设置 `CONSOLE_SILENT=1`，将静默控制台输出（仅在 `APP_ENV=testing` 时生效）。
+常用命令：
 
-## API 响应格式
+```shell
+# 生成 APP_KEY；不会初始化数据库或 Redis
+go run main.go key
+
+# 执行数据库迁移；只初始化日志和数据库
+go run main.go migrate up
+
+# 启动完整 API 运行时
+go run main.go serve
+
+# 运行真实 HTTP API smoke 测试
+python3 scripts/api_smoke_test.py --base-url http://127.0.0.1:3000
+```
+
+命令初始化范围：
+
+- `key`、`make` 不初始化数据库或 Redis。
+- `migrate`、`seed` 只初始化日志与数据库。
+- `cache` 只初始化日志、Redis 与缓存。
+- `serve` 初始化完整 API 运行时。
+
+### 配置提示
+
+`APP_KEY` 必须是安全随机值。可通过 `go run main.go key` 生成并填入
+`.env`。
+`APP_ENV_PATH` 可指定自定义 env 文件路径（例如测试场景），优先级高于
+`-e/--env` 与默认 `.env`。
+测试中若设置 `CONSOLE_SILENT=1`，将静默控制台输出（仅在
+`APP_ENV=testing` 时生效）。
+`.env.testing` 使用 `/tmp/gohub_api_smoke.db` 作为 SQLite 数据库，用于
+本地真实 HTTP smoke 测试。
+
+### API 响应格式
+
 统一响应结构：
+
 ```json
 {
   "code": "OK",
@@ -105,6 +138,7 @@ Use "Gohub [command] --help" for more information about a command.
 ```
 
 校验/处理失败：
+
 ```json
 {
   "code": "ERR_VALIDATION",
@@ -116,6 +150,7 @@ Use "Gohub [command] --help" for more information about a command.
 ```
 
 分页使用 `offset/limit`，返回：
+
 ```json
 {
   "code": "OK",
@@ -129,7 +164,78 @@ Use "Gohub [command] --help" for more information about a command.
 }
 ```
 
-# TODO
-Postman 文档书写
-支持多种缓存中间件，目前只支持 Redis
-使用多种 Web 框架重构，例如 Iris，Fiber 等
+常用响应码：
+
+- `OK`
+- `CREATED`
+- `ERR_BAD_REQUEST`
+- `ERR_UNAUTHORIZED`
+- `ERR_FORBIDDEN`
+- `ERR_NOT_FOUND`
+- `ERR_VALIDATION`
+- `ERR_UNPROCESSABLE`
+- `ERR_INTERNAL`
+
+分页查询参数：
+
+- `offset`：整数，最小值 `0`
+- `limit`：整数，范围 `1..100`
+- `sort`：`id`、`created_at`、`updated_at`
+- `order`：`asc`、`desc`
+
+### API 路由
+
+默认 API 前缀为 `/api/v1`。如果配置了 `API_DOMAIN`，前缀为 `/v1`。
+
+| 方法 | 路径 | 认证 | 说明 |
+|---|---|---:|---|
+| POST | `/auth/signup/phone/exist` | 否 | 检查手机号是否已注册 |
+| POST | `/auth/signup/email/exist` | 否 | 检查邮箱是否已注册 |
+| POST | `/auth/signup/using-phone` | 否 | 手机号 + 验证码注册 |
+| POST | `/auth/signup/using-email` | 否 | 邮箱 + 验证码注册 |
+| POST | `/auth/verify-codes/captcha` | 否 | 生成图片验证码 |
+| POST | `/auth/verify-codes/phone` | 否 | 发送手机验证码 |
+| POST | `/auth/verify-codes/email` | 否 | 发送邮箱验证码 |
+| POST | `/auth/login/using-phone` | 否 | 手机号 + 验证码登录 |
+| POST | `/auth/login/using-password` | 否 | 用户名/邮箱/手机号 + 密码登录 |
+| POST | `/auth/login/refresh-token` | Bearer | 刷新访问令牌 |
+| POST | `/auth/password-reset/using-phone` | 否 | 通过手机验证码重置密码 |
+| POST | `/auth/password-reset/using-email` | 否 | 通过邮箱验证码重置密码 |
+| GET | `/user` | Bearer | 当前用户 |
+| GET | `/users` | 否 | 用户分页列表 |
+| PUT | `/users` | Bearer | 更新个人资料 |
+| PUT | `/users/email` | Bearer | 更新邮箱 |
+| PUT | `/users/phone` | Bearer | 更新手机号 |
+| PUT | `/users/password` | Bearer | 更新密码 |
+| PUT | `/users/avatar` | Bearer | 以 multipart 字段 `avatar` 上传头像 |
+| GET | `/categories` | 否 | 分类分页列表 |
+| POST | `/categories` | Bearer | 创建分类 |
+| PUT | `/categories/:id` | Bearer | 更新本人分类 |
+| DELETE | `/categories/:id` | Bearer | 删除本人分类 |
+| GET | `/topics` | 否 | 话题分页列表 |
+| GET | `/topics/:id` | 否 | 话题详情 |
+| POST | `/topics` | Bearer | 创建话题 |
+| PUT | `/topics/:id` | Bearer | 更新本人话题 |
+| DELETE | `/topics/:id` | Bearer | 删除本人话题 |
+| GET | `/links` | 否 | 友情链接列表 |
+
+### 真实 API Smoke 测试
+
+`scripts/api_smoke_test.py` 会通过真实 HTTP 请求覆盖 `routes/api.go` 注册的全部路由。
+
+```shell
+go run main.go --env=testing migrate fresh
+go run main.go --env=testing serve
+python3 scripts/api_smoke_test.py --base-url http://127.0.0.1:3000
+```
+
+在 `APP_ENV=testing` 中，验证码支持内置测试快捷值：
+
+- 图片验证码 ID：`captcha_skip_test`
+- 手机号前缀：`000`
+- 邮箱后缀：`@testing.com`
+
+## TODO
+
+- 支持多种缓存中间件，目前只支持 Redis/内存测试存储
+- 可选补充 Postman collection
