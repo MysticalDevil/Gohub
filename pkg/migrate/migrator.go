@@ -105,13 +105,13 @@ func (migrator *Migrator) rollbackMigrations(migrations []Migration) bool {
 		// Execute the down method of migrating files
 		mfile := getMigrationFile(_migration.Migration)
 		if mfile.Down != nil {
-			mfile.Down(database.DB.Migrator(), database.SQLDB)
+			console.ExitIf(mfile.Down(database.DB.Migrator(), database.SQLDB))
 		}
 
 		runed = true
 
 		// Delete this record if the rollback is successful
-		migrator.DB.Delete(&_migration)
+		console.ExitIf(migrator.DB.Delete(&_migration).Error)
 
 		console.Success("finish " + mfile.FileName)
 	}
@@ -205,7 +205,7 @@ func (migrator *Migrator) runUpMigration(mfile MigrationFile, batch int) {
 	if mfile.Up != nil {
 		console.Warning("migrating " + mfile.FileName)
 		// Execute up method
-		mfile.Up(database.DB.Migrator(), database.SQLDB)
+		console.ExitIf(mfile.Up(database.DB.Migrator(), database.SQLDB))
 		// Prompts for that file to be migrated
 		console.Success("migrated " + mfile.FileName)
 	}

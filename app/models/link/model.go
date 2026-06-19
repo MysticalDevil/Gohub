@@ -17,16 +17,16 @@ type Link struct {
 	models.CommonTimestampsField
 }
 
-func (link *Link) Create(ctx context.Context) {
-	database.DBWithContext(ctx).Create(&link)
+func (link *Link) Create(ctx context.Context) error {
+	return database.DBWithContext(ctx).Create(&link).Error
 }
 
-func (link *Link) Save(ctx context.Context) (rowsAffected int64) {
+func (link *Link) Save(ctx context.Context) (rowsAffected int64, err error) {
 	result := database.DBWithContext(ctx).Save(&link)
-	return result.RowsAffected
+	return result.RowsAffected, result.Error
 }
 
-func (link *Link) Delete(ctx context.Context) (rowsAffected int64) {
+func (link *Link) Delete(ctx context.Context) (rowsAffected int64, err error) {
 	result := database.DBWithContext(ctx).Delete(&link)
-	return result.RowsAffected
+	return result.RowsAffected, result.Error
 }

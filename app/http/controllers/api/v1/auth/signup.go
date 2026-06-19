@@ -72,15 +72,14 @@ func (sc *SignupController) SignupUsingEmail(c *gin.Context) {
 }
 
 func (sc *SignupController) createUserAndRespond(c *gin.Context, userModel user.User) {
-	userModel.Create(c.Request.Context())
-
-	if userModel.ID > 0 {
-		token := jwt.NewJWT().IssueToken(userModel.GetStringID(), userModel.Name)
-		response.Created(c, gin.H{
-			"token": token,
-			"user":  userModel,
-		})
-	} else {
+	if err := userModel.Create(c.Request.Context()); err != nil {
 		response.Abort500(c, "Failed to create user, please try later~")
+		return
 	}
+
+	token := jwt.NewJWT().IssueToken(userModel.GetStringID(), userModel.Name)
+	response.Created(c, gin.H{
+		"token": token,
+		"user":  userModel,
+	})
 }

@@ -1,6 +1,9 @@
 package middlewares
 
 import (
+	"io"
+	"net/http"
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -32,4 +35,25 @@ func TestSanitizeBodyIgnoresNonJSON(t *testing.T) {
 
 func TestSanitizeBodyEmpty(t *testing.T) {
 	require.Equal(t, "", sanitizeBody(""))
+}
+
+func TestSanitizeRequestForLogRedactsHeadersAndOmitsBody(t *testing.T) {
+	req, err := http.NewRequest(
+		http.MethodPost,
+		"/login",
+		io.NopCloser(strings.NewReader(`{"password":"secret","verify_code":"123456"}`)),
+	)
+	require.NoError(t, err)
+	req.Header.Set("Authorization", "Bearer token")
+	req.Header.Set("Cookie", "session=abc")
+	req.Header.Set("Content-Type", "application/json")
+
+	result := sanitizeRequestForLog(req)
+
+	require.Contains(t, result, "Authorization: [REDACTED]")
+	require.Contains(t, result, "Cookie: [REDACTED]")
+	require.NotContains(t, result, "Bearer token")
+	require.NotContains(t, result, "session=abc")
+	require.NotContains(t, result, "secret")
+	require.NotContains(t, result, "123456")
 }

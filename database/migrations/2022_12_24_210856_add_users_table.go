@@ -21,12 +21,12 @@ func init() {
 		models.CommonTimestampsField
 	}
 
-	up := func(migrator gorm.Migrator, DB *sql.DB) {
-		_ = migrator.AutoMigrate(&User{})
+	up := func(migrator gorm.Migrator, DB *sql.DB) error {
+		return migrator.AutoMigrate(&User{})
 	}
 
-	down := func(migrator gorm.Migrator, DB *sql.DB) {
-		_ = migrator.DropTable(&User{})
+	down := func(migrator gorm.Migrator, DB *sql.DB) error {
+		return migrator.DropTable(&User{})
 	}
 
 	migrate.Add("2022_12_24_210856_add_users_table", up, down)

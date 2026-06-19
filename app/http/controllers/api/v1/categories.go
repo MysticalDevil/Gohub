@@ -25,12 +25,11 @@ func (ctrl *CategoriesController) Store(c *gin.Context) {
 		UserID:      auth.CurrentUID(c),
 	}
 
-	categoryModel.Create(c.Request.Context())
-	if categoryModel.ID > 0 {
-		response.Created(c, categoryModel)
-	} else {
+	if err := categoryModel.Create(c.Request.Context()); err != nil {
 		response.Abort500(c, "Failed to create, please try later ~")
+		return
 	}
+	response.Created(c, categoryModel)
 }
 
 func (ctrl *CategoriesController) Update(c *gin.Context) {
@@ -56,7 +55,11 @@ func (ctrl *CategoriesController) Update(c *gin.Context) {
 
 	categoryModel.Name = request.Name
 	categoryModel.Description = request.Description
-	rowsAffected := categoryModel.UpdateFields(c.Request.Context(), request.Name, request.Description)
+	rowsAffected, err := categoryModel.UpdateFields(c.Request.Context(), request.Name, request.Description)
+	if err != nil {
+		response.Abort500(c)
+		return
+	}
 
 	if rowsAffected > 0 {
 		response.Data(c, categoryModel)
@@ -91,7 +94,11 @@ func (ctrl *CategoriesController) Delete(c *gin.Context) {
 		return
 	}
 
-	rowsAffected := categoryModel.Delete(c.Request.Context())
+	rowsAffected, err := categoryModel.Delete(c.Request.Context())
+	if err != nil {
+		response.Abort500(c, "Deletion failed, please try later~")
+		return
+	}
 	if rowsAffected > 0 {
 		response.Success(c)
 		return

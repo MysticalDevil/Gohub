@@ -5,7 +5,6 @@ import (
 	"context"
 	"database/sql"
 	"errors"
-	"fmt"
 
 	"gohub/pkg/config"
 	"gohub/pkg/logger"
@@ -19,20 +18,21 @@ var (
 )
 
 // Connect To connect database
-func Connect(dbConfig gorm.Dialector, _logger gormLogger.Interface) {
+func Connect(dbConfig gorm.Dialector, _logger gormLogger.Interface) error {
 	// Use gorm.Open to connect to the database
 	var err error
 	DB, err = gorm.Open(dbConfig, &gorm.Config{
 		Logger: _logger,
 	})
 	if err != nil {
-		fmt.Println(err.Error())
+		return err
 	}
 
 	SQLDB, err = DB.DB()
 	if err != nil {
-		fmt.Println(err.Error())
+		return err
 	}
+	return nil
 }
 
 func CurrentDatabase() (dbName string) {
@@ -117,7 +117,9 @@ func deleteAllSqliteTables() error {
 	var tables []string
 
 	// Read all tables
-	err := DB.Select(&tables, "SELECT name FROM sqlite_master WHERE type='table'").Error
+	err := DB.Raw("SELECT name FROM sqlite_master WHERE type = ? AND name NOT LIKE ?", "table", "sqlite_%").
+		Scan(&tables).
+		Error
 	if err != nil {
 		return err
 	}

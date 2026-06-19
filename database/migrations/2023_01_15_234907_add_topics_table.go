@@ -32,12 +32,12 @@ func init() {
 		models.CommonTimestampsField
 	}
 
-	up := func(migrator gorm.Migrator, DB *sql.DB) {
-		_ = migrator.AutoMigrate(&Topic{})
+	up := func(migrator gorm.Migrator, DB *sql.DB) error {
+		return migrator.AutoMigrate(&Topic{})
 	}
 
-	down := func(migrator gorm.Migrator, DB *sql.DB) {
-		_ = migrator.DropTable(&Topic{})
+	down := func(migrator gorm.Migrator, DB *sql.DB) error {
+		return migrator.DropTable(&Topic{})
 	}
 
 	migrate.Add("2023_01_15_234907_add_topics_table", up, down)

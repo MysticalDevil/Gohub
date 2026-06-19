@@ -38,3 +38,10 @@ func TestGetObjectMissingKey(t *testing.T) {
 	GetObject("links:missing", &wanted)
 	require.Empty(t, wanted)
 }
+
+func TestRedisStorePrefixesIncrementParameters(t *testing.T) {
+	store := &RedisStore{KeyPrefix: "app:cache:"}
+
+	require.Equal(t, []any{"app:cache:visits"}, store.prefixedParameters("visits"))
+	require.Equal(t, []any{"app:cache:visits", int64(3)}, store.prefixedParameters("visits", int64(3)))
+}

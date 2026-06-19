@@ -26,12 +26,11 @@ func (ctrl *TopicsController) Store(c *gin.Context) {
 		UserID:     auth.CurrentUID(c),
 	}
 
-	topicModel.Create(c.Request.Context())
-	if topicModel.ID > 0 {
-		response.Created(c, topicModel)
-	} else {
+	if err := topicModel.Create(c.Request.Context()); err != nil {
 		response.Abort500(c, "Failed to create, please try later~")
+		return
 	}
+	response.Created(c, topicModel)
 }
 
 func (ctrl *TopicsController) Update(c *gin.Context) {
@@ -59,7 +58,11 @@ func (ctrl *TopicsController) Update(c *gin.Context) {
 	topicModel.Body = request.Body
 	topicModel.CategoryID = request.CategoryID
 
-	rowsAffected := topicModel.UpdateFields(c.Request.Context(), request.Title, request.Body, request.CategoryID)
+	rowsAffected, err := topicModel.UpdateFields(c.Request.Context(), request.Title, request.Body, request.CategoryID)
+	if err != nil {
+		response.Abort500(c, "Failed to update, please try later~")
+		return
+	}
 	if rowsAffected > 0 {
 		response.Data(c, topicModel)
 	} else {
@@ -83,7 +86,11 @@ func (ctrl *TopicsController) Delete(c *gin.Context) {
 		return
 	}
 
-	rowsAffected := topicModel.Delete(c.Request.Context())
+	rowsAffected, err := topicModel.Delete(c.Request.Context())
+	if err != nil {
+		response.Abort500(c, "Failed to delete, please try later~")
+		return
+	}
 	if rowsAffected > 0 {
 		response.Success(c)
 		return

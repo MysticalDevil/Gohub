@@ -80,6 +80,13 @@ func sanitizeBody(bodyStr string) string {
 	return string(b)
 }
 
+func redactSensitiveHeader(value string) string {
+	if strings.TrimSpace(value) == "" {
+		return value
+	}
+	return "[REDACTED]"
+}
+
 // Logger Log request
 func Logger() gin.HandlerFunc {
 	return func(c *gin.Context) {

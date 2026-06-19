@@ -8,7 +8,7 @@ import (
 )
 
 // migrationFunc Define the type of up and down callback methods
-type migrationFunc func(migrator gorm.Migrator, db *sql.DB)
+type migrationFunc func(migrator gorm.Migrator, db *sql.DB) error
 
 // migrationFiles Array of all migration files
 var migrationFiles []MigrationFile

@@ -49,9 +49,22 @@ func (s *RedisStore) IsAlive() error {
 }
 
 func (s *RedisStore) Increment(parameters ...any) {
-	s.RedisClient.Increment(parameters...)
+	s.RedisClient.Increment(s.prefixedParameters(parameters...)...)
 }
 
 func (s *RedisStore) Decrement(parameters ...any) {
-	s.RedisClient.Decrement(parameters...)
+	s.RedisClient.Decrement(s.prefixedParameters(parameters...)...)
+}
+
+func (s *RedisStore) prefixedParameters(parameters ...any) []any {
+	if len(parameters) == 0 {
+		return parameters
+	}
+
+	prefixed := make([]any, len(parameters))
+	copy(prefixed, parameters)
+	if key, ok := parameters[0].(string); ok {
+		prefixed[0] = s.KeyPrefix + key
+	}
+	return prefixed
 }

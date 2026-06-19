@@ -19,12 +19,12 @@ func init() {
 		models.CommonTimestampsField
 	}
 
-	up := func(migrator gorm.Migrator, DB *sql.DB) {
-		_ = migrator.AutoMigrate(&Link{})
+	up := func(migrator gorm.Migrator, DB *sql.DB) error {
+		return migrator.AutoMigrate(&Link{})
 	}
 
-	down := func(migrator gorm.Migrator, DB *sql.DB) {
-		_ = migrator.DropTable(&Link{})
+	down := func(migrator gorm.Migrator, DB *sql.DB) error {
+		return migrator.DropTable(&Link{})
 	}
 
 	migrate.Add("2023_01_16_144259_add_links_table", up, down)

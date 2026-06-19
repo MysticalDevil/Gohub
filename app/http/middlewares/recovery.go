@@ -3,6 +3,7 @@ package middlewares
 import (
 	"log/slog"
 	"net"
+	"net/http"
 	"net/http/httputil"
 	"os"
 	"runtime/debug"
@@ -19,7 +20,7 @@ func Recovery() gin.HandlerFunc {
 		defer func() {
 			if err := recover(); err != nil {
 				// Get user request information
-				httpRequest, _ := httputil.DumpRequest(c.Request, true)
+				httpRequest := sanitizeRequestForLog(c.Request)
 
 				// When the link is interrupted,
 				// it is normal behavior for the client to interrupt the connection,
@@ -38,7 +39,7 @@ func Recovery() gin.HandlerFunc {
 				if brokenPipe {
 					logger.Error(c.Request.URL.Path,
 						slog.Any("error", err),
-						slog.String("request", string(httpRequest)),
+						slog.String("request", httpRequest),
 					)
 					_ = c.Error(err.(error))
 					c.Abort()
@@ -48,7 +49,7 @@ func Recovery() gin.HandlerFunc {
 				// If it is not a link break, start recording stack information
 				logger.Error("recovery from panic",
 					slog.Any("error", err),
-					slog.String("request", string(httpRequest)),
+					slog.String("request", httpRequest),
 					slog.String("stacktrace", string(debug.Stack())),
 				)
 
@@ -58,4 +59,20 @@ func Recovery() gin.HandlerFunc {
 		}()
 		c.Next()
 	}
+}
+
+func sanitizeRequestForLog(r *http.Request) string {
+	cloned := r.Clone(r.Context())
+	cloned.Header = r.Header.Clone()
+	for _, header := range []string{"Authorization", "Cookie", "X-Api-Key"} {
+		if value := cloned.Header.Get(header); value != "" {
+			cloned.Header.Set(header, redactSensitiveHeader(value))
+		}
+	}
+
+	httpRequest, err := httputil.DumpRequest(cloned, false)
+	if err != nil {
+		return r.Method + " " + r.URL.String()
+	}
+	return string(httpRequest)
 }

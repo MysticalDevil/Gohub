@@ -27,25 +27,25 @@ type Topic struct {
 	models.CommonTimestampsField
 }
 
-func (topic *Topic) Create(ctx context.Context) {
-	database.DBWithContext(ctx).Create(&topic)
+func (topic *Topic) Create(ctx context.Context) error {
+	return database.DBWithContext(ctx).Create(&topic).Error
 }
 
-func (topic *Topic) Save(ctx context.Context) (rowsAffected int64) {
+func (topic *Topic) Save(ctx context.Context) (rowsAffected int64, err error) {
 	result := database.DBWithContext(ctx).Save(&topic)
-	return result.RowsAffected
+	return result.RowsAffected, result.Error
 }
 
-func (topic *Topic) UpdateFields(ctx context.Context, title, body, categoryID string) (rowsAffected int64) {
+func (topic *Topic) UpdateFields(ctx context.Context, title, body, categoryID string) (rowsAffected int64, err error) {
 	result := database.DBWithContext(ctx).Model(&topic).Updates(map[string]any{
 		"title":       title,
 		"body":        body,
 		"category_id": categoryID,
 	})
-	return result.RowsAffected
+	return result.RowsAffected, result.Error
 }
 
-func (topic *Topic) Delete(ctx context.Context) (rowsAffected int64) {
+func (topic *Topic) Delete(ctx context.Context) (rowsAffected int64, err error) {
 	result := database.DBWithContext(ctx).Delete(&topic)
-	return result.RowsAffected
+	return result.RowsAffected, result.Error
 }

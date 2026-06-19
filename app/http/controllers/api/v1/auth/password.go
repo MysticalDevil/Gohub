@@ -28,7 +28,10 @@ func (pc *PasswordController) ResetByPhone(c *gin.Context) {
 		return
 	}
 
-	userModel.UpdatePassword(c.Request.Context(), request.Password)
+	if _, err := userModel.UpdatePassword(c.Request.Context(), request.Password); err != nil {
+		response.Abort500(c, "Failed to update password")
+		return
+	}
 
 	response.Success(c)
 }
@@ -49,7 +52,10 @@ func (pc *PasswordController) ResetByEmail(c *gin.Context) {
 		return
 	}
 
-	userModel.UpdatePassword(c.Request.Context(), request.Password)
+	if _, err := userModel.UpdatePassword(c.Request.Context(), request.Password); err != nil {
+		response.Abort500(c, "Failed to update password")
+		return
+	}
 
 	response.Success(c)
 }

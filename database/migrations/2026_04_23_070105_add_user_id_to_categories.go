@@ -16,12 +16,12 @@ func init() {
 		UserID string `gorm:"type:bigint;default:0;index"`
 	}
 
-	up := func(migrator gorm.Migrator, DB *sql.DB) {
-		_ = migrator.AutoMigrate(&Category{})
+	up := func(migrator gorm.Migrator, DB *sql.DB) error {
+		return migrator.AutoMigrate(&Category{})
 	}
 
-	down := func(migrator gorm.Migrator, DB *sql.DB) {
-		_ = migrator.DropColumn(&Category{}, "UserID")
+	down := func(migrator gorm.Migrator, DB *sql.DB) error {
+		return migrator.DropColumn(&Category{}, "UserID")
 	}
 
 	migrate.Add("2026_04_23_070105_add_user_id_to_categories", up, down)

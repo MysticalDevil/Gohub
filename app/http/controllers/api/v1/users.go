@@ -39,7 +39,11 @@ func (ctrl *UsersController) UpdateProfile(c *gin.Context) {
 
 	currentUser := auth.CurrentUser(c)
 
-	rowsAffected := currentUser.UpdateProfile(c.Request.Context(), request.Name, request.City, request.Introduction)
+	rowsAffected, err := currentUser.UpdateProfile(c.Request.Context(), request.Name, request.City, request.Introduction)
+	if err != nil {
+		response.Abort500(c, "Failed to update, please try later~")
+		return
+	}
 	if rowsAffected > 0 {
 		response.Data(c, currentUser)
 	} else {
@@ -55,7 +59,11 @@ func (ctrl *UsersController) UpdateEmail(c *gin.Context) {
 
 	currentUser := auth.CurrentUser(c)
 
-	rowsAffected := currentUser.UpdateEmail(c.Request.Context(), request.Email)
+	rowsAffected, err := currentUser.UpdateEmail(c.Request.Context(), request.Email)
+	if err != nil {
+		response.Abort500(c, "Failed to update, please try later~")
+		return
+	}
 	if rowsAffected > 0 {
 		response.Success(c)
 	} else {
@@ -71,7 +79,11 @@ func (ctrl *UsersController) UpdatePhone(c *gin.Context) {
 
 	currentUser := auth.CurrentUser(c)
 
-	rowsAffected := currentUser.UpdatePhone(c.Request.Context(), request.Phone)
+	rowsAffected, err := currentUser.UpdatePhone(c.Request.Context(), request.Phone)
+	if err != nil {
+		response.Abort500(c, "Failed to update, please try later~")
+		return
+	}
 	if rowsAffected > 0 {
 		response.Success(c)
 	} else {
@@ -92,7 +104,11 @@ func (ctrl *UsersController) UpdatePassword(c *gin.Context) {
 		return
 	}
 
-	rowsAffected := currentUser.UpdatePassword(c.Request.Context(), request.NewPassword)
+	rowsAffected, err := currentUser.UpdatePassword(c.Request.Context(), request.NewPassword)
+	if err != nil {
+		response.Abort500(c, "Failed to update password, please try later~")
+		return
+	}
 	if rowsAffected > 0 {
 		response.Success(c)
 	} else {
@@ -114,7 +130,11 @@ func (ctrl *UsersController) UpdateAvatar(c *gin.Context) {
 
 	currentUser := auth.CurrentUser(c)
 	currentUser.Avatar = config.GetString("app.url") + avatar
-	rowsAffected := currentUser.UpdateAvatar(c.Request.Context(), currentUser.Avatar)
+	rowsAffected, err := currentUser.UpdateAvatar(c.Request.Context(), currentUser.Avatar)
+	if err != nil {
+		response.Abort500(c, "Failed to update avatar, please try later~")
+		return
+	}
 
 	if rowsAffected > 0 {
 		response.Data(c, currentUser)

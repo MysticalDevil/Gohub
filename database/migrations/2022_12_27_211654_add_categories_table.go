@@ -19,12 +19,12 @@ func init() {
 		models.CommonTimestampsField
 	}
 
-	up := func(migrator gorm.Migrator, DB *sql.DB) {
-		_ = migrator.AutoMigrate(&Category{})
+	up := func(migrator gorm.Migrator, DB *sql.DB) error {
+		return migrator.AutoMigrate(&Category{})
 	}
 
-	down := func(migrator gorm.Migrator, DB *sql.DB) {
-		_ = migrator.DropTable(&Category{})
+	down := func(migrator gorm.Migrator, DB *sql.DB) error {
+		return migrator.DropTable(&Category{})
 	}
 
 	migrate.Add("2022_12_27_211654_add_categories_table", up, down)

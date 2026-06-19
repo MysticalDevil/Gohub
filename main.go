@@ -27,18 +27,28 @@ func main() {
 
 		// All subcommands of rootCmd execute the following code
 		PersistentPreRun: func(command *cobra.Command, args []string) {
+			if commandInTree(command, "key") || commandInTree(command, "make") {
+				return
+			}
+
 			config.InitConfig(cmd.Env)
 
 			// Initialize Logger
 			bootstrap.SetupLogger()
 
-			// Initialize DB
+			if commandInTree(command, "migrate") || commandInTree(command, "seed") {
+				bootstrap.SetupDB()
+				return
+			}
+
+			if commandInTree(command, "cache") {
+				bootstrap.SetupRedis()
+				bootstrap.SetupCache()
+				return
+			}
+
 			bootstrap.SetupDB()
-
-			// Initialize Redis
 			bootstrap.SetupRedis()
-
-			// Initialize the cache
 			bootstrap.SetupCache()
 		},
 	}
@@ -64,4 +74,13 @@ func main() {
 	if err := rootCmd.Execute(); err != nil {
 		console.Exit(fmt.Sprintf("Failed to run app with %v: %x", os.Args, err.Error()))
 	}
+}
+
+func commandInTree(command *cobra.Command, name string) bool {
+	for current := command; current != nil; current = current.Parent() {
+		if current.Name() == name {
+			return true
+		}
+	}
+	return false
 }

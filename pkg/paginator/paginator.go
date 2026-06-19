@@ -36,6 +36,12 @@ type Paginator struct {
 	ctx   *gin.Context
 }
 
+var allowedSortColumns = map[string]string{
+	"id":         "id",
+	"created_at": "created_at",
+	"updated_at": "updated_at",
+}
+
 // Paginate
 // c - gin.context, Used to get the URL parameters for paging
 // db - Gorm, Query handle to query the data set and get the total number of data
@@ -62,13 +68,18 @@ func Paginate(_ context.Context, c *gin.Context, db *gorm.DB, data any, limit in
 	}
 	p.initProperties(limit)
 
-	// Query database
-	err := p.query.Preload(clause.Associations). // Read Associations
-							Order(p.Sort + " " + p.Order). // Sort
-							Limit(p.Limit).
-							Offset(p.Offset).
-							Find(data).
-							Error
+	orderBy := clause.OrderByColumn{
+		Column: clause.Column{Name: p.Sort},
+		Desc:   p.Order == "desc",
+	}
+
+	err := p.query.
+		Preload(clause.Associations).
+		Order(orderBy).
+		Limit(p.Limit).
+		Offset(p.Offset).
+		Find(data).
+		Error
 	if err != nil {
 		logger.LogIf(err)
 		return Paging{}
@@ -87,10 +98,27 @@ func (p *Paginator) initProperties(limit int) {
 	p.Offset = p.getOffset()
 
 	// Sort parameters
-	p.Order = p.ctx.DefaultQuery(config.Get("paging.url_query_order"), "asc")
-	p.Sort = p.ctx.DefaultQuery(config.Get("paging.url_query_sort"), "id")
+	p.Order = p.getOrder()
+	p.Sort = p.getSort()
 
 	p.TotalCount = p.getTotalCount()
+}
+
+func (p *Paginator) getSort() string {
+	sort := p.ctx.DefaultQuery(config.Get("paging.url_query_sort"), "id")
+	if column, ok := allowedSortColumns[sort]; ok {
+		return column
+	}
+	return "id"
+}
+
+func (p *Paginator) getOrder() string {
+	switch p.ctx.DefaultQuery(config.Get("paging.url_query_order"), "asc") {
+	case "desc":
+		return "desc"
+	default:
+		return "asc"
+	}
 }
 
 func (p *Paginator) getLimit(limit int) int {

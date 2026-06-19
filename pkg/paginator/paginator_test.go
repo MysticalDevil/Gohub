@@ -79,3 +79,25 @@ func TestGetOffsetNegative(t *testing.T) {
 	p := &Paginator{ctx: c}
 	require.Equal(t, 0, p.getOffset())
 }
+
+func TestGetSortRejectsUnknownColumn(t *testing.T) {
+	initTestConfig(t)
+
+	w := httptest.NewRecorder()
+	c, _ := gin.CreateTestContext(w)
+	c.Request = httptest.NewRequest(http.MethodGet, "/?sort=id%20desc", nil)
+
+	p := &Paginator{ctx: c}
+	require.Equal(t, "id", p.getSort())
+}
+
+func TestGetOrderRejectsUnknownDirection(t *testing.T) {
+	initTestConfig(t)
+
+	w := httptest.NewRecorder()
+	c, _ := gin.CreateTestContext(w)
+	c.Request = httptest.NewRequest(http.MethodGet, "/?order=desc;drop", nil)
+
+	p := &Paginator{ctx: c}
+	require.Equal(t, "asc", p.getOrder())
+}
